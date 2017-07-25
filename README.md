@@ -3,6 +3,7 @@ Allows python to interface with MESA
 
 ## Requirements:
 gfort2py 
+
 numpy
 
 ## MESA
@@ -10,5 +11,5 @@ Currently version 9898 plus patch (note with the patch enabled we dont use clibm
 
 ````bash
 cd $MESA_DIR
-0001-Build-shared-libs.patch
+patch -p1 < 0001-Build-shared-libs.patch
 ````
