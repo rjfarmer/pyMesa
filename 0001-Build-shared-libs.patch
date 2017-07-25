@@ -1,58 +1,57 @@
-From 31806d81f142a50647f8d15e75a2ebdd1b99e779 Mon Sep 17 00:00:00 2001
+From 47b0e80a4e12c02605195c48770062186ab666e8 Mon Sep 17 00:00:00 2001
 From: Robert Farmer <rjfarmer@asu.edu>
-Date: Tue, 25 Jul 2017 16:18:52 +0100
+Date: Tue, 25 Jul 2017 16:42:36 +0100
 Subject: [PATCH] Build shared libs
 
 ---
  adipls/export                    |  4 ++--
- adipls/make/makefile             |  2 +-
  atm/export                       |  2 +-
- atm/make/makefile                |  2 +-
+ atm/make/makefile                |  4 ++--
  binary/export                    |  2 +-
- binary/make/makefile             |  2 +-
+ binary/make/makefile             |  4 ++--
  chem/export                      |  2 +-
- chem/make/makefile               |  2 +-
+ chem/make/makefile               |  4 ++--
  colors/export                    |  2 +-
- colors/make/makefile             |  2 +-
+ colors/make/makefile             |  4 ++--
  const/export                     |  2 +-
- const/make/makefile              |  2 +-
+ const/make/makefile              |  4 ++--
  crlibm/build_and_test_mic_native |  2 +-
  crlibm/export                    |  2 +-
- crlibm/make/makefile             |  4 ++--
+ crlibm/make/makefile             |  6 +++---
  eos/export                       |  2 +-
- eos/make/makefile                |  2 +-
+ eos/make/makefile                |  4 ++--
  gyre/export                      |  2 +-
- gyre/make/makefile               |  2 +-
+ gyre/make/makefile               |  6 +++---
  interp_1d/export                 |  2 +-
- interp_1d/make/makefile          |  2 +-
+ interp_1d/make/makefile          |  4 ++--
  interp_2d/export                 |  2 +-
- interp_2d/make/makefile          |  2 +-
+ interp_2d/make/makefile          |  4 ++--
  ionization/export                |  2 +-
- ionization/make/makefile         |  2 +-
+ ionization/make/makefile         |  4 ++--
  kap/export                       |  2 +-
- kap/make/makefile                |  2 +-
+ kap/make/makefile                |  4 ++--
  kap/private/kap_eval_support.f90 |  1 +
  mlt/export                       |  2 +-
- mlt/make/makefile                |  2 +-
+ mlt/make/makefile                |  4 ++--
  mtx/export                       | 10 +++++-----
- mtx/make/makefile                | 23 ++++++++++++++---------
+ mtx/make/makefile                | 25 +++++++++++++++----------
  net/export                       |  2 +-
- net/make/makefile                |  2 +-
+ net/make/makefile                |  4 ++--
  neu/export                       |  2 +-
- neu/make/makefile                |  2 +-
+ neu/make/makefile                |  4 ++--
  num/export                       |  2 +-
- num/make/makefile                |  2 +-
+ num/make/makefile                |  4 ++--
  package_template/export          |  2 +-
- package_template/make/makefile   |  2 +-
+ package_template/make/makefile   |  4 ++--
  rates/export                     |  2 +-
- rates/make/makefile              |  2 +-
+ rates/make/makefile              |  4 ++--
  rates/private/weaklib_tables.f90 |  2 +-
  star/export                      |  2 +-
- star/make/makefile               |  2 +-
+ star/make/makefile               |  4 ++--
  utils/export                     |  2 +-
- utils/make/makefile              |  2 +-
- utils/makefile_header            | 12 +++++++-----
- 48 files changed, 73 insertions(+), 65 deletions(-)
+ utils/make/makefile              |  4 ++--
+ utils/makefile_header            | 14 ++++++++------
+ 47 files changed, 95 insertions(+), 87 deletions(-)
 
 diff --git a/adipls/export b/adipls/export
 index 1cd2fc0..41eb34d 100755
@@ -64,19 +63,6 @@ index 1cd2fc0..41eb34d 100755
  cd ../lib
 -ranlib libadipls.a
 +ranlib libadipls.so
-diff --git a/adipls/make/makefile b/adipls/make/makefile
-index 25fb031..406d74e 100644
---- a/adipls/make/makefile
-+++ b/adipls/make/makefile
-@@ -3,7 +3,7 @@ MESA_DIR = ../..
- 
- include $(MESA_DIR)/utils/makefile_header
-   
--LIB = libadipls.a
-+LIB = libadipls.so
- ADIPLS_DIR = ../adipack.c/adipls
- ADIAJOBS_DIR = ../adipack.c/adiajobs
- GENSR_DIR = ../adipack.c/gensr
 diff --git a/atm/export b/atm/export
 index 4273b50..8ad2891 100755
 --- a/atm/export
@@ -88,7 +74,7 @@ index 4273b50..8ad2891 100755
 -cp make/libatm*.a ../lib
 +cp make/libatm*.so ../lib
 diff --git a/atm/make/makefile b/atm/make/makefile
-index d90ddac..6a6a5e8 100644
+index d90ddac..93f3c66 100644
 --- a/atm/make/makefile
 +++ b/atm/make/makefile
 @@ -23,7 +23,7 @@ SRCS = \
@@ -100,6 +86,15 @@ index d90ddac..6a6a5e8 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -48,7 +48,7 @@ COMPILE_CMD = $(COMPILE) $(FCfree)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/binary/export b/binary/export
 index 5570fdb..23c80c2 100755
 --- a/binary/export
@@ -111,7 +106,7 @@ index 5570fdb..23c80c2 100755
 -cp make/libbinary*.a ../lib
 +cp make/libbinary*.so ../lib
 diff --git a/binary/make/makefile b/binary/make/makefile
-index 4a3fe2e..aa34ea2 100644
+index 4a3fe2e..9ea417c 100644
 --- a/binary/make/makefile
 +++ b/binary/make/makefile
 @@ -45,7 +45,7 @@ SRCS = \
@@ -123,6 +118,15 @@ index 4a3fe2e..aa34ea2 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -70,7 +70,7 @@ COMPILE_CMD = $(COMPILE)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/chem/export b/chem/export
 index 29d1dea..6d0cac9 100755
 --- a/chem/export
@@ -134,7 +138,7 @@ index 29d1dea..6d0cac9 100755
 -cp make/libchem*.a ../lib
 +cp make/libchem*.so ../lib
 diff --git a/chem/make/makefile b/chem/make/makefile
-index 2d66a26..e06672a 100644
+index 2d66a26..d1dcaa3 100644
 --- a/chem/make/makefile
 +++ b/chem/make/makefile
 @@ -23,7 +23,7 @@ SRCS = \
@@ -146,6 +150,15 @@ index 2d66a26..e06672a 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -49,7 +49,7 @@ COMPILE_CMD = $(COMPILE)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/colors/export b/colors/export
 index 163ccff..db92550 100755
 --- a/colors/export
@@ -157,7 +170,7 @@ index 163ccff..db92550 100755
 -cp make/libcolors*.a ../lib
 +cp make/libcolors*.so ../lib
 diff --git a/colors/make/makefile b/colors/make/makefile
-index 6881be2..4c6ef04 100644
+index 6881be2..45e299b 100644
 --- a/colors/make/makefile
 +++ b/colors/make/makefile
 @@ -21,7 +21,7 @@ SRCS = \
@@ -169,6 +182,15 @@ index 6881be2..4c6ef04 100644
  LIB_DEFS = colors_def.o
  LIB_OBJS = $(filter-out $(LIB_DEFS),$(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS))))
  $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
+@@ -44,7 +44,7 @@ COMPILE_CMD = $(COMPILE)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/const/export b/const/export
 index 9ebf280..d3a0870 100755
 --- a/const/export
@@ -180,7 +202,7 @@ index 9ebf280..d3a0870 100755
 -cp make/libconst*.a ../lib
 +cp make/libconst*.so ../lib
 diff --git a/const/make/makefile b/const/make/makefile
-index 6027577..c37c3ec 100644
+index 6027577..a5126df 100644
 --- a/const/make/makefile
 +++ b/const/make/makefile
 @@ -20,7 +20,7 @@ SRCS = \
@@ -192,6 +214,15 @@ index 6027577..c37c3ec 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -42,7 +42,7 @@ COMPILE_CMD = $(COMPILE)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/crlibm/build_and_test_mic_native b/crlibm/build_and_test_mic_native
 index 4ad30dd..b1b64e8 100755
 --- a/crlibm/build_and_test_mic_native
@@ -219,7 +250,7 @@ index 7f46310..4b0b667 100755
  then
  cp crlibm/libcrlibm*.a ../lib
 diff --git a/crlibm/make/makefile b/crlibm/make/makefile
-index d48c87a..0063b4e 100644
+index d48c87a..1b3891e 100644
 --- a/crlibm/make/makefile
 +++ b/crlibm/make/makefile
 @@ -11,7 +11,7 @@ include $(MESA_DIR)/utils/makefile_header
@@ -240,6 +271,12 @@ index d48c87a..0063b4e 100644
  COMPILE = $(COMPILE_TO_DEPLOY) $(FCfree)
  #COMPILE = $(COMPILE_TO_TEST) $(FCfree)
  
+@@ -40,4 +40,4 @@ crlibm_c_fortran.o: $(MOD_PRIVATE_DIR)/crlibm_c_fortran.c
+ 	$(COMPILE_C) -c -I$(MESA_INCLUDE_DIR) $< -o $@
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a
 diff --git a/eos/export b/eos/export
 index f2a4616..fee833f 100755
 --- a/eos/export
@@ -251,7 +288,7 @@ index f2a4616..fee833f 100755
 -cp make/libeos*.a ../lib
 +cp make/libeos*.so ../lib
 diff --git a/eos/make/makefile b/eos/make/makefile
-index 5d67123..32decaa 100644
+index 5d67123..83bf87a 100644
 --- a/eos/make/makefile
 +++ b/eos/make/makefile
 @@ -33,7 +33,7 @@ SRCS = \
@@ -263,6 +300,15 @@ index 5d67123..32decaa 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -67,7 +67,7 @@ eos_def.o: COMPILE_CMD = $(COMPILE_FIXED)
+ 	@true
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/gyre/export b/gyre/export
 index d283d72..2f5aa5a 100755
 --- a/gyre/export
@@ -275,7 +321,7 @@ index d283d72..2f5aa5a 100755
 +cp make/libgyre*.so ../lib
  
 diff --git a/gyre/make/makefile b/gyre/make/makefile
-index 07dd7a9..fa332f9 100644
+index 07dd7a9..e416fd8 100644
 --- a/gyre/make/makefile
 +++ b/gyre/make/makefile
 @@ -13,7 +13,7 @@ ifeq ($(USE_GYRE),NO)
@@ -287,6 +333,24 @@ index 07dd7a9..fa332f9 100644
  LIB_OBJS = gyre_lib_stub.o
  
  $(LIB) : $(LIB_OBJS)
+@@ -28,7 +28,7 @@ gyre_lib_stub.o: $(MOD_PUBLIC_DIR)/gyre_lib_stub.f
+ 	$(COMPILE) $<         
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a
+ 
+ else
+ 
+@@ -75,7 +75,7 @@ vpath %.f ${GYRE_DIRS}
+ 	@if [ -e $(basename $@).mod ]; then touch $(basename $@).mod; fi
+ 
+ clean:
+-	-@rm -f *.o *.f90 *.fpp *.mod *.modmic .depend *.a
++	-@rm -f *.o *.f90 *.fpp *.mod *.modmic .depend *.so *.a
+ 
+ # Dependencies
+ 
 diff --git a/interp_1d/export b/interp_1d/export
 index 3920e17..596b2d8 100755
 --- a/interp_1d/export
@@ -298,7 +362,7 @@ index 3920e17..596b2d8 100755
 -cp make/libinterp_1d*.a ../lib
 +cp make/libinterp_1d*.so ../lib
 diff --git a/interp_1d/make/makefile b/interp_1d/make/makefile
-index bc056ff..5cf76e0 100644
+index bc056ff..d34ef07 100644
 --- a/interp_1d/make/makefile
 +++ b/interp_1d/make/makefile
 @@ -27,7 +27,7 @@ SRCS = \
@@ -310,6 +374,15 @@ index bc056ff..5cf76e0 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -48,7 +48,7 @@ COMPILE_CMD = $(COMPILE)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/interp_2d/export b/interp_2d/export
 index fb041d8..03b3554 100755
 --- a/interp_2d/export
@@ -321,7 +394,7 @@ index fb041d8..03b3554 100755
 -cp make/libinterp_2d*.a ../lib
 +cp make/libinterp_2d*.so ../lib
 diff --git a/interp_2d/make/makefile b/interp_2d/make/makefile
-index ee6bfa6..aa5f54f 100644
+index ee6bfa6..134b392 100644
 --- a/interp_2d/make/makefile
 +++ b/interp_2d/make/makefile
 @@ -29,7 +29,7 @@ SRCS = \
@@ -333,6 +406,15 @@ index ee6bfa6..aa5f54f 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -66,7 +66,7 @@ bicub_db2.o: COMPILE_CMD = $(COMPILE_NO_CHECKS) $(FCfixed)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/ionization/export b/ionization/export
 index d546fee..0f361d3 100755
 --- a/ionization/export
@@ -344,7 +426,7 @@ index d546fee..0f361d3 100755
 -cp make/libionization*.a ../lib
 +cp make/libionization*.so ../lib
 diff --git a/ionization/make/makefile b/ionization/make/makefile
-index 31a05b9..89fd14e 100644
+index 31a05b9..90c0f0e 100644
 --- a/ionization/make/makefile
 +++ b/ionization/make/makefile
 @@ -25,7 +25,7 @@ SRCS = \
@@ -356,6 +438,15 @@ index 31a05b9..89fd14e 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -47,7 +47,7 @@ COMPILE_CMD = $(COMPILE)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/kap/export b/kap/export
 index e30663b..7620d37 100755
 --- a/kap/export
@@ -367,7 +458,7 @@ index e30663b..7620d37 100755
 -cp make/libkap*.a ../lib
 +cp make/libkap*.so ../lib
 diff --git a/kap/make/makefile b/kap/make/makefile
-index 2f25bdc..27e08ef 100644
+index 2f25bdc..85394e7 100644
 --- a/kap/make/makefile
 +++ b/kap/make/makefile
 @@ -33,7 +33,7 @@ SRCS = \
@@ -379,6 +470,15 @@ index 2f25bdc..27e08ef 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -65,7 +65,7 @@ op_radacc.o: COMPILE_CMD = $(COMPILE_LEGACAY_NOCHECKS) $(FCfixed)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/kap/private/kap_eval_support.f90 b/kap/private/kap_eval_support.f90
 index bd4f1f9..43bc33f 100644
 --- a/kap/private/kap_eval_support.f90
@@ -402,7 +502,7 @@ index fcd2c35..39e0eb8 100755
 -cp make/libmlt*.a ../lib
 +cp make/libmlt*.so ../lib
 diff --git a/mlt/make/makefile b/mlt/make/makefile
-index 259e99c..abdaf85 100644
+index 259e99c..90744ad 100644
 --- a/mlt/make/makefile
 +++ b/mlt/make/makefile
 @@ -21,7 +21,7 @@ SRCS = \
@@ -414,6 +514,15 @@ index 259e99c..abdaf85 100644
  LIB_DEFS = mlt_def.o 
  LIB_OBJS =$(filter-out $(LIB_DEFS),$(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS))))
  $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
+@@ -45,7 +45,7 @@ COMPILE_CMD = $(COMPILE)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/mtx/export b/mtx/export
 index f0f2209..e1f7d91 100755
 --- a/mtx/export
@@ -439,7 +548,7 @@ index f0f2209..e1f7d91 100755
 -cp make/libmtx*.a ../lib
 +cp make/libmtx*.so ../lib
 diff --git a/mtx/make/makefile b/mtx/make/makefile
-index 77433b0..2be8b3e 100644
+index 77433b0..8128120 100644
 --- a/mtx/make/makefile
 +++ b/mtx/make/makefile
 @@ -222,7 +222,7 @@ endif
@@ -497,6 +606,15 @@ index 77433b0..2be8b3e 100644
  
  COMPILE_CMD = $(COMPILE)
  
+@@ -289,7 +294,7 @@ $(filter-out dlamch.o,$(BLAS_OBJS)) : COMPILE_CMD = $(COMPILE_XTRA) -w
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.f90 *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.f90 *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/net/export b/net/export
 index af80599..9179d98 100755
 --- a/net/export
@@ -508,7 +626,7 @@ index af80599..9179d98 100755
 -cp make/libnet*.a ../lib
 +cp make/libnet*.so ../lib
 diff --git a/net/make/makefile b/net/make/makefile
-index 9a4388e..9e64933 100644
+index 9a4388e..c20777a 100644
 --- a/net/make/makefile
 +++ b/net/make/makefile
 @@ -33,7 +33,7 @@ SRCS = \
@@ -520,6 +638,15 @@ index 9a4388e..9e64933 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -62,7 +62,7 @@ COMPILE_CMD = $(COMPILE)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/neu/export b/neu/export
 index 351e7a2..a8a67da 100755
 --- a/neu/export
@@ -531,7 +658,7 @@ index 351e7a2..a8a67da 100755
 -cp make/libneu*.a ../lib
 +cp make/libneu*.so ../lib
 diff --git a/neu/make/makefile b/neu/make/makefile
-index 4e6a08c..c0a7216 100644
+index 4e6a08c..a564bb9 100644
 --- a/neu/make/makefile
 +++ b/neu/make/makefile
 @@ -21,7 +21,7 @@ SRCS = \
@@ -543,6 +670,15 @@ index 4e6a08c..c0a7216 100644
  LIB_DEFS = neu_def.o
  LIB_OBJS =$(filter-out $(LIB_DEFS),$(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS))))
  $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
+@@ -46,7 +46,7 @@ COMPILE_CMD = $(COMPILE)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/num/export b/num/export
 index de2b380..3bd17bc 100755
 --- a/num/export
@@ -554,7 +690,7 @@ index de2b380..3bd17bc 100755
 -cp make/libnum*.a ../lib
 +cp make/libnum*.so ../lib
 diff --git a/num/make/makefile b/num/make/makefile
-index 9f56361..f5f7863 100644
+index 9f56361..5849a37 100644
 --- a/num/make/makefile
 +++ b/num/make/makefile
 @@ -23,7 +23,7 @@ SRCS = \
@@ -566,6 +702,15 @@ index 9f56361..f5f7863 100644
  LIB_DEFS = num_def.o
  LIB_OBJS = $(filter-out $(LIB_DEFS),$(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS))))
  $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
+@@ -67,7 +67,7 @@ mod_rosenbrock.o: COMPILE_CMD = $(COMPILE_LEGACY_XTRA)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/package_template/export b/package_template/export
 index 2949ffe..fd5c4d8 100755
 --- a/package_template/export
@@ -577,7 +722,7 @@ index 2949ffe..fd5c4d8 100755
 -cp make/libxxx*.a ../lib
 +cp make/libxxx*.so ../lib
 diff --git a/package_template/make/makefile b/package_template/make/makefile
-index 92ab385..413d6cf 100644
+index 92ab385..4695130 100644
 --- a/package_template/make/makefile
 +++ b/package_template/make/makefile
 @@ -18,7 +18,7 @@ SRCS = pkg_mod.f \
@@ -589,6 +734,15 @@ index 92ab385..413d6cf 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -44,7 +44,7 @@ COMPILE_CMD = $(COMPILE)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/rates/export b/rates/export
 index 726b0b0..dfecb8c 100755
 --- a/rates/export
@@ -600,7 +754,7 @@ index 726b0b0..dfecb8c 100755
 -cp make/librates*.a ../lib
 +cp make/librates*.so ../lib
 diff --git a/rates/make/makefile b/rates/make/makefile
-index 492923d..b8f1905 100644
+index 492923d..0558c96 100644
 --- a/rates/make/makefile
 +++ b/rates/make/makefile
 @@ -43,7 +43,7 @@ SRCS = \
@@ -612,6 +766,15 @@ index 492923d..b8f1905 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -68,7 +68,7 @@ rates_names.o: COMPILE_CMD = $(COMPILE_BASIC) $(FCfree) $(FCchecks) -c -O0
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *.a .depend
++	-@rm -f *.o *.mod *.modmic *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/rates/private/weaklib_tables.f90 b/rates/private/weaklib_tables.f90
 index 6f3e719..780effb 100644
 --- a/rates/private/weaklib_tables.f90
@@ -639,7 +802,7 @@ index 60c4639..e329252 100755
  cd ../star
  if [ -e make/libstar++.a ]
 diff --git a/star/make/makefile b/star/make/makefile
-index a6e8858..dc7bdcb 100644
+index a6e8858..ff28c36 100644
 --- a/star/make/makefile
 +++ b/star/make/makefile
 @@ -200,7 +200,7 @@ SRCS = \
@@ -651,6 +814,15 @@ index a6e8858..dc7bdcb 100644
  LIB_DEFS = 
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
+@@ -278,7 +278,7 @@ rt1d.o : COMPILE_CMD = $(COMPILE) -O3
+ 	@true
+ 
+ clean:
+-	-@rm -f *.f90 *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.f90 *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/utils/export b/utils/export
 index fbc2921..f2fb1a1 100755
 --- a/utils/export
@@ -662,7 +834,7 @@ index fbc2921..f2fb1a1 100755
 -cp make/libutils*.a ../lib
 +cp make/libutils*.so ../lib
 diff --git a/utils/make/makefile b/utils/make/makefile
-index 8e35ae7..40c9f18 100644
+index 8e35ae7..6fda837 100644
 --- a/utils/make/makefile
 +++ b/utils/make/makefile
 @@ -33,7 +33,7 @@ SRCS = \
@@ -674,8 +846,17 @@ index 8e35ae7..40c9f18 100644
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
  	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
+@@ -55,7 +55,7 @@ COMPILE_CMD = $(COMPILE)
+ %.o : %.mod
+ 
+ clean:
+-	-@rm -f *.o *.mod *.modmic *genmod.f90 *.a .depend
++	-@rm -f *.o *.mod *.modmic *genmod.f90 *.so *.a .depend
+ 
+ #################################################################
+ #
 diff --git a/utils/makefile_header b/utils/makefile_header
-index 5979b09..af5ff8b 100644
+index 5979b09..f258304 100644
 --- a/utils/makefile_header
 +++ b/utils/makefile_header
 @@ -40,6 +40,8 @@ endif
@@ -711,6 +892,15 @@ index 5979b09..af5ff8b 100644
  
  #################################################################
  
+@@ -199,7 +201,7 @@ LOAD_MESA_BINARY = -L$(MESA_LIB_DIR) -lbinary $(STAR_LOAD_LIST)
+ LOADER = $(FC)
+ 
+ # LIB_TOOL creates libraries
+-LIB_TOOL = ar crs
++LIB_TOOL = $(FC) -shared -o
+ 
+ 
+ STAR_WORK_OBJS = \
 -- 
 2.9.4
 
