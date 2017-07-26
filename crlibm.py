@@ -1,0 +1,19 @@
+import gfort2py as gf
+import numpy as np
+import os
+
+MESA_DIR = os.environ.get('MESA_DIR')
+
+LIB_DIR = os.path.join(MESA_DIR,'lib')
+INCLUDE_DIR = os.path.join(MESA_DIR,'include')
+
+os.environ["LD_LIBRARY_PATH"] =  LIB_DIR 
+
+FOLDER = "crlibm"
+
+SHARED_LIB = os.path.join(LIB_DIR,"libf2crlibm.so")
+MODULE = os.path.join(INCLUDE_DIR,FOLDER+"_lib.mod")  
+
+# Borken, looks like the shared lib didnt link everything poroperly
+
+x=gf.fFort(SHARED_LIB,MODULE,reload=True)

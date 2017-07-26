@@ -1,57 +1,57 @@
-From 47b0e80a4e12c02605195c48770062186ab666e8 Mon Sep 17 00:00:00 2001
+From 79ef021007d1f90c5ed5adb8c4e8c8945d39344f Mon Sep 17 00:00:00 2001
 From: Robert Farmer <rjfarmer@asu.edu>
-Date: Tue, 25 Jul 2017 16:42:36 +0100
+Date: Wed, 26 Jul 2017 13:39:57 +0100
 Subject: [PATCH] Build shared libs
 
 ---
  adipls/export                    |  4 ++--
  atm/export                       |  2 +-
- atm/make/makefile                |  4 ++--
+ atm/make/makefile                |  7 ++++---
  binary/export                    |  2 +-
- binary/make/makefile             |  4 ++--
+ binary/make/makefile             |  7 ++++---
  chem/export                      |  2 +-
- chem/make/makefile               |  4 ++--
+ chem/make/makefile               |  7 ++++---
  colors/export                    |  2 +-
- colors/make/makefile             |  4 ++--
+ colors/make/makefile             |  7 ++++---
  const/export                     |  2 +-
- const/make/makefile              |  4 ++--
+ const/make/makefile              |  7 ++++---
  crlibm/build_and_test_mic_native |  2 +-
  crlibm/export                    |  2 +-
- crlibm/make/makefile             |  6 +++---
+ crlibm/make/makefile             |  9 +++++----
  eos/export                       |  2 +-
- eos/make/makefile                |  4 ++--
+ eos/make/makefile                |  7 ++++---
  gyre/export                      |  2 +-
- gyre/make/makefile               |  6 +++---
+ gyre/make/makefile               |  9 +++++----
  interp_1d/export                 |  2 +-
- interp_1d/make/makefile          |  4 ++--
+ interp_1d/make/makefile          |  7 ++++---
  interp_2d/export                 |  2 +-
- interp_2d/make/makefile          |  4 ++--
+ interp_2d/make/makefile          |  7 ++++---
  ionization/export                |  2 +-
- ionization/make/makefile         |  4 ++--
+ ionization/make/makefile         |  7 ++++---
  kap/export                       |  2 +-
- kap/make/makefile                |  4 ++--
+ kap/make/makefile                |  7 ++++---
  kap/private/kap_eval_support.f90 |  1 +
  mlt/export                       |  2 +-
- mlt/make/makefile                |  4 ++--
+ mlt/make/makefile                |  7 ++++---
  mtx/export                       | 10 +++++-----
  mtx/make/makefile                | 25 +++++++++++++++----------
  net/export                       |  2 +-
- net/make/makefile                |  4 ++--
+ net/make/makefile                |  7 ++++---
  neu/export                       |  2 +-
- neu/make/makefile                |  4 ++--
+ neu/make/makefile                |  7 ++++---
  num/export                       |  2 +-
- num/make/makefile                |  4 ++--
+ num/make/makefile                |  7 ++++---
  package_template/export          |  2 +-
  package_template/make/makefile   |  4 ++--
  rates/export                     |  2 +-
- rates/make/makefile              |  4 ++--
+ rates/make/makefile              |  7 ++++---
  rates/private/weaklib_tables.f90 |  2 +-
  star/export                      |  2 +-
- star/make/makefile               |  4 ++--
+ star/make/makefile               |  8 +++++---
  utils/export                     |  2 +-
- utils/make/makefile              |  4 ++--
+ utils/make/makefile              |  7 ++++---
  utils/makefile_header            | 14 ++++++++------
- 47 files changed, 95 insertions(+), 87 deletions(-)
+ 47 files changed, 134 insertions(+), 106 deletions(-)
 
 diff --git a/adipls/export b/adipls/export
 index 1cd2fc0..41eb34d 100755
@@ -74,19 +74,24 @@ index 4273b50..8ad2891 100755
 -cp make/libatm*.a ../lib
 +cp make/libatm*.so ../lib
 diff --git a/atm/make/makefile b/atm/make/makefile
-index d90ddac..93f3c66 100644
+index d90ddac..6bd0089 100644
 --- a/atm/make/makefile
 +++ b/atm/make/makefile
-@@ -23,7 +23,7 @@ SRCS = \
+@@ -23,10 +23,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libatm.a
 +LIB = libatm.so
++LIB_DEPENDS = -L$(MESA_LIB_DIR) -leos -lkap -lchem $(LOAD_MESA_NUMERICS)
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -48,7 +48,7 @@ COMPILE_CMD = $(COMPILE) $(FCfree)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -48,7 +49,7 @@ COMPILE_CMD = $(COMPILE) $(FCfree)
  %.o : %.mod
  
  clean:
@@ -106,19 +111,24 @@ index 5570fdb..23c80c2 100755
 -cp make/libbinary*.a ../lib
 +cp make/libbinary*.so ../lib
 diff --git a/binary/make/makefile b/binary/make/makefile
-index 4a3fe2e..9ea417c 100644
+index 4a3fe2e..5a83cb3 100644
 --- a/binary/make/makefile
 +++ b/binary/make/makefile
-@@ -45,7 +45,7 @@ SRCS = \
+@@ -45,10 +45,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libbinary.a
 +LIB = libbinary.so
++LIB_DEPENDS = -L$(MESA_LIB_DIR) $(LOAD_MESA_STAR)
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -70,7 +70,7 @@ COMPILE_CMD = $(COMPILE)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -70,7 +71,7 @@ COMPILE_CMD = $(COMPILE)
  %.o : %.mod
  
  clean:
@@ -138,19 +148,24 @@ index 29d1dea..6d0cac9 100755
 -cp make/libchem*.a ../lib
 +cp make/libchem*.so ../lib
 diff --git a/chem/make/makefile b/chem/make/makefile
-index 2d66a26..d1dcaa3 100644
+index 2d66a26..4ba18e3 100644
 --- a/chem/make/makefile
 +++ b/chem/make/makefile
-@@ -23,7 +23,7 @@ SRCS = \
+@@ -23,10 +23,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libchem.a
 +LIB = libchem.so
++LIB_DEPENDS = -L$(MESA_LIB_DIR) -linterp_1d -lnum $(LOAD_MATRIX) $(LOAD_HDF5)
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -49,7 +49,7 @@ COMPILE_CMD = $(COMPILE)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -49,7 +50,7 @@ COMPILE_CMD = $(COMPILE)
  %.o : %.mod
  
  clean:
@@ -170,19 +185,25 @@ index 163ccff..db92550 100755
 -cp make/libcolors*.a ../lib
 +cp make/libcolors*.so ../lib
 diff --git a/colors/make/makefile b/colors/make/makefile
-index 6881be2..45e299b 100644
+index 6881be2..95807bc 100644
 --- a/colors/make/makefile
 +++ b/colors/make/makefile
-@@ -21,7 +21,7 @@ SRCS = \
+@@ -21,11 +21,12 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libcolors.a
 +LIB = libcolors.so
  LIB_DEFS = colors_def.o
++LIB_DEPENDS = -L$(MESA_LIB_DIR) $(LOAD_MATRIX)
  LIB_OBJS = $(filter-out $(LIB_DEFS),$(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS))))
  $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
-@@ -44,7 +44,7 @@ COMPILE_CMD = $(COMPILE)
+-	$(LIB_TOOL) $(LIB) $(LIB_DEFS) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_DEFS) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -44,7 +45,7 @@ COMPILE_CMD = $(COMPILE)
  %.o : %.mod
  
  clean:
@@ -202,19 +223,24 @@ index 9ebf280..d3a0870 100755
 -cp make/libconst*.a ../lib
 +cp make/libconst*.so ../lib
 diff --git a/const/make/makefile b/const/make/makefile
-index 6027577..a5126df 100644
+index 6027577..3046ffe 100644
 --- a/const/make/makefile
 +++ b/const/make/makefile
-@@ -20,7 +20,7 @@ SRCS = \
+@@ -20,10 +20,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libconst.a
 +LIB = libconst.so
++LIB_DEPENDS = 
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -42,7 +42,7 @@ COMPILE_CMD = $(COMPILE)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -42,7 +43,7 @@ COMPILE_CMD = $(COMPILE)
  %.o : %.mod
  
  clean:
@@ -250,19 +276,26 @@ index 7f46310..4b0b667 100755
  then
  cp crlibm/libcrlibm*.a ../lib
 diff --git a/crlibm/make/makefile b/crlibm/make/makefile
-index d48c87a..1b3891e 100644
+index d48c87a..26019a3 100644
 --- a/crlibm/make/makefile
 +++ b/crlibm/make/makefile
-@@ -11,7 +11,7 @@ include $(MESA_DIR)/utils/makefile_header
+@@ -11,8 +11,9 @@ include $(MESA_DIR)/utils/makefile_header
  
  # STEP 2: build the library
  
 -LIB = libf2crlibm.a
 +LIB = libf2crlibm.so
  LIB_DEFS = 
++LIB_DEPENDS = -L$(MESA_LIB_DIR) -lutils -lconst
  
  ifeq ($(USE_STUB_FOR_CRLIBM),YES)
-@@ -26,7 +26,7 @@ $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
+ LIB_OBJS = crlibm_lib_stub.o
+@@ -22,11 +23,11 @@ endif
+ 
+ 
+ $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
  	
  #################################################################
  
@@ -271,7 +304,7 @@ index d48c87a..1b3891e 100644
  COMPILE = $(COMPILE_TO_DEPLOY) $(FCfree)
  #COMPILE = $(COMPILE_TO_TEST) $(FCfree)
  
-@@ -40,4 +40,4 @@ crlibm_c_fortran.o: $(MOD_PRIVATE_DIR)/crlibm_c_fortran.c
+@@ -40,4 +41,4 @@ crlibm_c_fortran.o: $(MOD_PRIVATE_DIR)/crlibm_c_fortran.c
  	$(COMPILE_C) -c -I$(MESA_INCLUDE_DIR) $< -o $@
  
  clean:
@@ -288,19 +321,24 @@ index f2a4616..fee833f 100755
 -cp make/libeos*.a ../lib
 +cp make/libeos*.so ../lib
 diff --git a/eos/make/makefile b/eos/make/makefile
-index 5d67123..83bf87a 100644
+index 5d67123..1c40765 100644
 --- a/eos/make/makefile
 +++ b/eos/make/makefile
-@@ -33,7 +33,7 @@ SRCS = \
+@@ -33,10 +33,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libeos.a
 +LIB = libeos.so
++LIB_DEPENDS = -L$(MESA_LIB_DIR) -lchem $(LOAD_MESA_NUMERICS)
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -67,7 +67,7 @@ eos_def.o: COMPILE_CMD = $(COMPILE_FIXED)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -67,7 +68,7 @@ eos_def.o: COMPILE_CMD = $(COMPILE_FIXED)
  	@true
  
  clean:
@@ -321,19 +359,25 @@ index d283d72..2f5aa5a 100755
 +cp make/libgyre*.so ../lib
  
 diff --git a/gyre/make/makefile b/gyre/make/makefile
-index 07dd7a9..e416fd8 100644
+index 07dd7a9..0a39f41 100644
 --- a/gyre/make/makefile
 +++ b/gyre/make/makefile
-@@ -13,7 +13,7 @@ ifeq ($(USE_GYRE),NO)
+@@ -13,11 +13,12 @@ ifeq ($(USE_GYRE),NO)
  
  # STEP 2: build a stub library
  
 -LIB = libgyre.a
 +LIB = libgyre.so
++LIB_DEPENDS = -L$(LOCAL_LIB_DIR) -lgyre $(LOAD_LAPACK) -L$(MESA_DIR)/lib -lconst
  LIB_OBJS = gyre_lib_stub.o
  
  $(LIB) : $(LIB_OBJS)
-@@ -28,7 +28,7 @@ gyre_lib_stub.o: $(MOD_PUBLIC_DIR)/gyre_lib_stub.f
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ 
+@@ -28,7 +29,7 @@ gyre_lib_stub.o: $(MOD_PUBLIC_DIR)/gyre_lib_stub.f
  	$(COMPILE) $<         
  
  clean:
@@ -342,7 +386,7 @@ index 07dd7a9..e416fd8 100644
  
  else
  
-@@ -75,7 +75,7 @@ vpath %.f ${GYRE_DIRS}
+@@ -75,7 +76,7 @@ vpath %.f ${GYRE_DIRS}
  	@if [ -e $(basename $@).mod ]; then touch $(basename $@).mod; fi
  
  clean:
@@ -362,19 +406,24 @@ index 3920e17..596b2d8 100755
 -cp make/libinterp_1d*.a ../lib
 +cp make/libinterp_1d*.so ../lib
 diff --git a/interp_1d/make/makefile b/interp_1d/make/makefile
-index bc056ff..d34ef07 100644
+index bc056ff..7fc4e41 100644
 --- a/interp_1d/make/makefile
 +++ b/interp_1d/make/makefile
-@@ -27,7 +27,7 @@ SRCS = \
+@@ -27,10 +27,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libinterp_1d.a
 +LIB = libinterp_1d.so
++LIB_DEPENDS = -L$(MESA_LIB_DIR) $(LOAD_MATRIX)
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -48,7 +48,7 @@ COMPILE_CMD = $(COMPILE)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ 
+@@ -48,7 +49,7 @@ COMPILE_CMD = $(COMPILE)
  %.o : %.mod
  
  clean:
@@ -394,19 +443,24 @@ index fb041d8..03b3554 100755
 -cp make/libinterp_2d*.a ../lib
 +cp make/libinterp_2d*.so ../lib
 diff --git a/interp_2d/make/makefile b/interp_2d/make/makefile
-index ee6bfa6..134b392 100644
+index ee6bfa6..7e8527a 100644
 --- a/interp_2d/make/makefile
 +++ b/interp_2d/make/makefile
-@@ -29,7 +29,7 @@ SRCS = \
+@@ -29,10 +29,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libinterp_2d.a
 +LIB = libinterp_2d.so
++LIB_DEPENDS = -L$(MESA_LIB_DIR) -lnum -linterp_1d $(LOAD_MATRIX)
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -66,7 +66,7 @@ bicub_db2.o: COMPILE_CMD = $(COMPILE_NO_CHECKS) $(FCfixed)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -66,7 +67,7 @@ bicub_db2.o: COMPILE_CMD = $(COMPILE_NO_CHECKS) $(FCfixed)
  %.o : %.mod
  
  clean:
@@ -426,19 +480,24 @@ index d546fee..0f361d3 100755
 -cp make/libionization*.a ../lib
 +cp make/libionization*.so ../lib
 diff --git a/ionization/make/makefile b/ionization/make/makefile
-index 31a05b9..90c0f0e 100644
+index 31a05b9..3199b55 100644
 --- a/ionization/make/makefile
 +++ b/ionization/make/makefile
-@@ -25,7 +25,7 @@ SRCS = \
+@@ -25,10 +25,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libionization.a
 +LIB = libionization.so
++LIB_DEPENDS = -L$(MESA_LIB_DIR) -lnet -leos -lkap -lrates -lchem $(LOAD_MESA_NUMERICS)
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -47,7 +47,7 @@ COMPILE_CMD = $(COMPILE)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -47,7 +48,7 @@ COMPILE_CMD = $(COMPILE)
  %.o : %.mod
  
  clean:
@@ -458,19 +517,24 @@ index e30663b..7620d37 100755
 -cp make/libkap*.a ../lib
 +cp make/libkap*.so ../lib
 diff --git a/kap/make/makefile b/kap/make/makefile
-index 2f25bdc..85394e7 100644
+index 2f25bdc..39a67f8 100644
 --- a/kap/make/makefile
 +++ b/kap/make/makefile
-@@ -33,7 +33,7 @@ SRCS = \
+@@ -33,10 +33,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libkap.a
 +LIB = libkap.so
++LIB_DEPENDS = -L$(MESA_LIB_DIR) $(LOAD_MESA_NUMERICS) -leos -lchem 
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -65,7 +65,7 @@ op_radacc.o: COMPILE_CMD = $(COMPILE_LEGACAY_NOCHECKS) $(FCfixed)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -65,7 +66,7 @@ op_radacc.o: COMPILE_CMD = $(COMPILE_LEGACAY_NOCHECKS) $(FCfixed)
  %.o : %.mod
  
  clean:
@@ -502,19 +566,25 @@ index fcd2c35..39e0eb8 100755
 -cp make/libmlt*.a ../lib
 +cp make/libmlt*.so ../lib
 diff --git a/mlt/make/makefile b/mlt/make/makefile
-index 259e99c..90744ad 100644
+index 259e99c..89fbb24 100644
 --- a/mlt/make/makefile
 +++ b/mlt/make/makefile
-@@ -21,7 +21,7 @@ SRCS = \
+@@ -21,11 +21,12 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libmlt.a
 +LIB = libmlt.so
  LIB_DEFS = mlt_def.o 
++LIB_DEPENDS = -L$(MESA_LIB_DIR) -latm -lnet -leos -lkap -lrates -lchem $(LOAD_MESA_NUMERICS)
  LIB_OBJS =$(filter-out $(LIB_DEFS),$(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS))))
  $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
-@@ -45,7 +45,7 @@ COMPILE_CMD = $(COMPILE)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -45,7 +46,7 @@ COMPILE_CMD = $(COMPILE)
  %.o : %.mod
  
  clean:
@@ -626,19 +696,24 @@ index af80599..9179d98 100755
 -cp make/libnet*.a ../lib
 +cp make/libnet*.so ../lib
 diff --git a/net/make/makefile b/net/make/makefile
-index 9a4388e..c20777a 100644
+index 9a4388e..8440a3d 100644
 --- a/net/make/makefile
 +++ b/net/make/makefile
-@@ -33,7 +33,7 @@ SRCS = \
+@@ -33,10 +33,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libnet.a
 +LIB = libnet.so
++LIB_DEPENDS = -L$(MESA_LIB_DIR) -leos -lrates -lchem $(LOAD_MESA_NUMERICS)
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -62,7 +62,7 @@ COMPILE_CMD = $(COMPILE)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -62,7 +63,7 @@ COMPILE_CMD = $(COMPILE)
  %.o : %.mod
  
  clean:
@@ -658,19 +733,25 @@ index 351e7a2..a8a67da 100755
 -cp make/libneu*.a ../lib
 +cp make/libneu*.so ../lib
 diff --git a/neu/make/makefile b/neu/make/makefile
-index 4e6a08c..a564bb9 100644
+index 4e6a08c..9c672a0 100644
 --- a/neu/make/makefile
 +++ b/neu/make/makefile
-@@ -21,7 +21,7 @@ SRCS = \
+@@ -21,11 +21,12 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libneu.a
 +LIB = libneu.so
  LIB_DEFS = neu_def.o
++LIB_DEPENDS = -L$(MESA_LIB_DIR) $(LOAD_MESA_NUMERICS)
  LIB_OBJS =$(filter-out $(LIB_DEFS),$(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS))))
  $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
-@@ -46,7 +46,7 @@ COMPILE_CMD = $(COMPILE)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -46,7 +47,7 @@ COMPILE_CMD = $(COMPILE)
  %.o : %.mod
  
  clean:
@@ -690,19 +771,25 @@ index de2b380..3bd17bc 100755
 -cp make/libnum*.a ../lib
 +cp make/libnum*.so ../lib
 diff --git a/num/make/makefile b/num/make/makefile
-index 9f56361..5849a37 100644
+index 9f56361..0757316 100644
 --- a/num/make/makefile
 +++ b/num/make/makefile
-@@ -23,7 +23,7 @@ SRCS = \
+@@ -23,11 +23,12 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libnum.a
 +LIB = libnum.so
  LIB_DEFS = num_def.o
++LIB_DEPENDS =  -L$(MESA_LIB_DIR) $(LOAD_MATRIX)
  LIB_OBJS = $(filter-out $(LIB_DEFS),$(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS))))
  $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
-@@ -67,7 +67,7 @@ mod_rosenbrock.o: COMPILE_CMD = $(COMPILE_LEGACY_XTRA)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -67,7 +68,7 @@ mod_rosenbrock.o: COMPILE_CMD = $(COMPILE_LEGACY_XTRA)
  %.o : %.mod
  
  clean:
@@ -754,19 +841,24 @@ index 726b0b0..dfecb8c 100755
 -cp make/librates*.a ../lib
 +cp make/librates*.so ../lib
 diff --git a/rates/make/makefile b/rates/make/makefile
-index 492923d..0558c96 100644
+index 492923d..d2ad41b 100644
 --- a/rates/make/makefile
 +++ b/rates/make/makefile
-@@ -43,7 +43,7 @@ SRCS = \
+@@ -43,10 +43,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = librates.a
 +LIB = librates.so
++LIB_DEPENDS = -L$(MESA_LIB_DIR) -lchem -leos $(LOAD_MESA_NUMERICS)
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -68,7 +68,7 @@ rates_names.o: COMPILE_CMD = $(COMPILE_BASIC) $(FCfree) $(FCchecks) -c -O0
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -68,7 +69,7 @@ rates_names.o: COMPILE_CMD = $(COMPILE_BASIC) $(FCfree) $(FCchecks) -c -O0
  %.o : %.mod
  
  clean:
@@ -802,19 +894,26 @@ index 60c4639..e329252 100755
  cd ../star
  if [ -e make/libstar++.a ]
 diff --git a/star/make/makefile b/star/make/makefile
-index a6e8858..ff28c36 100644
+index a6e8858..f14de1d 100644
 --- a/star/make/makefile
 +++ b/star/make/makefile
-@@ -200,7 +200,7 @@ SRCS = \
+@@ -200,11 +200,13 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libstar.a
 +LIB = libstar.so
  LIB_DEFS = 
++LIB_DEPENDS = -L$(MESA_LIB_DIR) $(LOAD_MESA_STAR_SUPPORT) \
++   $(LOAD_PGPLOT) $(LOAD_SE)
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_DEFS) $(LIB_OBJS)
-@@ -278,7 +278,7 @@ rt1d.o : COMPILE_CMD = $(COMPILE) -O3
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS)
+ 
+ #################################################################
+ #
+@@ -278,7 +280,7 @@ rt1d.o : COMPILE_CMD = $(COMPILE) -O3
  	@true
  
  clean:
@@ -834,19 +933,24 @@ index fbc2921..f2fb1a1 100755
 -cp make/libutils*.a ../lib
 +cp make/libutils*.so ../lib
 diff --git a/utils/make/makefile b/utils/make/makefile
-index 8e35ae7..6fda837 100644
+index 8e35ae7..c914087 100644
 --- a/utils/make/makefile
 +++ b/utils/make/makefile
-@@ -33,7 +33,7 @@ SRCS = \
+@@ -33,10 +33,11 @@ SRCS = \
  #
  # TARGETS
  
 -LIB = libutils.a
 +LIB = libutils.so
++LIB_DEPENDS = -L$(MESA_LIB_DIR) -lconst
  LIB_OBJS = $(patsubst %.f,%.o,$(patsubst %.f90,%.o,$(SRCS)))
  $(LIB) : $(LIB_OBJS)
- 	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
-@@ -55,7 +55,7 @@ COMPILE_CMD = $(COMPILE)
+-	$(LIB_TOOL) $(LIB) $(LIB_OBJS)
++	$(LIB_TOOL) $(LIB) $(LIB_OBJS) $(LIB_DEPENDS) -fopenmp
+ 
+ #################################################################
+ #
+@@ -55,7 +56,7 @@ COMPILE_CMD = $(COMPILE)
  %.o : %.mod
  
  clean:
@@ -856,7 +960,7 @@ index 8e35ae7..6fda837 100644
  #################################################################
  #
 diff --git a/utils/makefile_header b/utils/makefile_header
-index 5979b09..f258304 100644
+index 5979b09..bef14ba 100644
 --- a/utils/makefile_header
 +++ b/utils/makefile_header
 @@ -40,6 +40,8 @@ endif
@@ -897,7 +1001,7 @@ index 5979b09..f258304 100644
  
  # LIB_TOOL creates libraries
 -LIB_TOOL = ar crs
-+LIB_TOOL = $(FC) -shared -o
++LIB_TOOL = gfortran -shared -o
  
  
  STAR_WORK_OBJS = \
