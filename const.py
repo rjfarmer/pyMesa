@@ -12,8 +12,14 @@ FOLDER = "const"
 SHARED_LIB = os.path.join(LIB_DIR,"lib"+FOLDER+".so")
 MODULE = os.path.join(INCLUDE_DIR,FOLDER+"_lib.mod")  
 
-#Currenly broken while i try to parse what number format 0.477d1a894a74e4@-1 is
-
 x=gf.fFort(SHARED_LIB,MODULE,reload=True)
 
+#Must be a var even though it wont change, the intent out faraibles are returned
+# in a dict from a subroutine call
+ierr=0
+res=x.const_init(MESA_DIR,ierr)
 
+
+print(x.a2rad)
+print(x.thermohaline_mixing)
+print(x.mev_to_ergs)
