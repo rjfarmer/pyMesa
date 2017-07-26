@@ -14,8 +14,8 @@ MODULE = os.path.join(INCLUDE_DIR,FOLDER+"_lib.mod")
 
 x=gf.fFort(SHARED_LIB,MODULE,reload=True)
 
-#Must be a var even though it wont change, the intent out faraibles are returned
-# in a dict from a subroutine call
+# Must be a variable even though it wont change, the intent out variables are returned
+# in a dict from subroutine calls
 ierr=0
 res=x.const_init(MESA_DIR,ierr)
 
