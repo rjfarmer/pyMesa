@@ -11,5 +11,11 @@ Currently version 9898 plus patch (note with the patch enabled we dont use clibm
 
 ````bash
 cd $MESA_DIR
+export LD_LIBRARY_PATH=../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
 patch -p1 < 0001-Build-shared-libs.patch
+./mk
+cd $MESA_DIR/lib
+for i in *.so;do chrpath -r $i;done
 ````
+
+

@@ -12,7 +12,7 @@ FOLDER = "const"
 SHARED_LIB = os.path.join(LIB_DIR,"lib"+FOLDER+".so")
 MODULE = os.path.join(INCLUDE_DIR,FOLDER+"_lib.mod")  
 
-x=gf.fFort(SHARED_LIB,MODULE,reload=True)
+x=gf.fFort(SHARED_LIB,MODULE,rerun=True)
 
 # Must be a variable even though it wont change, the intent out variables are returned
 # in a dict from subroutine calls
