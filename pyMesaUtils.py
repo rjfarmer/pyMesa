@@ -18,13 +18,14 @@ EOSPT_DATA=os.path.join(DATA_DIR,'eosPT_data')
 ION_DATA=os.path.join(DATA_DIR,'ionization_data')
 KAP_DATA=os.path.join(DATA_DIR,'kap_data')
 
+NET_DATA=os.path.join(DATA_DIR,'net_data')
 
 RATES_CACHE=os.path.join(RATES_DATA,'cache')
 EOSDT_CACHE=os.path.join(EOSDT_DATA,'cache')
 EOSPT_CACHE=os.path.join(EOSPT_DATA,'cache')
 ION_CACHE=os.path.join(ION_DATA,'cache')
 KAP_CACHE=os.path.join(KAP_DATA,'cache')
-
+NETS=os.path.join(NET_DATA,'nets')
 
 
 
