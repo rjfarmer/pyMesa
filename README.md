@@ -38,7 +38,7 @@ python3
 - [x] crlibm.py (Note this is the crlibm stub)
 - [x] eos.py
 - [x] ion.py
-- [ ] kap.py
+- [x] kap.py
 - [ ] net.py
 - [x] neu.py
 - [x] rates.py
