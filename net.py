@@ -78,8 +78,8 @@ weak_rate_factor = 1.0
 allQ = rates_def.std_reaction_qs.get()
 allQneu = rates_def.std_reaction_neuqs.get()
 
-reaction_Qs  = allQ
-reaction_neuQs = allQneu
+reaction_Qs  = allQ # Not correct need to map ids properly using g pointer but good enough for testing
+reaction_neuQs = allQneu # Not correct need to map ids properly using g pointer but good enough for testing
 reuse_rate_raw = False
 reuse_rate_screened = False
 
@@ -94,7 +94,7 @@ d_dxdt_dRho = np.zeros(num_isos)
 d_dxdt_dT = np.zeros(num_isos)
 d_dxdt_dx = np.zeros((num_isos,num_isos))
 
-eps_nuc_categories = np.zeros(100)
+eps_nuc_categories = np.zeros(chem_def.num_categories.get())
 eps_neu_total = 0.0
 screening_mode = 0
 theta_e_for_graboske_et_al = 0.0        
