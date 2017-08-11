@@ -1,6 +1,40 @@
+from __future__ import print_function
 import pyMesaUtils as pym
+import numpy as np
+import os
+import matplotlib.pyplot as plt
 
-rates_lib,rates_def = pym.loadMod("rates")
 
+const_lib, const_def = pym.loadMod("const")
+crlibm_lib, _ = pym.loadMod("crlibm")
+chem_lib, chem_def = pym.loadMod("chem")
+rates_lib, rates_def = pym.loadMod("rates")
+
+ierr=0
+
+crlibm_lib.crlibm_init()
+const_lib.const_init(pym.MESA_DIR,ierr)
+chem_lib.chem_init('isotopes.data',ierr)
 rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
                     'rate_tables',False,'','','',ierr)
+
+
+ierr=0
+
+rates_lib.show_reaction_rates_from_cache(os.path.join(pym.RATES_CACHE,'r_c12_ag_o16_1.bin'),ierr)
+
+c12o16_id=rates_lib.rates_reaction_id('r_c12_ag_o16')
+t=[]
+r=[]
+for logT in np.linspace(7.0,10.0,10000):
+     t.append(logT)
+     temp=10**logT
+     tf={}
+     res=rates_lib.eval_tfactors(tf, logT, temp)
+     tf=res['tf']
+     raw_rate=0
+     ierr=0    
+     res = rates_lib.get_raw_rate(1, c12o16_id, temp, tf, raw_rate, ierr)
+     r.append(res['raw_rate'])
+
+
