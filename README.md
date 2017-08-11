@@ -7,7 +7,9 @@ Allows python to interface with MESA
 numpy
 
 ## MESA patching
-Currently version 9898 plus patch (note with the patch enabled we dont use clibm, we use mesa's lapack and blas, we dont run the tests (as crlibm doesnt work) and anything past gyre doesnt build)
+Currently version 9898 plus patch (note with the patch enabled we dont use clibm, we use mesa's lapack and blas, we dont run the tests (as crlibm doesnt work) 
+and anything past (and including) gyre doesnt build as gyre need functions from lapack that are not in the MESA_SRCS version of lapack, but the sdk
+only ships static .a libraries when we need .so)
 
 ````bash
 cd $MESA_DIR
@@ -19,6 +21,7 @@ cd $MESA_DIR/lib
 for i in *.so;do chrpath -r $i;done
 
 #Debug only
+cd $MESA_DIR/include
 for i in *.mod;do j=${i%.*};cp $i $j.gz;gunzip $j.gz;echo $i;done
 
 ````

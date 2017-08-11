@@ -2,7 +2,6 @@ from __future__ import print_function
 import gfort2py as gf
 import numpy as np
 import os
-import six
 import sys
 
 
