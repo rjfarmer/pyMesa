@@ -20,11 +20,7 @@ rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
 net_lib.net_init(ierr)
 eos_lib.eos_init('mesa','','','',False,ierr)
                 
-                
-
 eos_handle = eos_lib.alloc_eos_handle(ierr)
-
-net_handle = net_lib.alloc_net_handle(ierr)
 
 chem_h1 = chem_def.ih1.get()
 

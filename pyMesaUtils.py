@@ -11,11 +11,19 @@ DATA_DIR = os.path.join(MESA_DIR,'data')
 LIB_DIR = os.path.join(MESA_DIR,'lib')
 INCLUDE_DIR = os.path.join(MESA_DIR,'include')
 
-RATES_CACHE=os.path.join(DATA_DIR,'rates_data','cache')
-EOSDT_CACHE=os.path.join(DATA_DIR,'eosDT_data','cache')
-EOSPT_CACHE=os.path.join(DATA_DIR,'reosPT_data','cache')
-ION_CACHE=os.path.join(DATA_DIR,'ionization_data','cache')
-KAP_CACHE=os.path.join(DATA_DIR,'kap_data','cache')
+
+RATES_DATA=os.path.join(DATA_DIR,'rates_data')
+EOSDT_DATA=os.path.join(DATA_DIR,'eosDT_data')
+EOSPT_DATA=os.path.join(DATA_DIR,'eosPT_data')
+ION_DATA=os.path.join(DATA_DIR,'ionization_data')
+KAP_DATA=os.path.join(DATA_DIR,'kap_data')
+
+
+RATES_CACHE=os.path.join(RATES_DATA,'cache')
+EOSDT_CACHE=os.path.join(EOSDT_DATA,'cache')
+EOSPT_CACHE=os.path.join(EOSPT_DATA,'cache')
+ION_CACHE=os.path.join(ION_DATA,'cache')
+KAP_CACHE=os.path.join(KAP_DATA,'cache')
 
 
 

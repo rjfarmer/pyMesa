@@ -6,7 +6,7 @@ Allows python to interface with MESA
 
 numpy
 
-## MESA
+## MESA patching
 Currently version 9898 plus patch (note with the patch enabled we dont use clibm, we use mesa's lapack and blas, we dont run the tests (as crlibm doesnt work) and anything past gyre doesnt build)
 
 ````bash
@@ -22,5 +22,28 @@ for i in *.so;do chrpath -r $i;done
 for i in *.mod;do j=${i%.*};cp $i $j.gz;gunzip $j.gz;echo $i;done
 
 ````
+
+## Running
+````bash
+export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH
+python3
+````
+
+## Modules that work (somewhat)
+
+- [x] atm.py
+- [x] chem.py
+- [ ] colors.py
+- [x] const.py
+- [x] crlibm.py (Note this is the crlibm stub)
+- [x] eos.py
+- [ ] kap.py
+- [ ] net.py
+- [x] neu.py
+- [x] rates.py
+- [ ] utils.py
+
+
+
 
 
