@@ -28,7 +28,7 @@ eos_lib.eos_init('mesa','','','',False,ierr)
 net_file = os.path.join(pym.NETS,'mesa_45.net')
 
                 
-
+# Net setup
 net_lib.net_init(ierr)
 handle=net_lib.alloc_net_handle(ierr)
 net_lib.net_start_def(handle, ierr)
@@ -47,7 +47,10 @@ which_rates[:] = 1
 net_lib.net_set_which_rates(handle, which_rates, ierr)
 net_lib.net_setup_tables(handle, '', ierr)
 
+# End net setup
 
+
+# net_get function parameters
 just_dxdt = False
 n = {}
 num_isos = species

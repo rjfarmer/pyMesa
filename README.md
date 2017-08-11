@@ -39,7 +39,7 @@ python3
 - [x] eos.py
 - [x] ion.py
 - [x] kap.py
-- [ ] net.py
+- [x] net.py
 - [x] neu.py
 - [x] rates.py
 - [ ] utils.py
