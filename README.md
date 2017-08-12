@@ -40,24 +40,24 @@ Note i've found you need to redo the LD_LIBRARY_EXPORT after initilizing the sdk
 ````python
 import pyMesaUtils as pym
 
-\# Loads the const module
+# Loads the const module
 const_lib,const_def = pym.loadMod("const")
 
-\# Must define a varaible even if its a intent out
+# Must define a variable even if its a intent out
 ierr=0
-\# Calls a function
+# Calls a function
 res = const_lib.const_init(pym.MESA_DIR,ierr)
 
-\# If the call was ubroutine then res is a dict with the intent out variable sin thier
-\# else it contains the result of the function call
+# If the call was ubroutine then res is a dict with the intent out variables in there
+# else it contains the result of the function call
 
 
-\# Gets a module variable
+# Gets a module variable
 const_def.mev_to_ergs
 
-\# Define derived types as dicts
+# Define derived types as dicts
 x = {}
-\# Arrays (if alloctable, intent(out), assumed etc) as empty
+# Arrays (if alloctable, intent(out), assumed etc) as empty
 x = np.zeros(size)
 
 ````
