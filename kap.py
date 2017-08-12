@@ -39,9 +39,10 @@ dlnkap_dlnRho = 0.0
 dlnkap_dlnT = 0.0
 ierr = 0
 
-res = kap_lib.kap_get_type2(handle, zbar, X, Z, Zbase, XC, XN, XO, XNe, logRho, logT, 
+kap2_res = kap_lib.kap_get_type2(handle, zbar, X, Z, Zbase, XC, XN, XO, XNe, logRho, logT, 
             lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT, use_Zbase_for_Type1, 
             frac_Type2, kap, dlnkap_dlnRho, dlnkap_dlnT, ierr)
 
-
-
+kap1_res = kap_lib.kap_get_type1(handle, zbar, X, Z, logRho, logT, 
+            lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT,
+            kap, dlnkap_dlnRho, dlnkap_dlnT, ierr)
