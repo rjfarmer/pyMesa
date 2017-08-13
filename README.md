@@ -7,15 +7,17 @@ Allows python to interface with MESA
 numpy
 
 ## MESA patching
-Currently version 9898 plus patch (note with the patch enabled we dont use clibm, we use mesa's lapack and blas, we dont run the tests (as crlibm doesnt work) 
-and anything past (and including) gyre doesnt build as gyre need functions from lapack that are not in the MESA_SRCS version of lapack, but the sdk
-only ships static .a libraries when we need .so)
+
+Find the patch for the mesa version you wishe to use in the patch folder and copy it to $MESA_DIR. Other
+mesa versions can be supported on request.
+
+Currently with this patch applied we dont use crlibm, we use mesa's lapack and blas and we dont run the test suite
+(as crlibm does not work). Gyre can not currently be built for this due to dependecny issues with mesa's lapack.
 
 ````bash
 cd $MESA_DIR
 export LD_LIBRARY_PATH=../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
-patch -p1 < 0001-Build-shared-libs.patch
-/usr/bin/touch skip_test
+patch -p1 < mesa-rXXX.patch # Replace XXXX with the patch file you copied over here
 ./mk
 cd $MESA_DIR/lib
 for i in *.so;do chrpath -r $i;done
