@@ -1,6 +1,6 @@
-From d84153b9abf0ed903203102e08eaa2822dc10714 Mon Sep 17 00:00:00 2001
+From c0b52a6dead758b108182183374deba4995fe810 Mon Sep 17 00:00:00 2001
 From: Robert Farmer <rjfarmer@asu.edu>
-Date: Sun, 13 Aug 2017 17:57:43 +0100
+Date: Mon, 14 Aug 2017 11:48:40 +0100
 Subject: [PATCH] patch
 
 ---
@@ -25,7 +25,7 @@ Subject: [PATCH] patch
  gyre/make/makefile               | 25 +++++++++++++++----------
  gyre/mk                          |  2 +-
  gyre/test/make/makefile          |  2 +-
- install                          |  7 ++++---
+ install                          | 13 ++++++++++---
  interp_1d/export                 |  2 +-
  interp_1d/make/makefile          |  7 ++++---
  interp_2d/export                 |  2 +-
@@ -56,7 +56,7 @@ Subject: [PATCH] patch
  utils/export                     |  2 +-
  utils/make/makefile              |  7 ++++---
  utils/makefile_header            | 16 +++++++++-------
- 52 files changed, 154 insertions(+), 121 deletions(-)
+ 52 files changed, 160 insertions(+), 121 deletions(-)
  create mode 100644 skip_test
 
 diff --git a/adipls/export b/adipls/export
@@ -469,10 +469,10 @@ index 4e2d2d6..a1864e9 100644
  #################################################################
  
 diff --git a/install b/install
-index ede909b..ed3216f 100755
+index ede909b..91045ad 100755
 --- a/install
 +++ b/install
-@@ -242,11 +242,12 @@ do_one sample
+@@ -242,12 +242,19 @@ do_one sample
  
  do_one star
  
@@ -481,13 +481,20 @@ index ede909b..ed3216f 100755
  
 -do_one adipls
 +#do_one gyre
-+
-+#do_one adipls
  
 -do_one_parallel binary
++#do_one adipls
++
++cd lib
++for i in *.so;do chrpath -r $i;done
++
++cd ../include
++for i in *.mod;do j=${i%.*};cp $i $j.gz;gunzip $j.gz;echo $i;done
+ 
++cd ../
  
  
- 
+ echo
 diff --git a/interp_1d/export b/interp_1d/export
 index 3920e17..596b2d8 100755
 --- a/interp_1d/export
