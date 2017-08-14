@@ -489,7 +489,7 @@ index ede909b..91045ad 100755
 +for i in *.so;do chrpath -r $i;done
 +
 +cd ../include
-+for i in *.mod;do j=${i%.*};cp $i $j.gz;gunzip $j.gz;echo $i;done
++for i in *.mod;do j=${i%.*};cp $i $j.gz;gunzip -f $j.gz;echo $i;done
  
 +cd ../
  
