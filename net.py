@@ -36,16 +36,21 @@ net_lib.net_start_def(handle, ierr)
 net_lib.read_net_file(net_file, handle, ierr)
 net_lib.net_finish_def(handle, ierr)
 
+net_lib.net_set_logTcut(handle, -1,-1, ierr)
+net_lib.net_set_fe56ec_fake_factor(handle, 10**-7, 3.0*10**9, ierr)
+
+
 #g={}
 #res = net_lib.net_ptr(handle, g, ierr)
-# Not the right way to do thing but works for now
+#g=res['g]
+# net_ptr broken for now
 g=net_def.net_handles
 species = g.num_isos
 num_reactions = g.num_reactions
 
 which_rates = np.zeros(rates_def.rates_reaction_id_max.get())
 reaction_id = np.zeros(num_reactions)
-which_rates[:] = 1
+which_rates[:] = rates_def.rates_jr_if_available.get()
 #rates_lib.set_which_rates(ierr)
 net_lib.net_set_which_rates(handle, which_rates, ierr)
 net_lib.net_setup_tables(handle, '', ierr)
