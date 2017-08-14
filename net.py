@@ -36,10 +36,12 @@ net_lib.net_start_def(handle, ierr)
 net_lib.read_net_file(net_file, handle, ierr)
 net_lib.net_finish_def(handle, ierr)
 
+#g={}
 #res = net_lib.net_ptr(handle, g, ierr)
-# Has issues with the g pointer so set manually for now
-species = 45
-num_reactions = 367
+# Not the right way to do thing but works for now
+g=net_def.net_handles
+species = g.num_isos
+num_reactions = g.num_reactions
 
 which_rates = np.zeros(rates_def.rates_reaction_id_max.get())
 reaction_id = np.zeros(num_reactions)
