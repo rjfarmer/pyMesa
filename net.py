@@ -42,7 +42,7 @@ net_lib.net_set_fe56ec_fake_factor(handle, 10**-7, 3.0*10**9, ierr)
 
 g={}
 res = net_lib.net_ptr(handle, g, ierr)
-g=res['g']
+g=res['g'] # NOte this is only a copy of the pointer, changes wont propagate back to mesa
 
 species = g['num_isos']
 num_reactions = g['num_reactions']
