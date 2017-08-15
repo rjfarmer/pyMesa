@@ -1,3 +1,5 @@
+![pyMesa logo](images/logo.png?raw=true "pyMesa Logo")
+
 # pyMesa
 Allows python to interface with MESA
 
