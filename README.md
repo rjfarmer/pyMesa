@@ -8,30 +8,28 @@ Allows python to interface with MESA
 
 numpy
 
+libtool
+
 ## MESA patching
 
-Find the patch for the mesa version you wishe to use in the patch folder and copy it to $MESA_DIR. Other
-mesa versions can be supported on request.
-
-Currently with this patch applied we dont use crlibm, we use mesa's lapack and blas and we dont run the test suite
-(as crlibm does not work). Gyre can not currently be built for this due to dependecny issues with mesa's lapack.
+Run the mesa-setup.sh script from this folder, after setting MESA_DIR and initilizing the SDK.
 
 ````bash
-cd $MESA_DIR
-export LD_LIBRARY_PATH=../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
-patch -p1 < mesa-rXXX.patch # Replace XXXX with the patch file you copied over here
-./clean
-./mk
+chmod u+x mesa-setup.sh
+./mesa-setup.sh
 ````
 
-To reverse the changes made to the MESA folder
-````bash
-cd $MESA_DIR
-patch -R -p1 < mesa-rXXX.patch # -R reverse the changes
-./clean
-./mk
-````
+This script should only be run once to setup up mesa. It can be ran again if you do a ./clean inside the MESA_DIR.
 
+We use mesa's lapack and blas and we dont run the test suite
+(as mesa's bundled lapack/blas are not bit-for-bit with the sdk's). 
+Gyre can not currently be built for this due to dependency issues with mesa's lapack.
+Who knows about adipls i didnt even try.
+
+## Supported MESA versions
+- 9793
+
+Other versions can be supported upon request.
 
 
 ## Running
@@ -41,8 +39,6 @@ patch -R -p1 < mesa-rXXX.patch # -R reverse the changes
 export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH
 python3
 ````
-
-Note i've found you need to redo the LD_LIBRARY_EXPORT after initilizing the sdk
 
 ## Usage
 
@@ -80,7 +76,7 @@ x = np.zeros(size)
 - [x] chem.py
 - [ ] colors.py
 - [x] const.py
-- [x] crlibm.py (Note this is the crlibm stub so not bit for bit)
+- [x] crlibm.py
 - [x] eos.py
 - [x] ion.py
 - [x] kap.py

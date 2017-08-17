@@ -1,0 +1,38 @@
+From c0b05e2fcace715466d7280d06a582083c11c117 Mon Sep 17 00:00:00 2001
+From: Robert Farmer <rjfarmer@asu.edu>
+Date: Thu, 17 Aug 2017 11:21:22 +0100
+Subject: [PATCH 2/3] bug fixes
+
+---
+ kap/private/kap_eval_support.f90 | 1 +
+ rates/private/weaklib_tables.f90 | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/kap/private/kap_eval_support.f90 b/kap/private/kap_eval_support.f90
+index bd4f1f9..43bc33f 100644
+--- a/kap/private/kap_eval_support.f90
++++ b/kap/private/kap_eval_support.f90
+@@ -36,6 +36,7 @@
+             rq, num_logs, log_min_in, log_max_in, ili_logs, logs, log_find, i, log0, log1, ierr)
+          use kap_def
+          use num_lib, only: binary_search
++         use utils_lib, only: is_bad
+          type (Kap_General_Info), pointer :: rq
+          integer, intent(in) :: num_logs, ili_logs
+          real(dp), intent(in) :: log_min_in, log_max_in
+diff --git a/rates/private/weaklib_tables.f90 b/rates/private/weaklib_tables.f90
+index 6f3e719..780effb 100644
+--- a/rates/private/weaklib_tables.f90
++++ b/rates/private/weaklib_tables.f90
+@@ -28,7 +28,7 @@ module weaklib_tables
+ 
+   use const_def
+   use crlibm_lib
+-  use utils_lib, only: mesa_error
++  use utils_lib, only: mesa_error, is_bad
+   use rates_def
+ 
+   implicit none
+-- 
+2.9.4
+
