@@ -21,10 +21,12 @@ fi
 MESA_VERSION=$(<"$MESA_DIR/data/version_number")
 
 
-if [[ "$MESA_VERSION" == 9793 ]];then
+if [[ "$MESA_VERSION" == 9793 ]];
+then
     rm -rf "$MESA_DIR"/patches
     mkdir -p "$MESA_DIR"/patches
-    for i in 0001-Build-shared-libraries.patch  0002-bug-fixes.patch  0003-crlibm-shared-library.patch;do
+    for i in 0001-Build-shared-libraries.patch  0002-bug-fixes.patch  0003-crlibm-shared-library.patch;
+    do
         cp patches/$i "$MESA_DIR"/patches/.
     done    
 else
@@ -38,7 +40,8 @@ cd "$MESA_DIR"
 echo "Clean MESA"
 ./clean
 echo "Patching mesa"
-for i in patches/*;do
+for i in patches/*;
+do
     patch -p1 < $i
 done
 echo "Building mesa"

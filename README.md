@@ -4,7 +4,7 @@
 Allows python to interface with MESA
 
 ## Requirements:
-[gfort2py](https://github.com/rjfarmer/gfort2py)
+[gfort2py](https://github.com/rjfarmer/gfort2py) (Available via pip)
 
 numpy
 
