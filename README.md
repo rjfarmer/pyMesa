@@ -1,4 +1,4 @@
-![pyMesa logo](images/logo.svg?raw=true "pyMesa Logo")
+![pyMesa logo](images/logo.svg)
 
 [![DOI](https://zenodo.org/badge/98320319.svg)](https://zenodo.org/badge/latestdoi/98320319)
 
