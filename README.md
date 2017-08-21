@@ -1,4 +1,7 @@
-![pyMesa logo](images/logo.png?raw=true "pyMesa Logo")
+![pyMesa logo](images/logo.svg?raw=true "pyMesa Logo")
+
+[![DOI](https://zenodo.org/badge/98320319.svg)](https://zenodo.org/badge/latestdoi/98320319)
+
 
 # pyMesa
 Allows python to interface with MESA
