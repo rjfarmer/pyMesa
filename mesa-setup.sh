@@ -46,7 +46,7 @@ echo "Clean MESA"
 echo "Patching mesa"
 for i in patches/*;
 do
-    patch -p1 < $i
+    patch -f -p1 < $i
 done
 echo "Building mesa"
 export LD_LIBRARY_PATH=../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
