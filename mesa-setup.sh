@@ -12,6 +12,10 @@ if [ -z "$MESA_DIR" ];then
     exit 1
 fi
 
+if [ -z "$MESASDK_ROOT" ];then
+    echo "MESASDK_ROOT is unset"
+    exit 1
+fi
 
 if [[ ! "$PATH" == *"$MESASDK_ROOT"* ]];then
     echo "MESASDK has not been initlized"
