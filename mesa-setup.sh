@@ -36,6 +36,11 @@ fi
 
 MESA_VERSION=$(<"$MESA_DIR/data/version_number")
 
+SDK_HAS_LAPACK_SO="0"
+if [[ -e "$MESASDK_ROOT"/lib/liblapack.so ]];then
+    SDK_HAS_LAPACK_SO="1"
+fi
+
 
 if [[ "$MESA_VERSION" == 9793 ]];
 then
@@ -50,6 +55,12 @@ else
     echo "Open issue on github to request your mesa version"
     exit 1
 fi
+
+
+if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
+    cp patches/0004-sdk-with-lapack.patch "$MESA_DIR"/patches/.
+fi
+
 
 
 cd "$MESA_DIR"
