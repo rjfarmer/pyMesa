@@ -39,13 +39,14 @@ net_lib.net_finish_def(handle, ierr)
 net_lib.net_set_logTcut(handle, -1,-1, ierr)
 net_lib.net_set_fe56ec_fake_factor(handle, 10**-7, 3.0*10**9, ierr)
 
-
 g={}
 res = net_lib.net_ptr(handle, g, ierr)
-g=res['g'] # NOte this is only a copy of the pointer, changes wont propagate back to mesa
+g=res['g'] # Note this is only a copy of the pointer, changes wont propagate back to mesa
 
 species = g['num_isos']
 num_reactions = g['num_reactions']
+
+rates_reaction_id_max = rates_def.rates_reaction_id_max.get()
 
 which_rates = np.zeros(rates_def.rates_reaction_id_max.get())
 reaction_id = np.zeros(num_reactions)
@@ -55,6 +56,39 @@ net_lib.net_set_which_rates(handle, which_rates, ierr)
 net_lib.net_setup_tables(handle, '', ierr)
 
 # End net setup
+
+
+num_chem_isos = chem_def.num_chem_isos.get()
+
+chem_id=np.zeros(num_chem_isos)
+net_iso_table=np.zeros(num_chem_isos)
+         
+res=net_lib.get_chem_id_table(handle, species, chem_id, ierr)
+chem_id = res['chem_id']
+
+res=net_lib.get_net_iso_table(handle, net_iso_table, ierr)
+net_iso = res['net_iso_table']
+
+res=net_lib.get_reaction_id_table(handle, num_reactions, reaction_id, ierr)
+reaction_id = res['reaction_id']
+ 
+reaction_table=np.zeros(rates_reaction_id_max)        
+res=net_lib.get_net_reaction_table(handle, reaction_table, ierr)
+
+reaction_table = res['net_reaction_table']
+
+#Setup reaction energies
+allQ = rates_def.std_reaction_qs.get()
+allQneu = rates_def.std_reaction_neuqs.get()
+
+reaction_Qs  = np.zeros(num_reactions) 
+reaction_neuQs = np.zeros(num_reactions) 
+
+
+for i in range(num_reactions):
+    reaction_Qs[i] = allQ[reaction_id[i]]
+    reaction_neuQs[i] = allQneu[reaction_id[i]]
+
 
 
 # net_get function parameters
@@ -84,12 +118,6 @@ rate_factors = np.zeros(num_reactions)
 rate_factors[:]=1.0
 weak_rate_factor = 1.0
 
-
-allQ = rates_def.std_reaction_qs.get()
-allQneu = rates_def.std_reaction_neuqs.get()
-
-reaction_Qs  = allQ # Not correct need to map ids properly using g pointer but good enough for testing
-reaction_neuQs = allQneu # Not correct need to map ids properly using g pointer but good enough for testing
 reuse_rate_raw = False
 reuse_rate_screened = False
 
