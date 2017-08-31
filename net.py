@@ -141,6 +141,7 @@ lwork = net_lib.net_work_size(handle, ierr)
 work = np.zeros(lwork)
 ierr = 0
 
+net_lib.net_get.saveArgs(True)
 res = net_lib.net_get( 
             handle, just_dxdt, n, num_isos, num_reactions,  
             x, temp, log10temp, rho, log10rho,  
