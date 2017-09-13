@@ -1,7 +1,6 @@
-#!/bin/bash
-
 # Tool to build mesa with python support
-#Copyright (C) 2017  Robert Farmer <rjfarmer@asu.edu>
+
+# Copyright (C) 2017  Robert Farmer <r.j.farmer@uva.nl>
 
 #This file is part of pyMesa.
 
