@@ -15,7 +15,21 @@ numpy
 
 libtool
 
-## MESA patching
+automake
+
+chrpath
+
+## Building
+
+### SDK's
+
+Grab these sdks first (if you dont use these sdks then you can still build pyMESA but it wont be bit-for-bit)
+
+[linnux sdk](http://www.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-20170821.tar.gz)
+
+[mac sdk](http://www.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-osx-10.12-20170821.dmg)
+
+### MESA patching
 
 Run the mesa-setup.sh script from this folder, after setting MESA_DIR and initilizing the SDK.
 
@@ -26,12 +40,9 @@ chmod u+x mesa-setup.sh
 
 This script should only be run once to setup up mesa. It can be ran again if you do a ./clean inside the MESA_DIR.
 
-We use mesa's lapack and blas and we dont run the test suite
-(as mesa's bundled lapack/blas are not bit-for-bit with the sdk's). 
-Gyre can not currently be built for this due to dependency issues with mesa's lapack.
-Who knows about adipls i didnt even try.
+Adipls, gyre and stella are not currently built as part of this.
 
-Thus currently accessing things vi the python interface is not guarenteed to be bit-for-bit with MESA via fortran.
+While we can use the inivdual MESA modules we can not currently run a full star (or binary) model, in either python or fortran.
 
 ## Supported MESA versions
 - 9793
@@ -68,23 +79,23 @@ res = const_lib.const_init(pym.MESA_DIR,ierr)
 # else it contains the result of the function call
 
 
-# Accessing a varaiable defined in a module is simply:
+# Accessing a variable defined in a module is simply:
 const_def.mev_to_ergs
 
-# IF the varaiable is not a parameter then you can change it with:
+# If the variable is not a parameter then you can change it with:
 const_def.standard_cgrav = 5.0
 
 # When passing a derived type, you should pass a dict to the function (filled with anything you want set)
 x = {}
 
-# Functions accepting arrays should pass a numpy array the size it expects (it the function allocates the array, then just pass a array of size 1)
+# Functions accepting arrays should pass a numpy array the size it expects (if the function allocates the array, then just pass an array of size 1)
 x = np.zeros(size)
 
 # Arrays inside derived types are unstable at the moment and don't completely work.
 
 ````
 
-Function names and module variabales are all tab complteable.
+Function names and module variables are all tab completable.
 
 
 ## Modules that work
@@ -98,7 +109,7 @@ Function names and module variabales are all tab complteable.
 - [x] eos.py
 - [x] ion.py
 - [x] kap.py
-- [ ] net.py
+- [ ] net.py (partial support)
 - [x] neu.py
 - [x] rates.py
 - [ ] utils.py

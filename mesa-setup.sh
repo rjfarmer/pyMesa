@@ -49,7 +49,16 @@ then
     for i in 0001-Build-shared-libraries.patch  0002-bug-fixes.patch  0003-crlibm-shared-library.patch;
     do
         cp patches/$i "$MESA_DIR"/patches/.
-    done    
+    done 
+#Not ready yet
+#elif [[ "$MESA_VERSION" == 10000 ]];
+#then
+    #rm -rf "$MESA_DIR"/patches
+    #mkdir -p "$MESA_DIR"/patches
+    #for i in 0001-Build-shared-libraries.patch 0003-crlibm-shared-library.patch;
+    #do
+        #cp patches/$i "$MESA_DIR"/patches/.
+    #done  
 else
     echo "MESA version $MESA_VERSION not supported"
     echo "Open issue on github to request your mesa version"
@@ -66,6 +75,11 @@ fi
 cd "$MESA_DIR"
 echo "Clean MESA"
 ./clean
+
+#Skip Tests in star as we cnat run a full model yet
+/usr/bin/touch star/skip_test
+/usr/bin/touch binary/skip_test
+
 echo "Patching mesa"
 for i in patches/*;
 do
@@ -74,8 +88,21 @@ done
 echo "Building mesa"
 export LD_LIBRARY_PATH=../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
 ./mk
+if [[ $? != 0 ]];then
+    echo
+    echo
+    echo
+    echo "****************************************************************"
+    echo "pyMESA building fail"
+    echo "****************************************************************"
+    echo
+    echo
+    echo
+    exit 1
+fi
+
 echo "****************************************************************"
-echo "MESA is now ready for python"
+echo "pyMESA build was succesfull"
 echo "Each time you wish to use this you must set the LD_LIBRARAY_PATH"
 echo "After the sdk has been initilized:"
 echo 'export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH'

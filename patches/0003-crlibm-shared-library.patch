@@ -1,12 +1,12 @@
-From 3c4adc9cc4d88d85db082409b9651339b67d0156 Mon Sep 17 00:00:00 2001
+From b1739a589b5d940740f260b7316d65c764b079e0 Mon Sep 17 00:00:00 2001
 From: Robert Farmer <rjfarmer@asu.edu>
-Date: Thu, 17 Aug 2017 11:52:19 +0100
-Subject: [PATCH 3/3] crlibm shared library
+Date: Fri, 15 Sep 2017 14:09:47 +0200
+Subject: [PATCH] crlibm shared library
 
 ---
- crlibm/build_and_test                     |     5 +-
+ crlibm/build_and_test                     |    11 +-
  crlibm/build_and_test_mic_native          |     2 +-
- crlibm/build_and_test_parallel            |     5 +-
+ crlibm/build_and_test_parallel            |    11 +-
  crlibm/ck                                 |     4 +-
  crlibm/crlibm-patches/Makefile            |  1137 ++
  crlibm/crlibm-patches/Makefile.am         |   134 +
@@ -27,7 +27,7 @@ Subject: [PATCH 3/3] crlibm shared library
  crlibm/export                             |     2 +-
  crlibm/make/makefile                      |     9 +-
  crlibm/makefile_crlibm                    |    13 +-
- 23 files changed, 57063 insertions(+), 13 deletions(-)
+ 23 files changed, 57071 insertions(+), 17 deletions(-)
  create mode 100644 crlibm/crlibm-patches/Makefile
  create mode 100644 crlibm/crlibm-patches/Makefile.am
  create mode 100644 crlibm/crlibm-patches/Makefile.in
@@ -46,7 +46,7 @@ Subject: [PATCH 3/3] crlibm shared library
  create mode 100644 crlibm/crlibm-patches/tests/Makefile.in
 
 diff --git a/crlibm/build_and_test b/crlibm/build_and_test
-index 971a546..1334f9d 100755
+index 971a546..f5d616e 100755
 --- a/crlibm/build_and_test
 +++ b/crlibm/build_and_test
 @@ -11,7 +11,7 @@ function check_okay {
@@ -58,13 +58,25 @@ index 971a546..1334f9d 100755
  then
    rm -rf crlibm-1.0beta4_unzip.tar.gz crlibm-1.0beta4_unzip.tar crlibm 2>/dev/null
    cp crlibm-1.0beta4.tar.gz crlibm-1.0beta4_unzip.tar.gz
-@@ -27,7 +27,8 @@ then
+@@ -19,15 +19,18 @@ then
+   tar -xvf crlibm-1.0beta4_unzip.tar
+   mv crlibm-1.0beta4 crlibm
+   cd crlibm
+-  make -f ../makefile_crlibm 
+-  #./configure
++  #make -f ../makefile_crlibm 
++  rsync -a ../crlibm-patches/ .
++  chmod u+x configure
++  ./configure
+   make
+   check_okay
+   cd ..
    rm -f crlibm-1.0beta4_unzip.tar crlibm-1.0beta4_unzip.tar.gz
    cp crlibm/crlibm.h ../include
    check_okay
 -  cp crlibm/libcrlibm*.a ../lib
-+  cp crlibm/.libs/libcrlibm*.so.* ../lib
-+  chrpath -r ../lib/libcrlibm.*.so* 
++  cp crlibm/.libs/libcrlibm*.so* ../lib
++  chrpath -r ../lib/libcrlibm*.so* 
    check_okay
  fi
  
@@ -82,7 +94,7 @@ index 4ad30dd..b1b64e8 100755
  fi
  
 diff --git a/crlibm/build_and_test_parallel b/crlibm/build_and_test_parallel
-index 2001a54..ae947d8 100755
+index 2001a54..6bef4d7 100755
 --- a/crlibm/build_and_test_parallel
 +++ b/crlibm/build_and_test_parallel
 @@ -33,7 +33,7 @@ function enum_procs {
@@ -94,13 +106,25 @@ index 2001a54..ae947d8 100755
  then
    rm -rf crlibm-1.0beta4_unzip.tar.gz crlibm-1.0beta4_unzip.tar crlibm 2>/dev/null
    cp crlibm-1.0beta4.tar.gz crlibm-1.0beta4_unzip.tar.gz
-@@ -49,7 +49,8 @@ then
+@@ -41,15 +41,18 @@ then
+   tar -xvf crlibm-1.0beta4_unzip.tar
+   mv crlibm-1.0beta4 crlibm
+   cd crlibm
+-  make -f ../makefile_crlibm 
+-  #./configure
++  #make -f ../makefile_crlibm 
++  rsync -a ../crlibm-patches/ .
++  chmod u+x configure
++  ./configure
+   make -j$(enum_procs)
+   check_okay
+   cd ..
    rm -f crlibm-1.0beta4_unzip.tar crlibm-1.0beta4_unzip.tar.gz
    cp crlibm/crlibm.h ../include
    check_okay
 -  cp crlibm/libcrlibm*.a ../lib
-+  cp crlibm/.libs/libcrlibm*..so.* ../lib
-+  chrpath -r ../lib/libcrlibm.*.so* 
++  cp crlibm/.libs/libcrlibm*.so* ../lib
++  chrpath -r ../lib/libcrlibm*.so* 
    check_okay
  fi
  
@@ -57320,5 +57344,5 @@ index baed78b..32d0890 100644
 +	make clean
 +	
 -- 
-2.9.4
+2.9.5
 
