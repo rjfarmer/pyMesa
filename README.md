@@ -25,7 +25,7 @@ chrpath
 
 Grab these sdks first (if you dont use these sdks then you can still build pyMESA but it wont be bit-for-bit)
 
-[linnux sdk](http://www.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-20170821.tar.gz)
+[linux sdk](http://www.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-20170821.tar.gz)
 
 [mac sdk](http://www.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-osx-10.12-20170821.dmg)
 
