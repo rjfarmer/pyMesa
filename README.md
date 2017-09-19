@@ -105,7 +105,7 @@ up if your accessing an array via a mesa constant:
 ````python
 mesa_array[mesa_module.i_mesa_const.get()]
 ````
- should instead be access as:
+ should instead be accessed as:
  
  ````python
 mesa_array[mesa_module.i_mesa_const.get()-1]
