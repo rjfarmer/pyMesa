@@ -100,7 +100,7 @@ Function names and module variables are all tab completable.
 ## Arrays
 
 Remember that fortran has 1-based arrays while numpy uses 0-based. This comes
-up if your accessing an array via a mesa constant:
+up if you're accessing an array via a mesa constant:
 
 ````python
 mesa_array[mesa_module.i_mesa_const.get()]
@@ -110,7 +110,7 @@ mesa_array[mesa_module.i_mesa_const.get()]
  ````python
 mesa_array[mesa_module.i_mesa_const.get()-1]
 ````
-
+An example of this can be found in eos.py.
 
 
 

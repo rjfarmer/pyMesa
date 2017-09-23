@@ -65,10 +65,15 @@ eos_helm_res = eos_lib.eosDT_HELMEOS_get(
                res, d_dlnRho_const_T, d_dlnT_const_Rho, 
                d_dabar_const_TRho, d_dzbar_const_TRho, helm_res, ierr)
 
+# The EOS call returns the quantities we want in the "res" array.
+res = eos_helm_res["res"]
+# These are indexed by indices that can be found in eos/public/eos_def.f
+# We can get those indices with calls like this:
+i_lnE = eos_def.i_lnE.get() - 1
+# subtract 1 due to the difference between fortran and numpy indexing.
 
-
-
-
+IE = np.exp(res[i_lnE])
+print("Internal Energy from HELM: ", IE, " erg/g")
 
 
 
