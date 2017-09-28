@@ -42,7 +42,7 @@ if [[ -e "$MESASDK_ROOT"/lib/liblapack.so ]];then
 fi
 
 
-if [[ "$MESA_VERSION" == 9793 ]];
+if [[ "$MESA_VERSION" == 9793 ]] || [[ "$PYMESA_OVERRIDE" == 1 ]];
 then
     rm -rf "$MESA_DIR"/patches
     mkdir -p "$MESA_DIR"/patches

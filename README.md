@@ -49,6 +49,13 @@ While we can use the inivdual MESA modules we can not currently run a full star 
 
 Other versions can be supported upon request.
 
+If you want to play with fire and try with another version, then set the enviroment variable:
+
+````bash
+export PYMESA_OVERRIDE=1
+````
+
+To override the version check. Though things may not work etween versions if MESA's build system changes
 
 ## Running
 ````bash
