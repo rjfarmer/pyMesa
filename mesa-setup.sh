@@ -42,23 +42,40 @@ if [[ -e "$MESASDK_ROOT"/lib/liblapack.so ]];then
 fi
 
 
-if [[ "$MESA_VERSION" == 9793 ]] || [[ "$PYMESA_OVERRIDE" == 1 ]];
+rm -rf "$MESA_DIR"/patches
+mkdir -p "$MESA_DIR"/patches
+
+
+#Set override if enabled:
+if [[ "$PYMESA_OVERRIDE" == 1 ]];
 then
-    rm -rf "$MESA_DIR"/patches
-    mkdir -p "$MESA_DIR"/patches
+    MESA_VERSION=10000
+fi
+
+
+if [[ "$MESA_VERSION" == 9793 ]];
+then
     for i in 0001-Build-shared-libraries.patch  0002-bug-fixes.patch  0003-crlibm-shared-library.patch;
     do
         cp patches/$i "$MESA_DIR"/patches/.
     done 
+    
+    if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
+        cp patches/0004-sdk-with-lapack.patch "$MESA_DIR"/patches/.
+    fi
+    
 #Not ready yet
-#elif [[ "$MESA_VERSION" == 10000 ]];
-#then
-    #rm -rf "$MESA_DIR"/patches
-    #mkdir -p "$MESA_DIR"/patches
-    #for i in 0001-Build-shared-libraries.patch 0003-crlibm-shared-library.patch;
-    #do
-        #cp patches/$i "$MESA_DIR"/patches/.
-    #done  
+elif [[ "$MESA_VERSION" == 10000 ]];
+then
+    for i in 0001-build-shared-libs-10000.patch 0002-build-crlibm-10000.patch;
+    do
+        cp patches/$i "$MESA_DIR"/patches/.
+    done  
+    
+    if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
+        cp patches/0003-sdk-with-lapack-10000.patch "$MESA_DIR"/patches/.
+    fi
+    
 else
     echo "MESA version $MESA_VERSION not supported"
     echo "Open issue on github to request your mesa version"
@@ -66,26 +83,24 @@ else
 fi
 
 
-if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
-    cp patches/0004-sdk-with-lapack.patch "$MESA_DIR"/patches/.
-fi
-
-
-
 cd "$MESA_DIR"
 echo "Clean MESA"
 ./clean
 
-#Skip Tests in star as we cnat run a full model yet
+#Skip Tests in star as we can't run a full model yet
 /usr/bin/touch star/skip_test
 /usr/bin/touch binary/skip_test
 
 echo "Patching mesa"
+
+mkdir -p "$MESA_DIR/crlibm/crlibm-patches"
+
 for i in patches/*;
 do
     patch -f -p1 < $i
 done
 echo "Building mesa"
+
 export LD_LIBRARY_PATH=../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
 ./mk
 if [[ $? != 0 ]];then

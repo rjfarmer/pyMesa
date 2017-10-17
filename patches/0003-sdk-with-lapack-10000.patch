@@ -1,0 +1,54 @@
+From a3de33bfbe28090a10e77db0117b28f88d179ba6 Mon Sep 17 00:00:00 2001
+From: Robert Farmer <r.j.farmer@uva.nl>
+Date: Tue, 17 Oct 2017 12:47:47 +0200
+Subject: [PATCH 3/3] sdk with lapack 10000
+
+---
+ install               |  2 +-
+ utils/makefile_header | 10 +++++-----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/install b/install
+index f0c1842..204dac8 100755
+--- a/install
++++ b/install
+@@ -244,7 +244,7 @@ do_one star
+ 
+ do_one_parallel binary
+ 
+-do_one gyre
++#do_one gyre
+ 
+ #do_one adipls
+ 
+diff --git a/utils/makefile_header b/utils/makefile_header
+index fd1ac95..5a28133 100644
+--- a/utils/makefile_header
++++ b/utils/makefile_header
+@@ -50,10 +50,10 @@ SPECIAL_C_FLAGS  = -fPIC -shared
+ 
+ # step 3) specify which BLAS and LAPACK libraries to use for mesa/mtx
+ 
+-WHICH_LAPACK =
+-WHICH_BLAS =
+-LOAD_LAPACK = `mesasdk_lapack_link`
+-LOAD_BLAS = `mesasdk_blas_link`
++WHICH_LAPACK = USE_SRCS
++LOAD_LAPACK = -lmesalapack
++WHICH_BLAS = USE_SRCS
++LOAD_BLAS = -lmesablas
+ 
+ 
+ # step 4) do you want to use PGPLOT with mesa/star?                                                                                     
+@@ -74,7 +74,7 @@ INCLUDE_HDF5 = -I${MESASDK_ROOT}/include
+ # if you don't plan to use GYRE and want to skip building it, then
+ #USE_GYRE = NO
+ # if you want to have GYRE built along with the rest of mesa, then
+-USE_GYRE = YES
++USE_GYRE = NO
+ 
+ 
+ # step 7) now do the mesa install
+-- 
+2.9.5
+
