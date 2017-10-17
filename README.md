@@ -4,7 +4,7 @@
 
 
 # pyMesa
-Allows python to interface with MESA. Current stable version is 1.0.8
+Allows python to interface with MESA. Current stable version is 1.0.1
 
 
 
