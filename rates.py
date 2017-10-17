@@ -15,7 +15,13 @@ ierr=0
 crlibm_lib.crlibm_init()
 const_lib.const_init(pym.MESA_DIR,ierr)
 chem_lib.chem_init('isotopes.data',ierr)
-rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
+
+if pym.MESA_VERSION >= 10000:
+     #Function sig changed
+     rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
+                    'rate_tables',False,False,'','','',ierr)
+else:
+     rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
                     'rate_tables',False,'','','',ierr)
 
 

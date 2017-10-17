@@ -1,7 +1,7 @@
-From 971fca0b2a2437a2b9605c2b375091eda0d19b58 Mon Sep 17 00:00:00 2001
+From f1df8bcade602449d8aaa2a9c92166ac474565a4 Mon Sep 17 00:00:00 2001
 From: Robert Farmer <r.j.farmer@uva.nl>
-Date: Tue, 17 Oct 2017 12:46:33 +0200
-Subject: [PATCH 2/3] build crlibm 10000
+Date: Tue, 17 Oct 2017 14:18:32 +0200
+Subject: [PATCH] build crlibm 10000
 
 ---
  crlibm/build_and_test                     |    11 +-
@@ -24,10 +24,10 @@ Subject: [PATCH 2/3] build crlibm 10000
  crlibm/crlibm-patches/tests/Makefile      |  1283 +++
  crlibm/crlibm-patches/tests/Makefile.am   |    78 +
  crlibm/crlibm-patches/tests/Makefile.in   |  1283 +++
- crlibm/export                             |     2 +-
+ crlibm/export                             |     6 +-
  crlibm/make/makefile                      |     9 +-
  crlibm/makefile_crlibm                    |    13 +-
- 23 files changed, 57071 insertions(+), 17 deletions(-)
+ 23 files changed, 57073 insertions(+), 19 deletions(-)
  create mode 100644 crlibm/crlibm-patches/Makefile
  create mode 100644 crlibm/crlibm-patches/Makefile.am
  create mode 100644 crlibm/crlibm-patches/Makefile.in
@@ -57275,18 +57275,21 @@ index 0000000..638bff6
 +# Otherwise a system limit (for SysV at least) may be exceeded.
 +.NOEXPORT:
 diff --git a/crlibm/export b/crlibm/export
-index 7f46310..4b0b667 100755
+index 7f46310..748b557 100755
 --- a/crlibm/export
 +++ b/crlibm/export
-@@ -1,7 +1,7 @@
+@@ -1,8 +1,8 @@
  #!/bin/bash
  
  cp make/crlibm_lib.mod ../include
 -cp make/libf2crlibm*.a ../lib
+-if [ -e make/libcrlibm.a ]
 +cp make/libf2crlibm*.so ../lib
- if [ -e make/libcrlibm.a ]
++if [ -e make/libcrlibm.so ]
  then
- cp crlibm/libcrlibm*.a ../lib
+-cp crlibm/libcrlibm*.a ../lib
++cp crlibm/libcrlibm*.so ../lib
+ fi
 diff --git a/crlibm/make/makefile b/crlibm/make/makefile
 index d48c87a..26019a3 100644
 --- a/crlibm/make/makefile

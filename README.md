@@ -4,7 +4,7 @@
 
 
 # pyMesa
-Allows python to interface with MESA.
+Allows python to interface with MESA. Current stable version is 1.0.8
 
 
 
@@ -46,6 +46,7 @@ While we can use the inivdual MESA modules we can not currently run a full star 
 
 ## Supported MESA versions
 - 9793
+- 10000
 
 Other versions can be supported upon request.
 
@@ -55,7 +56,7 @@ If you want to play with fire and try with another version, then set the envirom
 export PYMESA_OVERRIDE=1
 ````
 
-To override the version check. Though things may not work etween versions if MESA's build system changes
+To override the version check, this will attempt to build MESA using the most recent version of the patches to MESA. Though things may not work between versions if MESA's build system changes
 
 ## Running
 ````bash
@@ -140,10 +141,28 @@ An example of this can be found in eos.py.
 
 ## Unistalling
 
-The best bet is just to redownload mesa, during the setup phase we alter alot of files
+The best bet is just to redownload mesa, during the setup phase we alter alot of files. If you want to try then something like this should work:
+
+````bash
+cd $MESA_DIR
+./clean
+for i in $(ls patches/* | sort -r);
+do
+    patch -R -p1 < $i
+done
+
+for i in $(ls crlibm/crlibm-patches/* | sort -r);
+do 
+    patch -R -p1 < $i
+done    
+
+rm -rf $MESA_DIR/crlibm/crlibm-patches
+
+````
+
 
 ## Bug reports:
 
-Bug reports should go to the issue tracker on github. Please include mesa version and gfortran version
+Bug reports should go to the issue tracker on github. Please include mesa version, gfortran version, gfort2py version and pyMesa version 
 
 

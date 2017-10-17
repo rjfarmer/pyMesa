@@ -13,7 +13,15 @@ ierr=0
 crlibm_lib.crlibm_init()
 const_lib.const_init(pym.MESA_DIR,ierr)
 chem_lib.chem_init('isotopes.data',ierr)
-rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
+
+ierr=0
+
+if pym.MESA_VERSION >= 10000:
+     #Function sig changed
+     rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
+                    'rate_tables',False,False,'','','',ierr)
+else:
+     rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
                     'rate_tables',False,'','','',ierr)
 
 
@@ -57,13 +65,26 @@ always_skip_elec_pos = False
 always_include_elec_pos = False
 helm_res = np.zeros(eos_def.num_helm_results.get())
 
-eos_helm_res = eos_lib.eosDT_HELMEOS_get( 
+
+if pym.MESA_VERSION >= 10000:
+     off_table=False
+     eos_helm_res = eos_lib.eosDT_HELMEOS_get( 
+               eos_handle, Z, X, abar, zbar, 
+               species, chem_id, net_iso, xa, 
+               Rho, log10Rho, T, log10T, 
+               include_radiation, always_skip_elec_pos, always_include_elec_pos, 
+               res, d_dlnRho_const_T, d_dlnT_const_Rho, 
+               d_dabar_const_TRho, d_dzbar_const_TRho, helm_res,off_table, ierr)
+else:
+     eos_helm_res = eos_lib.eosDT_HELMEOS_get( 
                eos_handle, Z, X, abar, zbar, 
                species, chem_id, net_iso, xa, 
                Rho, log10Rho, T, log10T, 
                include_radiation, always_skip_elec_pos, always_include_elec_pos, 
                res, d_dlnRho_const_T, d_dlnT_const_Rho, 
                d_dabar_const_TRho, d_dzbar_const_TRho, helm_res, ierr)
+
+
 
 # The EOS call returns the quantities we want in the "res" array.
 res = eos_helm_res["res"]

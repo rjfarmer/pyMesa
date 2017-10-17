@@ -45,6 +45,9 @@ ION_CACHE=os.path.join(ION_DATA,'cache')
 KAP_CACHE=os.path.join(KAP_DATA,'cache')
 NETS=os.path.join(NET_DATA,'nets')
 
+with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
+    v=f.readline().strip()
+    MESA_VERSION=int(v)
 
 
 def loadMod(module):
