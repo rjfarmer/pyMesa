@@ -19,6 +19,8 @@ automake
 
 chrpath
 
+patch 
+
 ## Building
 
 ### SDK's
