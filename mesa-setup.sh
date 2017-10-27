@@ -63,8 +63,6 @@ then
     if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
         cp patches/0004-sdk-with-lapack.patch "$MESA_DIR"/patches/.
     fi
-    
-#Not ready yet
 elif [[ "$MESA_VERSION" == 10000 ]];
 then
     for i in 0001-build-shared-libs-10000.patch 0002-build-crlibm-10000.patch;
@@ -77,8 +75,8 @@ then
     fi
     
 else
-    echo "MESA version $MESA_VERSION not supported"
-    echo "Open issue on github to request your mesa version"
+    echo "MESA version $MESA_VERSION is not supported"
+    echo "Open an issue on github to request your mesa version"
     exit 1
 fi
 

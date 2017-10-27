@@ -33,7 +33,7 @@ Grab these sdks first (if you dont use these sdks then you can still build pyMES
 
 ### MESA patching
 
-Run the mesa-setup.sh script from this folder, after setting MESA_DIR and initilizing the SDK.
+Run the mesa-setup.sh script from this folder, after setting MESA_DIR and initializing the SDK.
 
 ````bash
 chmod u+x mesa-setup.sh
@@ -44,7 +44,7 @@ This script should only be run once to setup up mesa. It can be ran again if you
 
 Adipls, gyre and stella are not currently built as part of this.
 
-While we can use the inivdual MESA modules we can not currently run a full star (or binary) model, in either python or fortran.
+While we can use the individual MESA modules we can not currently run a full star (or binary) model, in either python or fortran.
 
 ## Supported MESA versions
 - 9793
@@ -52,7 +52,7 @@ While we can use the inivdual MESA modules we can not currently run a full star 
 
 Other versions can be supported upon request.
 
-If you want to play with fire and try with another version, then set the enviroment variable:
+If you want to play with fire and try with another version, then set the environment variable:
 
 ````bash
 export PYMESA_OVERRIDE=1
@@ -167,4 +167,10 @@ rm -rf $MESA_DIR/crlibm/crlibm-patches
 
 Bug reports should go to the issue tracker on github. Please include mesa version, gfortran version, gfort2py version and pyMesa version 
 
+## Contributing
+
+In general most of the development should go towards the gfort2py project to add new
+fortran features. This repository just handles building mesa for python support. Either
+bug reports if mesa versions don't work or new examples are welcome as either pull requests
+or issues on the github tracker.
 
