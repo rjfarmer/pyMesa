@@ -47,13 +47,13 @@ mkdir -p "$MESA_DIR"/patches
 
 
 #Set override if enabled:
-if [[ "$PYMESA_OVERRIDE" == 1 ]];
+if [ ! -z "$PYMESA_OVERRIDE" ]
 then
-    MESA_VERSION=10000
+    MESA_VERSION="$PYMESA_OVERRIDE"
 fi
 
 
-if [[ "$MESA_VERSION" == 9793 ]];
+if [[ "$MESA_VERSION" == 9793 ]]
 then
     for i in 0001-Build-shared-libraries.patch  0002-bug-fixes.patch  0003-crlibm-shared-library.patch;
     do
@@ -63,7 +63,7 @@ then
     if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
         cp patches/0004-sdk-with-lapack.patch "$MESA_DIR"/patches/.
     fi
-elif [[ "$MESA_VERSION" == 10000 ]];
+elif [[ "$MESA_VERSION" == 10000 ]]
 then
     for i in 0001-build-shared-libs-10000.patch 0002-build-crlibm-10000.patch;
     do
@@ -73,11 +73,26 @@ then
     if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
         cp patches/0003-sdk-with-lapack-10000.patch "$MESA_DIR"/patches/.
     fi
+elif [[ "$MESA_VERSION" == 10108 ]]
+then
+    for i in 0001-build-shared-libs-10108.patch 0002-build-crlibm-10108.patch;
+    do
+        cp patches/$i "$MESA_DIR"/patches/.
+    done  
     
+    if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
+        cp patches/0003-sdk-with-lapack-10000.patch "$MESA_DIR"/patches/.
+    fi
+        
 else
     echo "MESA version $MESA_VERSION is not supported"
     echo "Open an issue on github to request your mesa version"
     exit 1
+fi
+
+if [[ "$PYMESA_PATCH_INIT" == 1 ]]
+then
+    exit 0
 fi
 
 
@@ -98,6 +113,11 @@ do
     patch -f -p1 < $i
 done
 echo "Building mesa"
+
+if [[ "$PYMESA_PATCH_ONLY" == 1 ]]
+then
+    exit 0
+fi
 
 export LD_LIBRARY_PATH=../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
 ./mk

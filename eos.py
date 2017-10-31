@@ -74,7 +74,7 @@ if pym.MESA_VERSION >= 10000:
                Rho, log10Rho, T, log10T, 
                include_radiation, always_skip_elec_pos, always_include_elec_pos, 
                res, d_dlnRho_const_T, d_dlnT_const_Rho, 
-               d_dabar_const_TRho, d_dzbar_const_TRho, helm_res,off_table, ierr)
+               d_dabar_const_TRho, d_dzbar_const_TRho, helm_res, off_table, ierr)
 else:
      eos_helm_res = eos_lib.eosDT_HELMEOS_get( 
                eos_handle, Z, X, abar, zbar, 

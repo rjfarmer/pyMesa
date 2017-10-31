@@ -49,20 +49,21 @@ While we can use the individual MESA modules we can not currently run a full sta
 ## Supported MESA versions
 - 9793
 - 10000
+- 10108
 
 Other versions can be supported upon request.
 
 If you want to play with fire and try with another version, then set the environment variable:
 
 ````bash
-export PYMESA_OVERRIDE=1
+export PYMESA_OVERRIDE=A_MESA_VERSION
 ````
 
-To override the version check, this will attempt to build MESA using the most recent version of the patches to MESA. Though things may not work between versions if MESA's build system changes
+Will override the version check and attempt to build MESA using the patches for the version specified. things may not work between versions if MESA's build system changes.
 
 ## Running
 ````bash
-# Set MESA_DIR and initilize the sdk
+# Set MESA_DIR and initialize the sdk
 
 export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH
 python3
@@ -143,7 +144,7 @@ An example of this can be found in eos.py.
 
 ## Unistalling
 
-The best bet is just to redownload mesa, during the setup phase we alter alot of files. If you want to try then something like this should work:
+The best bet is just to redownload mesa, during the setup phase we alter alot of files. If you want to try to keep your MESA_DIR then something like this should work:
 
 ````bash
 cd $MESA_DIR
@@ -158,7 +159,7 @@ do
     patch -R -p1 < $i
 done    
 
-rm -rf $MESA_DIR/crlibm/crlibm-patches
+rm -rf $MESA_DIR/crlibm/crlibm-patches $MESA_DIR/{star,binary}/skip_test
 
 ````
 
