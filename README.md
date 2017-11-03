@@ -4,7 +4,7 @@
 
 
 # pyMesa
-Allows python to interface with MESA. Current stable version is 1.0.1
+Allows python to interface with MESA. Current stable version is 1.0.2
 
 
 
@@ -72,14 +72,17 @@ python3
 ## Usage
 
 Here is a basic example of talking to the const/ module, more advanced versions can be seen in the different .py files shipped.
+Note the only python file that actualy matters is the pyMesaUtils.py file, the other python files (eos, rates etc) are mearly examples of using pyMESA for that module from MESA.
 
 ````python
+# JUst need to make sure the pyMesaUtils.py file is visible either in the local directory or in PYHTHONPATH
+# It does not need to be in the MESA folder.
 import pyMesaUtils as pym
 
 # Loads the const module
 const_lib,const_def = pym.loadMod("const")
 
-# When calling a function we must either the value we want (for intent in variables) or an empty variable for intent outs.
+# When calling a function we must either set the value we want (for intent in variables) or an empty variable for intent outs.
 ierr=0
 # Calls a function
 res = const_lib.const_init(pym.MESA_DIR,ierr)
@@ -142,7 +145,7 @@ An example of this can be found in eos.py.
 - [ ] utils.py
 - [ ] star.py
 
-## Unistalling
+## Uninstalling
 
 The best bet is just to redownload mesa, during the setup phase we alter alot of files. If you want to try to keep your MESA_DIR then something like this should work:
 
@@ -172,6 +175,7 @@ Bug reports should go to the issue tracker on github. Please include mesa versio
 
 In general most of the development should go towards the gfort2py project to add new
 fortran features. This repository just handles building mesa for python support. Either
-bug reports if mesa versions don't work or new examples are welcome as either pull requests
+bug reports, if mesa versions don't work, or new examples are welcome as either pull requests
 or issues on the github tracker.
 
+People who use pyMESA in papers should cite this useing the zenodo link for the version they used. 
