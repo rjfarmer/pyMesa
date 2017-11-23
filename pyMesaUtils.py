@@ -23,8 +23,13 @@ import numpy as np
 import os
 import sys
 
+if "MESA_DIR" not in os.environ:
+    raise ValueError("Must set MESA_DIR enviroment variable")
 
 MESA_DIR = os.environ.get('MESA_DIR')
+
+
+
 DATA_DIR = os.path.join(MESA_DIR,'data')
 LIB_DIR = os.path.join(MESA_DIR,'lib')
 INCLUDE_DIR = os.path.join(MESA_DIR,'include')
