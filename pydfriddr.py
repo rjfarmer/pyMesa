@@ -14,7 +14,7 @@ import numpy as np
 
 neu_lib,neu_def = pym.loadMod("neu")
 
-def eval_x(x):
+def eval_x(x,deriv=False):
     """
     This should take the x value being tested and return y(x)
     
@@ -43,6 +43,11 @@ def eval_x(x):
     
     res = neu_lib.neu_get(T, log10_T, Rho, log10_Rho, abar, zbar, z2bar, log10_Tlim, flags, loss, sources, info)
     
+    if deriv:
+        index=neu_def.idneu_dT.get()-1
+    else:
+        index=neu_def.ineu.get()-1
+        
     return res['loss'][index]
     
 def eval_dx(x):
@@ -51,29 +56,7 @@ def eval_dx(x):
     
     """
     
-    T=x
-    log10_T=np.log10(T)
-    
-    Rho=10**9.0
-    log10_Rho=np.log10(T)
-    abar=1.0
-    zbar=1.0
-    z2bar=1.0
-    log10_Tlim=7.5
-    flags=np.zeros(neu_def.num_neu_types.get())
-    flags[:]=True
-    info=0
-    
-    index=neu_def.idneu_dT.get()-1
-    
-    num_neu_rvs=neu_def.num_neu_rvs.get()
-    num_neu_types=neu_def.num_neu_types.get()
-    loss=np.zeros(num_neu_rvs)
-    sources=np.zeros((num_neu_types,num_neu_rvs))
-    
-    res = neu_lib.neu_get(T, log10_T, Rho, log10_Rho, abar, zbar, z2bar, log10_Tlim, flags, loss, sources, info)
-    
-    return res['loss'][index]
+    return eval_x(x,deriv=True)
 
 
 
