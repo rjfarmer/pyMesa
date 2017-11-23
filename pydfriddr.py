@@ -128,7 +128,8 @@ def driver(xmin,xmax,num_steps,log=False):
 
     res=[]
     for i in xvalues:
-        res.append([i,eval_func(i,start_step,eval_x,eval_dx,False)])
+        r=eval_func(i,start_step,eval_x,eval_dx,False)
+        res.append([i,r])
     
     return res
     
@@ -140,7 +141,7 @@ def plot(xmin,xmax,num_steps):
     
     for i in r:
         x.append(np.log10(i[0]))
-        y.append(np.log10(np.abs(i[1][2])))
+        y.append(np.log10(np.abs(i[1][3])))
     
     plt.plot(x,y)
     plt.scatter(x,y)
