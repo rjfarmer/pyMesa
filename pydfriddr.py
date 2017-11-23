@@ -11,6 +11,8 @@ It does mean though we can not test the compound derivatives inside hydro_eqns.
 
 import pyMesaUtils as pym
 import numpy as np
+import matplotlib.pyplot as plt
+
 
 neu_lib,neu_def = pym.loadMod("neu")
 
@@ -32,9 +34,6 @@ def eval_x(x,deriv=False):
     flags=np.zeros(neu_def.num_neu_types.get())
     flags[:]=True
     info=0
-    
-    index=neu_def.ineu.get()-1
-    
     
     num_neu_rvs=neu_def.num_neu_rvs.get()
     num_neu_types=neu_def.num_neu_types.get()
@@ -60,7 +59,7 @@ def eval_dx(x):
 
 
 
-def eval_func(start_x,start_step,func=eval_x,func_dx=eval_dx):
+def eval_func(start_x,start_step,func=eval_x,func_dx=eval_dx,verbose=True):
     """
     Evaluate a function and its derivative by using ridders method of polynomial extrapolation
     Coded taken from $MESA_DIR/star/private/star_newton.f90 dfridr function
@@ -85,11 +84,11 @@ def eval_func(start_x,start_step,func=eval_x,func_dx=eval_dx):
     a=np.zeros((ntab,ntab))
     step=start_step
     a[1,1] = (func(start_x+step) - func(start_x-step)) / (2.0*step) 
-    print('\tdfdx',1,a[1,1],start_step)
+    if verbose: print('\tdfdx',1,a[1,1],start_step)
     for i in range(2,ntab+1):
         step=step/con
         a[1,i]=(func(start_x+step) - func(start_x-step)) / (2.0*step)
-        print('\tdfdx',i,a[1,i],step)
+        if verbose: print('\tdfdx',i,a[1,i],step)
         fac=con2
         for j in range(2,i+1):
             a[j,i]=(a[j-1,i]*fac - a[j-1,i-1])/(fac-1.0)
@@ -98,15 +97,53 @@ def eval_func(start_x,start_step,func=eval_x,func_dx=eval_dx):
             if errt < err:
                 err=errt
                 dfridr = a[j,i]
-                print('\t\tdfridr err',i,j,dfridr,err)
+                if verbose: print('\t\tdfridr err',i,j,dfridr,err)
         if np.abs(a[i,i] - a[i-1,i-1]) >= safe*err:
-            print("Higher order is worse")
+            if verbose: print("Higher order is worse")
             break
         
     dvardx_0 = func_dx(start_x)
     xdum=(dfridr-dvardx_0)/(np.maximum(dvardx_0,10**-50))
-    print()
-    print('analytic numeric err rel_diff',dvardx_0,dfridr,err,xdum)
-    
+    if verbose: print()
+    if verbose: print('analytic numeric err rel_diff',dvardx_0,dfridr,err,xdum)
+    return dvardx_0,dfridr,err,xdum
 
-eval_func(10**9,10**8,eval_x)
+
+#Single call
+eval_func(10**9,10**8,eval_x,eval_dx)
+
+
+###########################################
+
+# For doing many calls and plotting
+
+def driver(xmin,xmax,num_steps,log=False):
+
+    if log:
+        xvalues=np.linspace(np.log10(xmin),np.log10(xmax),num_steps)
+        xvalues=10**xvalues
+    else:
+        xvalues=np.linspace(xmin,xmax,num_steps)
+    start_step=(xvalues[1]-xvalues[0])/10.0
+
+    res=[]
+    for i in xvalues:
+        res.append([i,eval_func(i,start_step,eval_x,eval_dx,False)])
+    
+    return res
+    
+def plot(xmin,xmax,num_steps):    
+    r=driver(xmin,xmax,num_steps,True)
+        
+    x=[]
+    y=[]
+    
+    for i in r:
+        x.append(np.log10(i[0]))
+        y.append(np.log10(np.abs(i[1][2])))
+    
+    plt.plot(x,y)
+    plt.scatter(x,y)
+    plt.show()
+
+plot(10**8,9.99*10**9,1000)
