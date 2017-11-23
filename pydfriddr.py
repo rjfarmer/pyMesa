@@ -27,12 +27,13 @@ def eval_x(x,deriv=False):
     
     Rho=10**9.0
     log10_Rho=np.log10(T)
-    abar=1.0
-    zbar=1.0
-    z2bar=1.0
+    abar=0.5
+    zbar=0.5
+    z2bar=0.5
     log10_Tlim=7.5
     flags=np.zeros(neu_def.num_neu_types.get())
-    flags[:]=True
+    flags[:]=False
+    flags[0]=True
     info=0
     
     num_neu_rvs=neu_def.num_neu_rvs.get()
@@ -129,6 +130,8 @@ def driver(xmin,xmax,num_steps,log=False):
     res=[]
     for i in xvalues:
         r=eval_func(i,start_step,eval_x,eval_dx,False)
+        # Need some sort of test and retry (and reduce start_step) when
+        # err is large compared to dfridr
         res.append([i,r])
     
     return res
