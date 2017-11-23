@@ -24,7 +24,7 @@ import os
 import sys
 
 if "MESA_DIR" not in os.environ:
-    raise ValueError("Must set MESA_DIR enviroment variable")
+    raise ValueError("Must set MESA_DIR environment variable")
 
 MESA_DIR = os.environ.get('MESA_DIR')
 
