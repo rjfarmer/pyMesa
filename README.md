@@ -70,10 +70,10 @@ python3
 ## Usage
 
 Here is a basic example of talking to the const/ module, more advanced versions can be seen in the different .py files shipped.
-Note the only python file that actualy matters is the pyMesaUtils.py file, the other python files (eos, rates etc) are mearly examples of using pyMESA for that module from MESA.
+Note the only python file that actually matters is the pyMesaUtils.py file, the other python files (eos, rates etc) are mearly examples of using pyMESA for that module from MESA.
 
 ````python
-# JUst need to make sure the pyMesaUtils.py file is visible either in the local directory or in PYHTHONPATH
+# Just need to make sure the pyMesaUtils.py file is visible either in the local directory or in PYHTHONPATH
 # It does not need to be in the MESA folder.
 import pyMesaUtils as pym
 

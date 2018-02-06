@@ -203,7 +203,7 @@ def plot2d(xmin,xmax,ymin,ymax,xsteps,ysteps,deriv_flag,neu_flag,name,rev=False,
         z=z.T
         extent=(np.log10(ymin),np.log10(ymax),np.log10(xmin),np.log10(xmax))
     
-    cax=ax.imshow(z.T,extent=extent,aspect='auto',vmin=np.maximum(np.min(z),-16.0),vmax=0.0)
+    cax=ax.imshow(z.T,extent=extent,aspect='auto',vmin=np.maximum(np.min(z),-16.0),vmax=0.0,origin='lower')
     cb=fig.colorbar(cax)
     
     cb.set_label('log abs dfriddr err')
