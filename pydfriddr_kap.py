@@ -70,9 +70,9 @@ def eval_x(x,*args,**kwargs):
         answer = res['kap']
     else:
         if test_var is 't':
-            answer = res['dlnkap_dlnt']*np.log(10.0)
+            answer = res['dlnkap_dlnt']
         elif test_var is 'r':
-            answer = res['dlnkap_dlnrho']*np.log(10.0)
+            answer = res['dlnkap_dlnrho']
         
         
     return answer
@@ -223,12 +223,13 @@ kap_lib.kap_set_choices(kap_handle,False,False,True,0.71,0.70,0.001,0.01,ierr)
 
 
 
-eval_x(9.0,'t',9.0,deriv=True)
+# eval_x(9.0,'t',9.0,deriv=True)
 
 prefix=sys.argv[1]
 
 steps=100
 
+#ln values
 tmin=5.0
 tmax=10.0
 rmin=0.0
