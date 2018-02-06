@@ -17,6 +17,9 @@ kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,3.80,False,pym.KAP_
 
 kap_handle = kap_lib.alloc_kap_handle(ierr)
 
+kap_lib.kap_set_choices(kap_handle,False,False,True,0.71,0.70,0.001,0.01,ierr)
+
+
 
 handle = kap_handle
 zbar = 1.0
