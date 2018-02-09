@@ -51,7 +51,9 @@ def eval_x(x,*args,**kwargs):
     if args[4] >= 0:
         flags[args[4]]=True
     else:
+        # flags[3]=True
         flags[:]=True
+        # flags[-1]=False
     info=0
     
     num_neu_rvs=neu_def.num_neu_rvs.get()
@@ -213,9 +215,13 @@ def plot2d(xmin,xmax,ymin,ymax,xsteps,ysteps,deriv_flag,neu_flag,name,rev=False,
     fig.savefig(name)
     plt.close(fig)
     
-def plot2d2(xmin,xmax,ymin,ymax,xsteps,ysteps,deriv_flag,neu_flag,name):    
+def plot2dNeu(xmin,xmax,ymin,ymax,xsteps,ysteps,name):    
+    deriv_flag='t'
+    neu_flag=-1
+    title='nu'
+    rev=False
     
-    xvalues=np.linspace(xmin,xmax,int(xsteps))
+    xvalues=np.linspace(np.log10(xmin),np.log10(xmax),int(xsteps))
     yvalues=np.linspace(np.log10(ymin),np.log10(ymax),int(ysteps))
     
         
@@ -224,21 +230,23 @@ def plot2d2(xmin,xmax,ymin,ymax,xsteps,ysteps,deriv_flag,neu_flag,name):
     for i in xvalues:
         z.append([])
         for j in yvalues:
-            #print(i,j)
-            r=bestfit(i,deriv_flag,10**j,10**9.0,30.0,neu_flag)
-            z[-1].append(np.log10(np.abs(r[3])))
+            z[-1].append(np.log10(eval_x(10**i,'t',10**j,56,26,3,deriv=False)))
     
     z=np.array(z)
     fig=plt.figure()
     ax=fig.add_subplot(111)
     
-    cax=ax.imshow(z.T,extent=(np.nanmin(xvalues),np.nanmax(xvalues),np.log10(ymin),np.log10(ymax)),aspect='auto',vmin=np.maximum(np.min(z),-16.0),vmax=0.0)
-    fig.colorbar(cax)
+    extent=(np.log10(xmin),np.log10(xmax),np.log10(ymin),np.log10(ymax))
+
+    cax=ax.imshow(z.T,extent=extent,aspect='auto',origin='lower',cmap='bwr')
+    cb=fig.colorbar(cax)
     
-    ax.set_title('log abs dfriddr err')
+    cb.set_label('log abs neu ')
+    ax.set_title(title)
+    ax.set_xlabel('logT')
+    ax.set_ylabel('LogRho')
     fig.savefig(name)
     plt.close(fig)
-    
     
 
 
@@ -256,36 +264,32 @@ const_lib.const_init(pym.MESA_DIR,ierr)
 
 neu_lib,neu_def = pym.loadMod(mod)
 #print(eval_x(10**9.0,'r',10**10.1,56,26,3,deriv=False))
-#print(eval_x(10**9.0,'r',10**10.1,56,26,3,deriv=True))
-# print(eval_func(10**9.0,10**-0,eval_x,eval_dx,False,'r',10**9.0,56,26,4))
 
-# print(eval_func(10**9.0,10**-0,eval_x,eval_dx,False,'r',10**9.0,56,26,4))
-# print(eval_func(10**10.8,10**-0,eval_x,eval_dx,False,'t',10**10.5,56,26,3))
-
-#eval_x(10**9.0)
-
-#plot(10**0.0,10**12.0,1000)
-#plot(1.0,100.0,1000)
-# # #z=driver(10**9.6,10**9.7,1)
+#print(eval_func(10**9.0,10**0.0,eval_x,eval_dx,False,'t',10**2.0,56,26,4))
 
 prefix=sys.argv[1]
 
-j='t'
-plot2d(10**6.9,10**10.0,10**-1,10**11.0,100,100,j,-1,prefix+'_'+j+'_all.pdf',title='dt')
-for i in range(0,5):
-    print(j,i)
-    plot2d(10**6.9,10**10.0,10**-1,10**11.0,100,100,j,i,prefix+'_'+j+'_'+str(i)+'.pdf',title='dt')
 
+steps=1000
 
-j='r'
-plot2d(10**-1,10**11.0,10**6.9,10**10.0,100,100,j,-1,prefix+'_'+j+'_all.pdf',rev=True,title='drho')
-for i in range(0,5):
-    print(j,i)
-    plot2d(10**-1,10**11.0,10**6.9,10**10.0,100,100,j,i,prefix+'_'+j+'_'+str(i)+'.pdf',rev=True,title='drho')
+tmin=10**6.9
+tmax=10**10.0
+rmin=10**-1
+rmax=10**10
+
+# j='t'
+# plot2d(tmin,tmax,rmin,rmax,steps,steps,j,-1,prefix+'_'+j+'_all.pdf',title='dt')
+# for i in range(0,5):
+    # print(j,i)
+    # plot2d(tmin,tmax,rmin,rmax,steps,steps,j,i,prefix+'_'+j+'_'+str(i)+'.pdf',title='dt')
 
 
 # j='r'
-# plot2d(10**-1,10**11.0,10**6.9,10**10.0,100,100,j,-1,prefix+'_'+j+'_all.pdf',rev=True,title='drho')
-# i=3
-# plot2d(10**-1,10**11.0,10**6.9,10**10.0,100,100,j,i,prefix+'_'+j+'_'+str(i)+'.pdf',rev=True,title='drho')
+# plot2d(rmin,rmax,tmin,tmax,steps,steps,j,-1,prefix+'_'+j+'_all.pdf',rev=True,title='drho')
+# for i in range(0,5):
+    # print(j,i)
+    # plot2d(rmin,rmax,tmin,tmax,steps,steps,j,i,prefix+'_'+j+'_'+str(i)+'.pdf',rev=True,title='drho')
+
+plot2dNeu(tmin,tmax,rmin,rmax,steps,steps,prefix+'_neu.pdf')
+
 

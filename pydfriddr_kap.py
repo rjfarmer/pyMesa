@@ -26,10 +26,10 @@ def eval_x(x,*args,**kwargs):
     deriv=kwargs['deriv']
 
     if test_var is 't':
-        logT=x*np.log(10.0)
+        logT=x/np.log(10.0)
         logRho=args[1]*np.log(10.0)
     elif test_var is 'r':
-        logRho=x*np.log(10.0)
+        logRho=x/np.log(10.0)
         logT=args[1]*np.log(10.0)
 
     handle = 1
@@ -45,9 +45,13 @@ def eval_x(x,*args,**kwargs):
     # XN = 0.000745982044130567
     # XO = 0.0061729948909251585
     # XNe = 0.0011784393788064082
-    lnfree_e = -0.14276309175735255
-    d_lnfree_e_dlnRho= 0.0
-    d_lnfree_e_dlnT= 0.0
+    lnfree_e = -1.7540883425221482E-01
+    d_lnfree_e_dlnRho= 1.5040256009583098E-02
+    d_lnfree_e_dlnT= -6.8478280502896702E-03
+    # lnfree_e = 0.0
+    # d_lnfree_e_dlnRho= 0.0
+    # d_lnfree_e_dlnT= 0.0
+    
     use_Zbase_for_Type1 = False
     frac_Type2 = 1.0
     kap = 0.0
@@ -67,7 +71,7 @@ def eval_x(x,*args,**kwargs):
         
     # print(res)
     if not deriv:
-        answer = res['kap']
+        answer = np.log(res['kap'])
     else:
         if test_var is 't':
             answer = res['dlnkap_dlnt']
@@ -203,7 +207,6 @@ mod="kap"
 
 pym.buildModule(mod)
 
-eos_lib, eos_def = pym.loadMod("eos")
 const_lib, const_def = pym.loadMod("const")
 crlibm_lib, _ = pym.loadMod("crlibm")
 chem_lib, chem_def = pym.loadMod("chem")
@@ -213,6 +216,7 @@ ierr=0
 
 crlibm_lib.crlibm_init()
 const_lib.const_init(pym.MESA_DIR,ierr)
+chem_lib.chem_init('isotopes.data',ierr)
 
 
 kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,3.80,False,pym.KAP_CACHE,'',ierr)
@@ -227,10 +231,10 @@ kap_lib.kap_set_choices(kap_handle,False,False,True,0.71,0.70,0.001,0.01,ierr)
 
 prefix=sys.argv[1]
 
-steps=100
+steps=200
 
 #ln values
-tmin=5.0
+tmin=0.0
 tmax=10.0
 rmin=0.0
 rmax=10.0
