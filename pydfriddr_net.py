@@ -32,18 +32,13 @@ def eval_x(**kwargs):
     just_dxdt = False
     num_isos = species
     x=np.zeros(num_isos)
-    x[:]=10**-99
+
+    for i in ['h1','he4','si28','c12','o16','fe56']:
+        r=chem_lib.chem_get_iso_id(i)
+        x[net_iso[r-1]-1] = kwargs[i]
     
-    x[net_iso[chem_def.ih1.get()-1]-1] =kwargs['h1']
-    x[net_iso[chem_def.ihe4.get()-1]-1] = kwargs['he4']
-    x[net_iso[chem_def.isi28.get()-1]-1] = kwargs['si28']
-    x[net_iso[chem_def.ic12.get()-1]-1] = kwargs['c12']
-    x[net_iso[chem_def.io16.get()-1]-1] = kwargs['o16']
-    x[net_iso[chem_def.ife56.get()-1]-1] = kwargs['fe56']
+    x=np.maximum(10**-99,x)
     
-    log10temp = crlibm_lib.log10_cr(T)
-    log10rho = crlibm_lib.log10_cr(rho)
-        
     # print(log10temp,log10rho,abar,zbar,z2bar,ye)
     # print(x[net_iso[chem_def.ih1.get()-1]-1],
     # x[net_iso[chem_def.ihe4.get()-1]-1],
@@ -74,8 +69,7 @@ def eval_x(**kwargs):
     
     res = net_lib.net_get_s( 
             handle,num_isos,
-            x, T, log10temp, rho, log10rho,  
-            allQ, allQneu, 
+            x, T, rho,  
             eps_nuc, d_eps_nuc_dRho, d_eps_nuc_dT, d_eps_nuc_dx,  
             dxdt, d_dxdt_dRho, d_dxdt_dT, d_dxdt_dx,  
             eps_nuc_categories, eps_neu_total, 
@@ -136,8 +130,8 @@ def eval_func(func=eval_x,func_dx=eval_dx,verbose=True,**kwargs):
     a[1,1] = func(deriv=False,**kwargs) 
     
     kwargs[arg]=start_x-step
-    a[1,1] = a[1,1]-func(deriv=False,**kwargs) / (2.0*step) 
-    if verbose: print('\tdfdx',1,a[1,1],start_step)
+    a[1,1] = (a[1,1]-func(deriv=False,**kwargs)) / (2.0*step) 
+    if verbose: print('\tdfdx',1,a[1,1],step)
     for i in range(2,ntab):
         step=step/con
         
@@ -145,7 +139,7 @@ def eval_func(func=eval_x,func_dx=eval_dx,verbose=True,**kwargs):
         a[1,i]=func(deriv=False,**kwargs)
         
         kwargs[arg]=start_x-step
-        a[1,i]= a[1,i]- func(deriv=False,**kwargs) / (2.0*step)
+        a[1,i]= (a[1,i]- func(deriv=False,**kwargs)) / (2.0*step)
         if verbose: print('\tdfdx',i,a[1,i],step)
         fac=con2
         for j in range(2,i+1):
@@ -170,12 +164,13 @@ def eval_func(func=eval_x,func_dx=eval_dx,verbose=True,**kwargs):
 
 
 def bestfit(**kwargs):
+    kwargs.pop('deriv',None)
     tmp=[]
     err=[]
     for j in range(0,15):
         kwargs['start_step']=kwargs[kwargs['arg']]/(10.0**j)
         kwargs['start_x']=kwargs[kwargs['arg']]
-        r=eval_func(eval_x,eval_dx,False,**kwargs)
+        r=eval_func(eval_x,eval_dx,verbose=False,**kwargs)
         tmp.append(r)
         try:
             err.append(np.abs(r[2]/r[1]))
@@ -215,7 +210,6 @@ def plot2d(xmin,xmax,ymin,ymax,xsteps,ysteps,name,title='',**kwargs):
             z[-1].append(np.log10(np.abs(r[3])))
     
     z=np.array(z)
-    np.save(name,z)
     fig=plt.figure()
     ax=fig.add_subplot(111)
     extent=(xvalues.min(),xvalues.max(),yvalues.min(),yvalues.max())
@@ -263,7 +257,7 @@ chem_lib.chem_init('isotopes.data',ierr)
 rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
                     'rate_tables',False,False,'','','',ierr)
 
-net_file = os.path.join(pym.NETS,'mesa_45.net')
+net_file = os.path.join(pym.NETS,'mesa_75.net')
 
                 
 # Net setup
@@ -325,13 +319,25 @@ rate_factors[:]=1.0
 
 
 
-print(eval_x(test_var='t',arg='t',arg2='r',log=True,t=10**9.0,rho=10**9,
-      h1=0.0,he4=0.1,c12=0.1,o16=0.1,si28=0.5,fe56=0.2,deriv=False))
+# print(eval_x(test_var='t',arg='t',arg2='r',log=True,t=10**8.0,rho=10**8,
+      # h1=0.0,he4=0.1,c12=0.1,o16=0.1,si28=0.5,fe56=0.2,deriv=False))
+      
+# print(eval_x(test_var='t',arg='t',arg2='r',log=True,t=10**8.0,rho=10**8,
+      # h1=0.0,he4=0.1,c12=0.1,o16=0.1,si28=0.5,fe56=0.2,deriv=True))
 
-# print(eval_x(test_var='t',arg='t',arg2='r',log=True,t=10**9.0,rho=10**9,
-        # h1=0.0,he4=0.1,c12=0.1,o16=0.1,si28=0.5,fe56=0.2,deriv=True))
+# print(bestfit(test_var='t',arg='t',arg2='r',log=True,t=10**8.0,rho=10**8,
+      # h1=0.0,he4=0.1,c12=0.1,o16=0.1,si28=0.5,fe56=0.2,deriv=False,tol=10**-3))
+      
+# print(eval_x(test_var='t',arg='t',arg2='r',log=True,t=1.0+10**8.0,rho=10**8,
+      # h1=0.0,he4=0.1,c12=0.1,o16=0.1,si28=0.5,fe56=0.2,deriv=False))
+      
+# print(eval_x(test_var='t',arg='t',arg2='r',log=True,t=10**8.0 -1.0,rho=10**8,
+      # h1=0.0,he4=0.1,c12=0.1,o16=0.1,si28=0.5,fe56=0.2,deriv=False))
 
-# sys.exit()
+# # print(eval_x(test_var='t',arg='t',arg2='r',log=True,t=10**9.0,rho=10**9,
+        # # h1=0.0,he4=0.1,c12=0.1,o16=0.1,si28=0.5,fe56=0.2,deriv=True))
+
+# # sys.exit()
 
 
 
@@ -367,8 +373,7 @@ print("End r")
 # net_get_s
       # subroutine net_get_s( &
             # handle,num_isos, &
-            # x, temp, log10temp, rho, log10rho,  &
-            # reaction_Qs, reaction_neuQs, &
+            # x, temp, rho,   &
             # eps_nuc, d_eps_nuc_dRho, d_eps_nuc_dT, d_eps_nuc_dx,  &
             # dxdt, d_dxdt_dRho, d_dxdt_dT, d_dxdt_dx,  &
             # eps_nuc_categories, eps_neu_total, &
@@ -377,7 +382,8 @@ print("End r")
          # use chem_lib, only: basic_composition_info
          # use net_eval, only: eval_net
          # use net_def, only: Net_General_Info, Net_Info, get_net_ptr
-         # use rates_def, only: num_rvs, rates_reaction_id_max
+         # use rates_def
+         # use crlibm_lib
       
          # ! provide T or logT or both (the code needs both, so pass 'em if you've got 'em!)
          # ! same for Rho and logRho
@@ -385,12 +391,8 @@ print("End r")
          # integer, intent(in) :: handle
          # integer, intent(in) :: num_isos
          # real(dp), intent(in)  :: x(num_isos) ! (num_isos)
-         # real(dp), intent(in)  :: temp, log10temp ! log10 of temp
-            # ! provide both if you have them.  else pass one and set the other to = arg_not_provided
-            # ! "arg_not_provided" is defined in mesa const_def
-         # real(dp), intent(in)  :: rho, log10rho ! log10 of rho
-            # ! provide both if you have them.  else pass one and set the other to = arg_not_provided
-            # ! "arg_not_provided" is defined in mesa const_def
+         # real(dp), intent(in)  :: temp
+         # real(dp), intent(in)  :: rho
          # real(dp)  :: abar  ! mean number of nucleons per nucleus
          # real(dp)  :: zbar  ! mean charge per nucleus
          # real(dp)  :: z2bar ! mean charge squared per nucleus
@@ -407,8 +409,6 @@ print("End r")
             # ! rate_factors array is indexed by reaction number.
             # ! use net_reaction_table to map reaction id to reaction number.
          # real(dp) :: weak_rate_factor = 1d0
-         # real(dp), pointer, intent(in) :: reaction_Qs(:) ! (rates_reaction_id_max)
-         # real(dp), pointer, intent(in) :: reaction_neuQs(:) ! (rates_reaction_id_max)
          # real(dp), intent(out) :: eps_nuc ! ergs/g/s from burning after subtract reaction neutrinos
          # real(dp), intent(out) :: d_eps_nuc_dT
          # real(dp), intent(out) :: d_eps_nuc_dRho
@@ -432,16 +432,25 @@ print("End r")
          
          # integer, intent(out) :: ierr ! 0 means okay
                   
-         # integer :: time0, time1
+         # integer :: time0, time1,i,id,j
          # type (Net_General_Info), pointer :: g
          # real(dp), pointer, dimension(:) :: actual_Qs, actual_neuQs
          # logical, pointer :: from_weaklib(:) ! ignore if null
-         # logical, parameter :: symbolic = .false.
+         # logical, parameter :: symbolic = .false.,dbg=.false.
          # logical, parameter :: rates_only = .false.
          # type (Net_Info), target :: net_info_target
          # type (Net_Info), pointer :: netinfo
           # real(dp) :: xh, xhe,xz, z, mass_correction, sumx
          # integer,dimension(num_isos) :: chem_id
+         # real(dp) :: log10temp, log10rho
+         # integer, pointer :: index(:)
+         # real(dp), pointer, dimension(:) :: &
+            # rate_screened, rate_screened_dT, rate_screened_dRho, &
+            # rate_raw, rate_raw_dT, rate_raw_dRho
+         # integer, pointer :: reaction_id(:) ! maps net reaction number to reaction id
+         
+         # log10temp = log10_cr(temp)
+         # log10rho = log10_cr(rho)
          
          # actual_Qs => null()
          # actual_neuQs => null()
@@ -456,7 +465,7 @@ print("End r")
          
          # lwork=net_work_size(handle, ierr) 
          # allocate(work(lwork),rate_factors(g%num_reactions))
-         # rate_factors= 1d0
+         # rate_factors = 1d0
          # netinfo => net_info_target
          
          # eta=0d0
@@ -468,19 +477,56 @@ print("End r")
          # call basic_composition_info(g%num_isos, chem_id, x, xh, xhe, xz, &
             # abar, zbar, z2bar, ye, mass_correction,sumx)
          
+         # if(dbg) then
+            # write(*,*) xh,xhe,xz,abar,zbar,z2bar,ye
+            # write(*,*) temp, log10temp, rho, log10rho
+            
+            # do i = 1, g% num_isos
+               # id = g% chem_id(i)
+               # if (id > 0) write(*,*) i, trim(chem_isos% name(id)),x(i)
+            # end do
+         # end if
          
          # call eval_net( &
                # netinfo, g, rates_only, .false., g%num_isos, g%num_reactions, g% num_wk_reactions, &
                # x, temp, log10temp, rho, log10rho,  &
                # abar, zbar, z2bar, ye, eta, d_eta_dlnT, d_eta_dlnRho, &
                # rate_factors, weak_rate_factor, &
-               # reaction_Qs, reaction_neuQs, .false.,.false., &
+               # std_reaction_Qs, std_reaction_neuQs, .false.,.false., &
                # eps_nuc, d_eps_nuc_dRho, d_eps_nuc_dT, d_eps_nuc_dx,  &
-               # dxdt, d_dxdt_dRho, d_dxdt_dT, d_dxdt_dx,0, 0.d0,  &
+               # dxdt, d_dxdt_dRho, d_dxdt_dT, d_dxdt_dx,extended_screening, 0.d0,  &
                # eps_nuc_categories, eps_neu_total, &
                # lwork, work, actual_Qs, actual_neuQs, from_weaklib, symbolic, &
                # ierr)
          
-         # deallocate(work)
          
+         # if(dbg) then
+            # write(*,*) eps_nuc, d_eps_nuc_dRho, d_eps_nuc_dT
+            
+            # call get_net_rate_ptrs(handle, &
+               # rate_screened, rate_screened_dT, rate_screened_dRho, &
+               # rate_raw, rate_raw_dT, rate_raw_dRho, lwork, work, &
+               # ierr)
+            # call get_reaction_id_table_ptr(handle, reaction_id, ierr)
+            
+            # i = max(g%num_isos, g%num_reactions)
+            # allocate(index(i))
+            # do j=1,g%num_reactions
+                  # index(j) = j
+            # end do
+            
+            # do i=1,g%num_reactions
+               # j = index(g%num_reactions+1-i)
+               # write(*,*) trim(reaction_Name(reaction_id(j))), rate_raw(j),rate_screened(j)
+            # end do
+            
+            # write(*,*)
+            # do j=1,g%num_isos
+               # write(*,*) 'dxdt ' // trim(chem_isos% name(g%chem_id(j))), dxdt(j)
+            # end do
+            
+            
+         # end if
+         
+         # deallocate(work)
       # end subroutine net_get_s
