@@ -67,29 +67,36 @@ export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH
 python3
 ````
 
+## Structure
+
+The only python file that is actaully needed to run this is pyMesaUtils.py. This file contains the code needed to interface with mesa. Inside the mesa_models/ folder
+contain examples of how to interface with most of meas's modules. pydfriddr/ folder contains exampels for testing MESA's anayltic derivtaives with a numerical derivative.
+one\_zone will contain code to wrap MESA's one\_zone burn.
+
 ## Usage
 
-Here is a basic example of talking to the const/ module, more advanced versions can be seen in the different .py files shipped.
-Note the only python file that actually matters is the pyMesaUtils.py file, the other python files (eos, rates etc) are mearly examples of using pyMESA for that module from MESA.
+Here is a basic example of talking to the const/ module.
 
 ````python
 # Just need to make sure the pyMesaUtils.py file is visible either in the local directory or in PYHTHONPATH
-# It does not need to be in the MESA folder.
+# It does not need to be in $MESA_DIR folder.
 import pyMesaUtils as pym
+
+# pyMesa module defines a number of useful MESA paths as pym.SOMETHING.
+print(pym.MESA_DIR) # Print MESA_DIR
+print(pym.MESA_VERSION) # Print MESA version number
 
 # Loads the const module
 const_lib,const_def = pym.loadMod("const")
 
-# When calling a function we must either set the value we want (for intent in variables) or an empty variable for intent outs.
+# When calling a function we must either set the value we want (for intent(in/inout) variables) or an empty variable for intent(out).
 ierr=0
 # Calls a function
 res = const_lib.const_init(pym.MESA_DIR,ierr)
 
-# pyMesa module defines a number of useful MESA paths as pym.SOMETHING
 
 # If the call was a subroutine then res is a dict with the intent out variables in there
 # else it contains the result of the function call
-
 
 # Accessing a variable defined in a module is simply:
 const_def.mev_to_ergs
@@ -100,7 +107,7 @@ const_def.standard_cgrav = 5.0
 # When passing a derived type, you should pass a dict to the function (filled with anything you want set)
 x = {}
 
-# Functions accepting arrays should pass a numpy array the size it expects (if the function allocates the array, then just pass an array of size 1)
+# Functions accepting arrays should pass a numpy array of the size it expects (if the function allocates the array, then just pass an array of size 1)
 x = np.zeros(size)
 
 # Arrays inside derived types are unstable at the moment and don't completely work.
@@ -172,8 +179,10 @@ Bug reports should go to the issue tracker on github. Please include mesa versio
 ## Contributing
 
 In general most of the development should go towards the gfort2py project to add new
-fortran features. This repository just handles building mesa for python support. Either
-bug reports, if mesa versions don't work, or new examples are welcome as either pull requests
+fortran features. This repository just handles building mesa for python support. 
+
+Bug reports, if mesa versions don't work, or new examples are welcome as either pull requests
 or issues on the github tracker.
 
 People who use pyMESA in papers should cite this useing the zenodo link for the version they used. 
+
