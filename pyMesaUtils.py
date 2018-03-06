@@ -24,6 +24,23 @@ import os
 import sys
 import subprocess
 
+
+# Dependacy check
+G2PY_MIN_VER='1.0.11'
+
+try:
+	G2PY_VER=gf.__version__
+except AttributeError:
+	# Old versions didn't set __version__
+	raise AttributeError("Must update gfort2py to at least version "+G2PY_MIN_VER)
+
+def _versiontuple(v):
+    return tuple(map(int, (v.split("."))))
+
+if _versiontuple(G2PY_VER) < _versiontuple(G2PY_MIN_VER):
+	raise AttributeError("Must update gfort2py to at least version "+G2PY_MIN_VER)
+
+#MESA DIR check and path set
 if "MESA_DIR" not in os.environ:
     raise ValueError("Must set MESA_DIR environment variable")
 else:
@@ -59,7 +76,7 @@ with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
     v=f.readline().strip()
     MESA_VERSION=int(v)
 
-
+# The one function you actaully need
 def loadMod(module):
     
     if module =='crlibm':
