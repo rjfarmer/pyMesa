@@ -73,7 +73,7 @@ then
     if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
         cp patches/0003-sdk-with-lapack-10000.patch "$MESA_DIR"/patches/.
     fi
-elif [[ "$MESA_VERSION" == 10108 ]]
+elif [[ "$MESA_VERSION" == 10108 ]] || [[ "$MESA_VERSION" == 10398 ]]
 then
     for i in 0001-build-shared-libs-10108.patch 0002-build-crlibm-10108.patch;
     do

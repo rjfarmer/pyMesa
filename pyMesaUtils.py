@@ -29,16 +29,16 @@ import subprocess
 G2PY_MIN_VER='1.0.11'
 
 try:
-	G2PY_VER=gf.__version__
+    G2PY_VER=gf.__version__
 except AttributeError:
-	# Old versions didn't set __version__
-	raise AttributeError("Must update gfort2py to at least version "+G2PY_MIN_VER)
+    # Old versions didn't set __version__
+    raise AttributeError("Must update gfort2py to at least version "+G2PY_MIN_VER)
 
 def _versiontuple(v):
     return tuple(map(int, (v.split("."))))
 
 if _versiontuple(G2PY_VER) < _versiontuple(G2PY_MIN_VER):
-	raise AttributeError("Must update gfort2py to at least version "+G2PY_MIN_VER)
+    raise AttributeError("Must update gfort2py to at least version "+G2PY_MIN_VER)
 
 #MESA DIR check and path set
 if "MESA_DIR" not in os.environ:
@@ -72,6 +72,8 @@ ION_CACHE=os.path.join(ION_DATA,'cache')
 KAP_CACHE=os.path.join(KAP_DATA,'cache')
 NETS=os.path.join(NET_DATA,'nets')
 
+MESASDK_ROOT=os.path.expandvars('$MESASDK_ROOT')
+
 with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
     v=f.readline().strip()
     MESA_VERSION=int(v)
@@ -81,6 +83,8 @@ def loadMod(module):
     
     if module =='crlibm':
         SHARED_LIB = os.path.join(LIB_DIR,"libf2crlibm.so")
+    elif module =='run_star_support':
+         SHARED_LIB = os.path.join(LIB_DIR,"librun_star_support.so")
     else:
         SHARED_LIB = os.path.join(LIB_DIR,"lib"+module+".so")
     MODULE_LIB = os.path.join(INCLUDE_DIR,module+"_lib.mod")  
@@ -133,3 +137,26 @@ def buildModule(module):
 
     print("Built "+str(module))
 
+def buildRunStarSupport():
+    cwd = os.getcwd()
+    os.chdir(os.path.join(MESA_DIR,'star','make'))
+    try:
+        x = subprocess.call('gfortran -Wno-uninitialized -fno-range-check -fmax-errors=12 -fPIC -shared -fprotect-parens -fno-sign-zero -fbacktrace -ggdb -finit-real=snan -fopenmp  -std=f2008 -Wno-error=tabs -I../public -I../private -I../../include -I'+os.path.join(MESASDK_ROOT,'include')+' -Wunused-value -Werror -W -Wno-compare-reals -Wno-unused-parameter -fimplicit-none  -O2 -ffree-form -x f95-cpp-input -I../defaults -I../job -I../other ../job/run_star_support.f90 -o librun_star_support.so',shell=True)
+        if x:
+            raise ValueError("Build run_star_support failed")
+    except:
+        raise
+    finally:
+        os.chdir(cwd)
+        
+    os.chdir(LIB_DIR)
+    try:
+        x = subprocess.call("chrpath -r librun_star_support.so",shell=True)
+        if x:
+            raise ValueError("chrpath failed")
+    except:
+        raise
+    finally:
+        os.chdir(cwd)
+        
+    print("Built run_star_support")

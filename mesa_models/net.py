@@ -43,7 +43,7 @@ net_lib.net_start_def(handle, ierr)
 net_lib.read_net_file(net_file, handle, ierr)
 net_lib.net_finish_def(handle, ierr)
 
-net_lib.net_set_logTcut(handle, -1,-1, ierr)
+net_lib.net_set_logtcut(handle, -1,-1, ierr)
 net_lib.net_set_fe56ec_fake_factor(handle, 10**-7, 3.0*10**9, ierr)
 
 g={}
@@ -148,7 +148,6 @@ lwork = net_lib.net_work_size(handle, ierr)
 work = np.zeros(lwork)
 ierr = 0
 
-net_lib.net_get.saveArgs(True)
 res = net_lib.net_get( 
             handle, just_dxdt, n, num_isos, num_reactions,  
             x, temp, log10temp, rho, log10rho,  
