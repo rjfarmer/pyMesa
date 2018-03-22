@@ -10,10 +10,11 @@ kap_lib,kap_def = pym.loadMod("kap")
 ierr=0
 
 crlibm_lib.crlibm_init()
-const_lib.const_init(pym.MESA_DIR,ierr)
 
-
-kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,3.80,False,pym.KAP_CACHE,'',ierr)
+if pym.MESA_VERSION >= 10398:
+    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,False,pym.KAP_CACHE,'',ierr)
+else:
+    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,3.80,False,pym.KAP_CACHE,'',ierr)
 
 kap_handle = kap_lib.alloc_kap_handle(ierr)
 
@@ -42,10 +43,18 @@ dlnkap_dlnRho = 0.0
 dlnkap_dlnT = 0.0
 ierr = 0
 
-kap2_res = kap_lib.kap_get_type2(handle, zbar, X, Z, Zbase, XC, XN, XO, XNe, logRho, logT, 
+if pym.MESA_VERSION >= 10398:
+    kap_res = kap_libkap_get(handle, zbar, X, Z, Zbase, XC, XN, XO, XNe, logRho, logT,
+            lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT,
+            frac_Type2, kap, dlnkap_dlnRho, dlnkap_dlnT, ierr)
+else:
+    kap2_res = kap_lib.kap_get_type2(handle, zbar, X, Z, Zbase, XC, XN, XO, XNe, logRho, logT, 
             lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT, use_Zbase_for_Type1, 
             frac_Type2, kap, dlnkap_dlnRho, dlnkap_dlnT, ierr)
 
-kap1_res = kap_lib.kap_get_type1(handle, zbar, X, Z, logRho, logT, 
+    kap1_res = kap_lib.kap_get_type1(handle, zbar, X, Z, logRho, logT, 
             lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT,
             kap, dlnkap_dlnRho, dlnkap_dlnT, ierr)
+
+
+kap_lib.shutdown()

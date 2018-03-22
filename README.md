@@ -4,12 +4,12 @@
 
 
 # pyMesa
-Allows python to interface with MESA. Current stable version is 1.0.2
+Allows python to interface with MESA. Current stable version is 1.0.3
 
 
 
 ## Requirements:
-[gfort2py](https://github.com/rjfarmer/gfort2py) (Available via pip)
+[gfort2py](https://github.com/rjfarmer/gfort2py) (Also available via pip) (needs version >= 1.0.11)
 
 numpy
 
@@ -48,6 +48,7 @@ While we can use the individual MESA modules we can not currently run a full sta
 - 9793
 - 10000
 - 10108
+- 10398
 
 Other versions can be supported upon request.
 
@@ -57,7 +58,7 @@ If you want to play with fire and try with another version, then set the environ
 export PYMESA_OVERRIDE=A_MESA_VERSION
 ````
 
-Will override the version check and attempt to build MESA using the patches for the version specified. things may not work between versions if MESA's build system changes.
+Will override the version check and attempt to build MESA using the patches for the version specified. Things may not work between versions if MESA's build system changes.
 
 ## Running
 ````bash
@@ -69,9 +70,9 @@ python3
 
 ## Structure
 
-The only python file that is actaully needed to run this is pyMesaUtils.py. This file contains the code needed to interface with mesa. Inside the mesa_models/ folder
-contain examples of how to interface with most of meas's modules. pydfriddr/ folder contains exampels for testing MESA's anayltic derivtaives with a numerical derivative.
-one\_zone will contain code to wrap MESA's one\_zone burn.
+The only python file that is actually needed to run this is pyMesaUtils.py. This file contains the code needed to interface with mesa. Inside the mesa_models/ folder
+contain examples of how to interface with most of meas's modules. pydfriddr/ folder contains examples for testing MESA's analytic derivatives with a numerical derivative.
+
 
 ## Usage
 
@@ -106,6 +107,8 @@ const_def.standard_cgrav = 5.0
 
 # When passing a derived type, you should pass a dict to the function (filled with anything you want set)
 x = {}
+# or
+x = {'a':1,'b':'abc','c':{'d':1}}
 
 # Functions accepting arrays should pass a numpy array of the size it expects (if the function allocates the array, then just pass an array of size 1)
 x = np.zeros(size)
@@ -152,7 +155,7 @@ An example of this can be found in eos.py.
 
 ## Uninstalling
 
-The best bet is just to redownload mesa, during the setup phase we alter alot of files. If you want to try to keep your MESA_DIR then something like this should work:
+The best bet is just to re-download mesa, during the setup phase we alter a lot of files. If you want to try to keep your MESA_DIR then something like this should work:
 
 ````bash
 cd $MESA_DIR
@@ -184,5 +187,11 @@ fortran features. This repository just handles building mesa for python support.
 Bug reports, if mesa versions don't work, or new examples are welcome as either pull requests
 or issues on the github tracker.
 
-People who use pyMESA in papers should cite this useing the zenodo link for the version they used. 
+People who use pyMESA in papers should cite this using the zenodo link for the version they used. If you use pyMesa in a project yet me know and i can help advertise here (also useful for me to help
+with funding requests).
+
+## Known Projects using pyMesa
+
+[Poelarends et al 2017](https://ui.adsabs.harvard.edu/#abs/2017ApJ...850..197P/abstract)
+
 
