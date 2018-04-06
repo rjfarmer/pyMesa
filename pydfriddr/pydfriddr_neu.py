@@ -61,7 +61,9 @@ def eval_x(x,*args,**kwargs):
     loss=np.zeros(num_neu_rvs)
     sources=np.zeros((num_neu_types,num_neu_rvs))
     
-    res = neu_lib.neu_get(T, log10_T, rho, log10_Rho, abar, zbar, z2bar, log10_Tlim, flags, loss, sources, info)
+    mass= 10**4
+    
+    res = neu_lib.neu_get(T, log10_T, rho, log10_Rho, abar, zbar, z2bar, log10_Tlim, flags, loss, sources,mass, info)
     if not deriv:
         index=neu_def.ineu.get()-1
         
@@ -138,7 +140,10 @@ def bestfit(x,*args):
         start_step=x/(10.0**j)
         r=eval_func(x,start_step,eval_x,eval_dx,False,*args)
         tmp.append(r)
-        err.append(np.abs(r[2]/r[1]))
+        try:
+            err.append(np.abs(r[2]/r[1]))
+        except ZeroDivisionError:
+            err.append(np.nan)
        
     try:
         best_fit=np.nanargmin(err)
@@ -270,22 +275,22 @@ neu_lib,neu_def = pym.loadMod(mod)
 prefix=sys.argv[1]
 
 
-steps=1000
+steps=100
 
 tmin=10**6.9
 tmax=10**10.0
 rmin=10**-1
 rmax=10**10
 
-# j='t'
-# plot2d(tmin,tmax,rmin,rmax,steps,steps,j,-1,prefix+'_'+j+'_all.pdf',title='dt')
+j='t'
+plot2d(tmin,tmax,rmin,rmax,steps,steps,j,-1,prefix+'_'+j+'_all.pdf',title='dt')
 # for i in range(0,5):
     # print(j,i)
     # plot2d(tmin,tmax,rmin,rmax,steps,steps,j,i,prefix+'_'+j+'_'+str(i)+'.pdf',title='dt')
 
 
-# j='r'
-# plot2d(rmin,rmax,tmin,tmax,steps,steps,j,-1,prefix+'_'+j+'_all.pdf',rev=True,title='drho')
+j='r'
+plot2d(rmin,rmax,tmin,tmax,steps,steps,j,-1,prefix+'_'+j+'_all.pdf',rev=True,title='drho')
 # for i in range(0,5):
     # print(j,i)
     # plot2d(rmin,rmax,tmin,tmax,steps,steps,j,i,prefix+'_'+j+'_'+str(i)+'.pdf',rev=True,title='drho')
