@@ -26,7 +26,11 @@ else:
      rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
                     'rate_tables',False,'','','',ierr)
 
-kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,3.80,False,pym.KAP_CACHE,'',ierr)
+if pym.MESA_VERSION >= 10398:
+    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,False,pym.KAP_CACHE,'',ierr)
+else:
+    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,3.80,False,pym.KAP_CACHE,'',ierr)
+
 ion_lib.ionization_init('ion','',pym.ION_CACHE,False,ierr)
 net_lib.net_init(ierr)
 eos_lib.eos_init('mesa','','','',False,ierr)
