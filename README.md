@@ -187,8 +187,10 @@ fortran features. This repository just handles building mesa for python support.
 Bug reports, if mesa versions don't work, or new examples are welcome as either pull requests
 or issues on the github tracker.
 
-People who use pyMESA in papers should cite this using the zenodo link for the version they used. If you use pyMesa in a project yet me know and i can help advertise here (also useful for me to help
-with funding requests).
+## Citating
+
+People who use pyMESA in papers should cite this using the zenodo link for the version they used. If you use pyMesa in a project (resaech or teaching), let me know and i can help advertise here (also useful for me to help
+with funding requests). Current versions citation is in the CITATION file.
 
 ## Known Projects using pyMesa
 

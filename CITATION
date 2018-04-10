@@ -1,0 +1,9 @@
+@misc{pymesa,
+  author       = {Robert Farmer and
+                  Evan B. Bauer},
+  title        = {pyMesa},
+  month        = mar,
+  year         = 2018,
+  doi          = {10.5281/zenodo.1205271},
+  url          = {https://doi.org/10.5281/zenodo.1205271}
+}
