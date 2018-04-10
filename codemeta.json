@@ -1,0 +1,25 @@
+{
+    "@context": "http://schema.org",
+    "@type": "Code",
+    "author": [
+        {
+            "@id": "https://orcid.org/0000-0003-3441-7624",
+            "@type": "Person",
+            "email": "r.j.farmer@uva.nl",
+            "name": "Robert Farmer"
+        },
+        {
+            "@id": "https://orcid.org/0000-0002-4791-6724",
+            "@type": "Person",
+            "email": "ebauer@physics.ucsb.edu",
+            "name": "Evan Bauer"
+        }
+    ],
+    "citation": "https://doi.org/10.5281/zenodo.1205271",
+    "codeRepository": "https://github.com/rjfarmer/pyMesa",
+    "dateCreated": "2017-07-25",
+    "description": "Python bindings for the 1-D stellar evolution code, MESA",
+    "keywords": "python, fortran, MESA, bindings",
+    "license": "https://opensource.org/licenses/GPL-2.0",
+    "name": "pyMesa"
+}
