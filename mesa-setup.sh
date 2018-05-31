@@ -19,6 +19,15 @@
 #along with pyMesa. If not, see <http://www.gnu.org/licenses/>.
 
 
+
+#See bug #1
+if [ "$(uname)" -eq "Darwin" ];then
+	echo "pyMesa does not currently work with Macs"
+	echo "See https://github.com/rjfarmer/pyMesa/issues/1"
+	exit 1
+fi
+
+
 if [ -z "$MESA_DIR" ];then
     echo "MESA_DIR is unset"
     exit 1
@@ -121,7 +130,7 @@ fi
 
 export LD_LIBRARY_PATH=../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
 ./mk
-if [[ $? != 0 ]];then
+if [[ $? != 0 ]] || [[ ! -f "$MESA_DIR/lib/libstar.so" ]] ;then
     echo
     echo
     echo
