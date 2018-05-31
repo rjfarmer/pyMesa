@@ -4,11 +4,13 @@
 
 
 # pyMesa
-Allows python to interface with MESA. Current stable version is 1.0.3
+Allows python to interface with MESA stellar evolution code. Current stable version is 1.0.3
 
 
 
 ## Requirements:
+Note: pyMesa currently only works on linux, macs will fail to build.
+
 [gfort2py](https://github.com/rjfarmer/gfort2py) (Also available via pip) (needs version >= 1.0.11)
 
 numpy
