@@ -77,16 +77,23 @@ MESASDK_ROOT=os.path.expandvars('$MESASDK_ROOT')
 with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
     v=f.readline().strip()
     MESA_VERSION=int(v)
+    
+if sys.platform == "linux" or sys.platform == "linux2":
+    SHARED_LIB='so'
+elif sys.platform == "darwin":
+    SHARED_LIB="dylib"
+else:
+    raise Exception("Platform not support")
 
 # The one function you actaully need
 def loadMod(module):
     
     if module =='crlibm':
-        SHARED_LIB = os.path.join(LIB_DIR,"libf2crlibm.so")
+        SHARED_LIB = os.path.join(LIB_DIR,"libf2crlibm."+SHARED_LIB)
     elif module =='run_star_support':
-         SHARED_LIB = os.path.join(LIB_DIR,"librun_star_support.so")
+         SHARED_LIB = os.path.join(LIB_DIR,"librun_star_support."+SHARED_LIB)
     else:
-        SHARED_LIB = os.path.join(LIB_DIR,"lib"+module+".so")
+        SHARED_LIB = os.path.join(LIB_DIR,"lib"+module+"."+SHARED_LIB)
     MODULE_LIB = os.path.join(INCLUDE_DIR,module+"_lib.mod")  
     MODULE_DEF = os.path.join(INCLUDE_DIR,module+"_def.mod")  
     
@@ -127,7 +134,7 @@ def buildModule(module):
         
     os.chdir(LIB_DIR)
     try:
-        x = subprocess.call("chrpath -r lib"+module+".so",shell=True)
+        x = subprocess.call("chrpath -r lib"+module+"."+SHARED_LIB,shell=True)
         if x:
             raise ValueError("chrpath failed")
     except:
@@ -141,7 +148,7 @@ def buildRunStarSupport():
     cwd = os.getcwd()
     os.chdir(os.path.join(MESA_DIR,'star','make'))
     try:
-        x = subprocess.call('gfortran -Wno-uninitialized -fno-range-check -fmax-errors=12 -fPIC -shared -fprotect-parens -fno-sign-zero -fbacktrace -ggdb -finit-real=snan -fopenmp  -std=f2008 -Wno-error=tabs -I../public -I../private -I../../include -I'+os.path.join(MESASDK_ROOT,'include')+' -Wunused-value -Werror -W -Wno-compare-reals -Wno-unused-parameter -fimplicit-none  -O2 -ffree-form -x f95-cpp-input -I../defaults -I../job -I../other ../job/run_star_support.f90 -o librun_star_support.so',shell=True)
+        x = subprocess.call('gfortran -Wno-uninitialized -fno-range-check -fmax-errors=12 -fPIC -shared -fprotect-parens -fno-sign-zero -fbacktrace -ggdb -finit-real=snan -fopenmp  -std=f2008 -Wno-error=tabs -I../public -I../private -I../../include -I'+os.path.join(MESASDK_ROOT,'include')+' -Wunused-value -Werror -W -Wno-compare-reals -Wno-unused-parameter -fimplicit-none  -O2 -ffree-form -x f95-cpp-input -I../defaults -I../job -I../other ../job/run_star_support.f90 -o librun_star_support.'+SHARED_LIB,shell=True)
         if x:
             raise ValueError("Build run_star_support failed")
     except:
@@ -151,7 +158,7 @@ def buildRunStarSupport():
         
     os.chdir(LIB_DIR)
     try:
-        x = subprocess.call("chrpath -r librun_star_support.so",shell=True)
+        x = subprocess.call("chrpath -r librun_star_support."+SHARED_LIB,shell=True)
         if x:
             raise ValueError("chrpath failed")
     except:
