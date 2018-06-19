@@ -41,7 +41,7 @@ rm -rf "$MESA_DIR"/patches
 mkdir -p "$MESA_DIR"/patches
 
 if [[ "$(uname)" == "Darwin" ]];then
-    if [[ ! "$MESA_VERSION" -lt 10398 ]];then
+    if [[ "$MESA_VERSION" -lt 10398 ]];then
         echo "pyMesa only works on macs for mesa version >= 10398"
         exit 1
     fi
@@ -137,7 +137,12 @@ then
     exit 0
 fi
 
-export LD_LIBRARY_PATH=../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
+if [[ "$(uname)" == "Darwin" ]];then
+    export DYLD_LIBRARY_PATH=../make:$MESA_DIR/lib:$DYLD_LIBRARY_PATH
+else
+    export LD_LIBRARY_PATH=../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
+fi
+
 ./mk
 if [[ $? != 0 ]] || [[ ! -f "$MESA_DIR/lib/libstar.$SHARED_LIB" ]]  ;then
     echo
@@ -152,13 +157,23 @@ if [[ $? != 0 ]] || [[ ! -f "$MESA_DIR/lib/libstar.$SHARED_LIB" ]]  ;then
     exit 1
 fi
 
+echo
+echo
+echo
 echo "****************************************************************"
 echo "pyMESA build was succesfull"
-echo "Each time you wish to use this you must set the LD_LIBRARAY_PATH"
-echo "After the sdk has been initilized:"
-echo 'export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH'
-echo "Do not run this script again unless you ran ./clean inside MESA_DIR"
-echo "inside your MESA_DIR"
+if [[ "$(uname)" == "Darwin" ]];then
+    echo "Each time you wish to use this you must set the DYLD_LIBRARAY_PATH variable"
+else
+    echo "Each time you wish to use this you must set the LD_LIBRARAY_PATH variable"
+fi
+echo "After the mesasdk has been initilized:"
+if [[ "$(uname)" == "Darwin" ]];then
+    echo 'export DYLD_LIBRARY_PATH=$MESA_DIR/lib:$DYLD_LIBRARY_PATH'
+else
+    echo 'export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH'
+fi
+echo "Do not run this script again on the same MESA_DIR"
 echo "****************************************************************"
 echo
 echo
