@@ -138,9 +138,9 @@ then
 fi
 
 if [[ "$(uname)" == "Darwin" ]];then
-    export DYLD_LIBRARY_PATH=../make:$MESA_DIR/lib:$DYLD_LIBRARY_PATH
+    export DYLD_LIBRARY_PATH=../../make:../make:$MESA_DIR/lib:$DYLD_LIBRARY_PATH
 else
-    export LD_LIBRARY_PATH=../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
+    export LD_LIBRARY_PATH=../../make:../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
 fi
 
 ./mk

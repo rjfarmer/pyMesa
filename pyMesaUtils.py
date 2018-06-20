@@ -78,12 +78,14 @@ with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
     v=f.readline().strip()
     MESA_VERSION=int(v)
     
-if sys.platform == "linux" or sys.platform == "linux2":
+p=sys.platform.lower()
+
+if p == "linux" or p == "linux2":
     SHARED_LIB='so'
-elif sys.platform == "darwin":
+elif p == "darwin":
     SHARED_LIB="dylib"
 else:
-    raise Exception("Platform not support")
+    raise Exception("Platform not support "+str(p))
 
 # The one function you actaully need
 def loadMod(module):
