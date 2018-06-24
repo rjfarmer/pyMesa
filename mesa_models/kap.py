@@ -1,6 +1,9 @@
 import pyMesaUtils as pym
 import numpy as np
 
+
+pym.buildModule('kap')
+
 eos_lib, eos_def = pym.loadMod("eos")
 const_lib, const_def = pym.loadMod("const")
 crlibm_lib, _ = pym.loadMod("crlibm")
@@ -9,12 +12,15 @@ kap_lib,kap_def = pym.loadMod("kap")
 
 ierr=0
 
+
+const_lib.const_init('',ierr)  
 crlibm_lib.crlibm_init()
+chem_lib.chem_init('isotopes.data', ierr)
 
 if pym.MESA_VERSION >= 10398:
-    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,False,pym.KAP_CACHE,'',ierr)
+    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,True,pym.KAP_CACHE,'',ierr)
 else:
-    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,3.80,False,pym.KAP_CACHE,'',ierr)
+    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,3.80,True,pym.KAP_CACHE,'',ierr)
 
 kap_handle = kap_lib.alloc_kap_handle(ierr)
 
