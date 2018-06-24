@@ -81,9 +81,9 @@ with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
 p=sys.platform.lower()
 
 if p == "linux" or p == "linux2":
-    SHARED_LIB='so'
+    LIB_EXT='so'
 elif p == "darwin":
-    SHARED_LIB="dylib"
+    LIB_EXT="dylib"
 else:
     raise Exception("Platform not support "+str(p))
 
@@ -91,11 +91,12 @@ else:
 def loadMod(module):
     
     if module =='crlibm':
-        SHARED_LIB = os.path.join(LIB_DIR,"libf2crlibm."+SHARED_LIB)
+        SHARED_LIB = os.path.join(LIB_DIR,"libf2crlibm."+LIB_EXT)
     elif module =='run_star_support':
-         SHARED_LIB = os.path.join(LIB_DIR,"librun_star_support."+SHARED_LIB)
+         SHARED_LIB = os.path.join(LIB_DIR,"librun_star_support."+LIB_EXT)
     else:
-        SHARED_LIB = os.path.join(LIB_DIR,"lib"+module+"."+SHARED_LIB)
+        SHARED_LIB = os.path.join(LIB_DIR,"lib"+module+"."+LIB_EXT)
+        
     MODULE_LIB = os.path.join(INCLUDE_DIR,module+"_lib.mod")  
     MODULE_DEF = os.path.join(INCLUDE_DIR,module+"_def.mod")  
     
@@ -136,7 +137,7 @@ def buildModule(module):
         
     os.chdir(LIB_DIR)
     try:
-        x = subprocess.call("chrpath -r lib"+module+"."+SHARED_LIB,shell=True)
+        x = subprocess.call("chrpath -r lib"+module+"."+LIB_EXT,shell=True)
         if x:
             raise ValueError("chrpath failed")
     except:
@@ -160,7 +161,7 @@ def buildRunStarSupport():
         
     os.chdir(LIB_DIR)
     try:
-        x = subprocess.call("chrpath -r librun_star_support."+SHARED_LIB,shell=True)
+        x = subprocess.call("chrpath -r librun_star_support."+LIB_EXT,shell=True)
         if x:
             raise ValueError("chrpath failed")
     except:
