@@ -24,7 +24,10 @@ else:
 
 kap_handle = kap_lib.alloc_kap_handle(ierr)
 
-kap_lib.kap_set_choices(kap_handle,False,False,True,0.71,0.70,0.001,0.01,ierr)
+if pym.MESA_VERSION >= 10398:
+    kap_lib.kap_set_choices(kap_handle,False,False,True,True,True,0.71,0.70,0.001,0.01,ierr)
+else:
+    kap_lib.kap_set_choices(kap_handle,False,False,True,0.71,0.70,0.001,0.01,ierr)
 
 
 
@@ -62,5 +65,7 @@ else:
             lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT,
             kap, dlnkap_dlnRho, dlnkap_dlnT, ierr)
 
-
-kap_lib.shutdown()
+if pym.MESA_VERSION >= 10398:
+    kap_lib.kap_shutdown()
+else:
+    kap_lib.shutdown()
