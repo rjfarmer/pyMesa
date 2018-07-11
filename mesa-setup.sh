@@ -122,14 +122,18 @@ echo "Clean MESA"
 /usr/bin/touch star/skip_test
 /usr/bin/touch binary/skip_test
 
-echo "Patching mesa"
+if [ -z "$PYMESA_SKIP_PATCH" ]
+then
+	echo "Patching mesa"
+	
+	mkdir -p "$MESA_DIR/crlibm/crlibm-patches"
+	
+	for i in patches/*;
+	do
+	    patch -f -p1 < $i
+	done
+fi
 
-mkdir -p "$MESA_DIR/crlibm/crlibm-patches"
-
-for i in patches/*;
-do
-    patch -f -p1 < $i
-done
 echo "Building mesa"
 
 if [[ "$PYMESA_PATCH_ONLY" == 1 ]]
