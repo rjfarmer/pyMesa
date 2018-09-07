@@ -13,16 +13,16 @@ Note: pyMesa currently only works on linux, macs will fail to build.
 
 [gfort2py](https://github.com/rjfarmer/gfort2py) (Also available via pip) (needs version >= 1.0.11)
 
-numpy
+All versions need numpy and patch
+
+if using MESA <  11035 then you also need:
 
 libtool
 
 automake
 
 chrpath
-
-patch 
-
+ 
 ## Building
 
 ### SDK's
@@ -42,6 +42,9 @@ chmod u+x mesa-setup.sh
 
 This script should only be run once to setup up mesa. It can be ran again if you do a ./clean inside the MESA_DIR.
 
+#### MESA < 11035
+If using mesa version < 11035 then the following applies:
+
 Adipls, gyre and stella are not currently built as part of this.
 
 While we can use the individual MESA modules we can not currently run a full star (or binary) model, in either python or fortran.
@@ -51,6 +54,7 @@ While we can use the individual MESA modules we can not currently run a full sta
 - 10000
 - 10108
 - 10398
+- >11035 (non released mesa version)
 
 Other versions can be supported upon request.
 
@@ -66,6 +70,7 @@ Will override the version check and attempt to build MESA using the patches for 
 ````bash
 # Set MESA_DIR and initialize the sdk
 
+# If using MESA < 11035 set the LD_LIBRARY_PATH
 export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH
 python3
 ````
@@ -73,7 +78,7 @@ python3
 ## Structure
 
 The only python file that is actually needed to run this is pyMesaUtils.py. This file contains the code needed to interface with mesa. Inside the mesa_models/ folder
-contain examples of how to interface with most of meas's modules. pydfriddr/ folder contains examples for testing MESA's analytic derivatives with a numerical derivative.
+contain examples of how to interface with most of MESA's modules. pydfriddr/ folder contains examples for testing MESA's analytic derivatives with a numerical derivative.
 
 
 ## Usage
@@ -157,6 +162,8 @@ An example of this can be found in eos.py.
 
 ## Uninstalling
 
+If using MESA < 11035:
+
 The best bet is just to re-download mesa, during the setup phase we alter a lot of files. If you want to try to keep your MESA_DIR then something like this should work:
 
 ````bash
@@ -176,6 +183,9 @@ rm -rf $MESA_DIR/crlibm/crlibm-patches $MESA_DIR/{star,binary}/skip_test
 
 ````
 
+If using MESA >= 11035, then in utils/makefile_header switch USE_SHARED=YES to USE_SHARED=NO and do a ./clean
+and ./mk in $MESA_DIR
+
 
 ## Bug reports:
 
@@ -191,7 +201,7 @@ or issues on the github tracker.
 
 ## Citating
 
-People who use pyMESA in papers should cite this using the zenodo link for the version they used. If you use pyMesa in a project (resaech or teaching), let me know and i can help advertise here (also useful for me to help
+People who use pyMESA in papers should cite this using the zenodo link for the version they used. If you use pyMesa in a project (research or teaching), let me know and i can help advertise here (also useful for me to help
 with funding requests). Current versions citation is in the CITATION file.
 
 ## Known Projects using pyMesa

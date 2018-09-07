@@ -51,12 +51,6 @@ DATA_DIR = os.path.join(MESA_DIR,'data')
 LIB_DIR = os.path.join(MESA_DIR,'lib')
 INCLUDE_DIR = os.path.join(MESA_DIR,'include')
     
-if "LD_LIBRARY_PATH" not in os.environ:
-    raise ValueError("Must set LD_LIBRARY_PATH environment variable")
-elif LIB_DIR not in os.environ['LD_LIBRARY_PATH']:
-    raise ValueError("Must have $MESA_DIR/lib in LD_LIBRARY_PATH environment variable")
-
-
 RATES_DATA=os.path.join(DATA_DIR,'rates_data')
 EOSDT_DATA=os.path.join(DATA_DIR,'eosDT_data')
 EOSPT_DATA=os.path.join(DATA_DIR,'eosPT_data')
@@ -77,6 +71,12 @@ MESASDK_ROOT=os.path.expandvars('$MESASDK_ROOT')
 with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
     v=f.readline().strip()
     MESA_VERSION=int(v)
+    
+if MESA_VERSION < 11035:
+    if "LD_LIBRARY_PATH" not in os.environ:
+        raise ValueError("Must set LD_LIBRARY_PATH environment variable")
+    elif LIB_DIR not in os.environ['LD_LIBRARY_PATH']:
+        raise ValueError("Must have $MESA_DIR/lib in LD_LIBRARY_PATH environment variable")
     
 p=sys.platform.lower()
 
@@ -135,15 +135,16 @@ def buildModule(module):
     finally:
         os.chdir(cwd)
         
-    os.chdir(LIB_DIR)
-    try:
-        x = subprocess.call("chrpath -r lib"+module+"."+LIB_EXT,shell=True)
-        if x:
-            raise ValueError("chrpath failed")
-    except:
-        raise
-    finally:
-        os.chdir(cwd)
+    if MESA_VERSION < 11035:
+        os.chdir(LIB_DIR)
+        try:
+            x = subprocess.call("chrpath -r lib"+module+"."+LIB_EXT,shell=True)
+            if x:
+                raise ValueError("chrpath failed")
+        except:
+            raise
+        finally:
+            os.chdir(cwd)
 
     print("Built "+str(module))
 
@@ -151,7 +152,20 @@ def buildRunStarSupport():
     cwd = os.getcwd()
     os.chdir(os.path.join(MESA_DIR,'star','make'))
     try:
-        x = subprocess.call('gfortran -Wno-uninitialized -fno-range-check -fmax-errors=12 -fPIC -shared -fprotect-parens -fno-sign-zero -fbacktrace -ggdb -finit-real=snan -fopenmp  -std=f2008 -Wno-error=tabs -I../public -I../private -I../../include -I'+os.path.join(MESASDK_ROOT,'include')+' -Wunused-value -Werror -W -Wno-compare-reals -Wno-unused-parameter -fimplicit-none  -O2 -ffree-form -x f95-cpp-input -I../defaults -I../job -I../other ../job/run_star_support.f90 -o librun_star_support.'+SHARED_LIB,shell=True)
+        compile_cmd = ['gfortran -Wno-uninitialized -fno-range-check',
+                      '-fmax-errors=12 -fPIC -shared -fprotect-parens',
+                      '-fno-sign-zero -fbacktrace -ggdb -finit-real=snan',
+                      '-fopenmp  -std=f2008 -Wno-error=tabs -I../public',
+                      '-I../private -I../../include',
+                      '-I'+os.path.join(MESASDK_ROOT,'include'),
+                      '-Wunused-value -Werror -W -Wno-compare-reals',
+                      '-Wno-unused-parameter -fimplicit-none  -O2',
+                      '-ffree-form -x f95-cpp-input -I../defaults',
+                      '-I../job -I../other ../job/run_star_support.f90',
+                      '-Wl,-rpath=' + LIB_DIR,
+                      '-o librun_star_support.'+LIB_EXT]
+        
+        x = subprocess.call(" ".join(compile_cmd),shell=True))
         if x:
             raise ValueError("Build run_star_support failed")
     except:

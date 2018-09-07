@@ -1,0 +1,25 @@
+From 0d8d4c40c318afcddd18a99ebd82edc7c036a69b Mon Sep 17 00:00:00 2001
+From: Robert Farmer <r.j.farmer@uva.nl>
+Date: Fri, 7 Sep 2018 15:04:04 +0200
+Subject: [PATCH] turn shared on
+
+---
+ utils/makefile_header | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/utils/makefile_header b/utils/makefile_header
+index c22aa247f..688b4cf2f 100644
+--- a/utils/makefile_header
++++ b/utils/makefile_header
+@@ -86,7 +86,7 @@ USE_STUB_FOR_CRLIBM = NO
+ 
+ # step 9) Build shared libraries? Needed if you want mesa to be usable in python
+ 
+-USE_SHARED = NO
++USE_SHARED = YES
+ 
+ 
+ #################################################################
+-- 
+2.17.1
+

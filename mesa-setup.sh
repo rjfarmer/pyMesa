@@ -34,6 +34,8 @@ if [[ ! "$PATH" == *"$MESASDK_ROOT"* ]];then
     exit 1
 fi
 
+DO_NOTHING=0
+
 MESA_VERSION=$(<"$MESA_DIR/data/version_number")
 
 export SHARED_LIB=so
@@ -101,7 +103,9 @@ then
     #if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
         #cp patches/0003-sdk-with-lapack-10000.patch "$MESA_DIR"/patches/.
     #fi
-
+elif [[ "$MESA_VERSION" -gt 11035 ]]
+then
+    cp patches/0001-turn-shared-on.patch "$MESA_DIR"/patches/.
 else
     echo "MESA version $MESA_VERSION is not supported"
     echo "Open an issue on github to request your mesa version"
@@ -118,16 +122,22 @@ cd "$MESA_DIR"
 echo "Clean MESA"
 ./clean
 
-#Skip Tests in star as we can't run a full model yet
-/usr/bin/touch star/skip_test
-/usr/bin/touch binary/skip_test
+if [[ "$MESA_VERSION" -lt 11035 ]]
+then
+    #Skip Tests in star as we can't run a full model yet
+    /usr/bin/touch star/skip_test
+    /usr/bin/touch binary/skip_test
+fi
 
 if [ -z "$PYMESA_SKIP_PATCH" ]
 then
 	echo "Patching mesa"
 	
-	mkdir -p "$MESA_DIR/crlibm/crlibm-patches"
-	
+    if [[ "$MESA_VERSION" -lt 11035 ]]
+    then
+        mkdir -p "$MESA_DIR/crlibm/crlibm-patches"
+	fi
+    
 	for i in patches/*;
 	do
 	    patch -f -p1 < $i
@@ -141,11 +151,15 @@ then
     exit 0
 fi
 
-if [[ "$(uname)" == "Darwin" ]];then
-    export DYLD_LIBRARY_PATH=../../make:../make:$MESA_DIR/lib:$DYLD_LIBRARY_PATH
-else
-    export LD_LIBRARY_PATH=../../make:../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
+if [[ "$MESA_VERSION" -lt 11035 ]]
+then
+    if [[ "$(uname)" == "Darwin" ]];then
+        export DYLD_LIBRARY_PATH=../../make:../make:$MESA_DIR/lib:$DYLD_LIBRARY_PATH
+    else
+        export LD_LIBRARY_PATH=../../make:../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
+    fi
 fi
+
 
 ./mk
 if [[ $? != 0 ]] || [[ ! -f "$MESA_DIR/lib/libstar.$SHARED_LIB" ]]  ;then
@@ -161,24 +175,39 @@ if [[ $? != 0 ]] || [[ ! -f "$MESA_DIR/lib/libstar.$SHARED_LIB" ]]  ;then
     exit 1
 fi
 
-echo
-echo
-echo
-echo "****************************************************************"
-echo "pyMESA build was succesfull"
-if [[ "$(uname)" == "Darwin" ]];then
-    echo "Each time you wish to use this you must set the DYLD_LIBRARAY_PATH variable"
+if [[ "$MESA_VERSION" -lt 11035 ]]
+then
+    echo
+    echo
+    echo
+    echo "****************************************************************"
+    echo "pyMESA build was succesfull"
+    if [[ "$(uname)" == "Darwin" ]];then
+        echo "Each time you wish to use this you must set the DYLD_LIBRARAY_PATH variable"
+    else
+        echo "Each time you wish to use this you must set the LD_LIBRARAY_PATH variable"
+    fi
+    echo "After the mesasdk has been initilized:"
+    if [[ "$(uname)" == "Darwin" ]];then
+        echo 'export DYLD_LIBRARY_PATH=$MESA_DIR/lib:$DYLD_LIBRARY_PATH'
+    else
+        echo 'export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH'
+    fi
+    echo "Do not run this script again on the same MESA_DIR"
+    echo "****************************************************************"
+    echo
+    echo
+    echo
 else
-    echo "Each time you wish to use this you must set the LD_LIBRARAY_PATH variable"
+    echo
+    echo
+    echo
+    echo "****************************************************************"
+    echo "pyMESA build was succesfull"
+    echo "****************************************************************"
+    echo
+    echo
+    echo
+
 fi
-echo "After the mesasdk has been initilized:"
-if [[ "$(uname)" == "Darwin" ]];then
-    echo 'export DYLD_LIBRARY_PATH=$MESA_DIR/lib:$DYLD_LIBRARY_PATH'
-else
-    echo 'export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH'
-fi
-echo "Do not run this script again on the same MESA_DIR"
-echo "****************************************************************"
-echo
-echo
-echo
+    
