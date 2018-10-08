@@ -165,7 +165,7 @@ def buildRunStarSupport():
                       '-Wl,-rpath=' + LIB_DIR,
                       '-o librun_star_support.'+LIB_EXT]
         
-        x = subprocess.call(" ".join(compile_cmd),shell=True))
+        x = subprocess.call(" ".join(compile_cmd),shell=True)
         if x:
             raise ValueError("Build run_star_support failed")
     except:
