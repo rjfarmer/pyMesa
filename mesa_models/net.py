@@ -50,12 +50,13 @@ net_lib.net_finish_def(handle, ierr)
 net_lib.net_set_logtcut(handle, -1,-1, ierr)
 net_lib.net_set_fe56ec_fake_factor(handle, 10**-7, 3.0*10**9, ierr)
 
-g={}
-res = net_lib.net_ptr(handle, g, ierr)
-g=res['g'] # Note this is only a copy of the pointer, changes wont propagate back to mesa
+# Accessing the g pointer is broken
+# g={}
+# res = net_lib.net_ptr(handle, g, ierr)
+# g=res['g'] # Note this is only a copy of the pointer, changes wont propagate back to mesa
 
-species = g['num_isos']
-num_reactions = g['num_reactions']
+species = net_lib.net_num_isos(handle, ierr)
+num_reactions =  net_lib.net_num_reactions(handle, ierr)
 
 rates_reaction_id_max = rates_def.rates_reaction_id_max.get()
 

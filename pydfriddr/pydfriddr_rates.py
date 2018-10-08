@@ -291,7 +291,7 @@ eos_lib.eos_init('mesa','','','',True,ierr)
                 
                 
 
-net_file = os.path.join(pym.NETS,'mesa_201.net')
+net_file = os.path.join(pym.NETS,'mesa_45.net')
 
                 
 # Net setup
@@ -304,12 +304,8 @@ net_lib.net_finish_def(handle, ierr)
 net_lib.net_set_logtcut(handle, -1,-1, ierr)
 net_lib.net_set_fe56ec_fake_factor(handle, 10**-7, 3.0*10**9, ierr)
 
-g={}
-res = net_lib.net_ptr(handle, g, ierr)
-g=res['g'] # Note this is only a copy of the pointer, changes wont propagate back to mesa
-
-species = g['num_isos']
-num_reactions = g['num_reactions']
+species = net_lib.net_num_isos(handle, ierr)
+num_reactions =  net_lib.net_num_reactions(handle, ierr)
 
 rates_reaction_id_max = rates_def.rates_reaction_id_max.get()
 
@@ -325,15 +321,20 @@ net_lib.net_setup_tables(handle, '', ierr)
 
 ierr=0
 
-extra_args={'reac_id':rates_def.ir_s32_ap_cl35.get()}
+y=rates_lib.rates_reaction_id('r_p30_pg_s31')
+print(y)
+if y==0:
+    raise ValueError("Bad reaction id")
+
+extra_args={'reac_id':y}
 
 # print(eval_x(test_var='r',arg='t',arg2='r',log=True,t=10**8.0,r=10**8,
       # **extra_args,deriv=False))
       
 num=100
 
-xmin=10**7.0
-xmax=10**10.0
+xmin=10**8.0
+xmax=10**11.0
 
 plot2d(xmin,xmax,xmin,xmax,num,num,'rates_rev_t',title='dR/dt',**extra_args,
     test_var='t',arg='t',arg2='r',log=True,rev=True)
@@ -345,7 +346,12 @@ plotRaw(xmin,xmax,xmin,xmax,num,num,'rates_rev',title='R',**extra_args,
     test_var='t',arg='t',arg2='r',log=True,rev=True,deriv=False,logvalue=True)
 
 
-extra_args={'reac_id':rates_def.ir_cl35_pa_s32.get()}
+y=rates_def.rates_reaction_id('r_s31_gp_p30')
+
+if y==0:
+    raise ValueError("Bad reaction id")
+
+extra_args={'reac_id':y}
 
 plot2d(xmin,xmax,xmin,xmax,num,num,'rates_t',title='dR/dt',**extra_args,
     test_var='t',arg='t',arg2='r',log=True,rev=True)
