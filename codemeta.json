@@ -15,7 +15,7 @@
             "name": "Evan Bauer"
         }
     ],
-    "citation": "https://doi.org/10.5281/zenodo.1205271",
+    "citation": "https://doi.org/10.5281/zenodo.846304",
     "codeRepository": "https://github.com/rjfarmer/pyMesa",
     "dateCreated": "2017-07-25",
     "description": "Python bindings for the 1-D stellar evolution code, MESA",
