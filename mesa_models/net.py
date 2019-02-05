@@ -33,7 +33,7 @@ else:
 
 ion_lib.ionization_init('ion','',pym.ION_CACHE,False,ierr)
 net_lib.net_init(ierr)
-eos_lib.eos_init('mesa','','','',False,ierr)
+eos_lib.eos_init('mesa','','','',True,ierr)
                 
                 
 
@@ -117,6 +117,7 @@ temp = 10**9
 log10temp = np.log10(temp)
 rho = 10**9
 log10rho = np.log10(rho)
+
 abar = 0.75
 zbar = 0.75
 z2bar = 0.5

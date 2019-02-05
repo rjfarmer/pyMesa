@@ -24,9 +24,10 @@ def eval_x(**kwargs):
     """
     test_var=kwargs['test_var']
     deriv=kwargs['deriv']
+    handle=kwargs['handle']
 
-    temp=kwargs['t']
-    den=kwargs['r']
+    temp=np.maximum(1.0,kwargs['t'])
+    den=np.maximum(1.0,kwargs['r'])
     
     reac_id=kwargs['reac_id']
 
@@ -37,7 +38,7 @@ def eval_x(**kwargs):
     rate_raw_dT=0.0
     rate_raw_dRho=0.0
     
-    result = net_lib.net_get_rate_simple(
+    result = net_lib.net_get_rates_simple(
             handle,logT,logRho,reac_id,
             rate_raw,rate_raw_dT,rate_raw_dRho)
     
@@ -196,7 +197,7 @@ def plot2d(xmin,xmax,ymin,ymax,xsteps,ysteps,name,title='',**kwargs):
         ax.set_ylabel(kwargs['arg2'])
     
     fig.savefig(name)
-    # plt.show()
+    #plt.show()
     plt.close(fig)
     
 def plotRaw(xmin,xmax,ymin,ymax,xsteps,ysteps,name,title='',**kwargs):    
@@ -272,7 +273,10 @@ crlibm_lib.crlibm_init()
 const_lib.const_init(pym.MESA_DIR,ierr)
 chem_lib.chem_init('isotopes.data',ierr)
 
-if pym.MESA_VERSION >= 10000:
+if pym.MESA_VERSION >= 11213:
+    rates_lib.rates_init('reactions.list','jina_reaclib_results_20171020_default',
+                    'rate_tables',False,False,'','','',ierr)
+elif pym.MESA_VERSION >= 10000:
      #Function sig changed
      rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
                     'rate_tables',False,False,'','','',ierr)
@@ -280,7 +284,9 @@ else:
      rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
                     'rate_tables',False,'','','',ierr)
 
-if pym.MESA_VERSION >= 10398:
+if pym.MESA_VERSION >= 11354:
+    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,True,pym.KAP_CACHE,'',False,ierr)        
+elif pym.MESA_VERSION >= 10398:
     kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,True,pym.KAP_CACHE,'',ierr)
 else:
     kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,3.80,True,pym.KAP_CACHE,'',ierr)
@@ -291,7 +297,7 @@ eos_lib.eos_init('mesa','','','',True,ierr)
                 
                 
 
-net_file = os.path.join(pym.NETS,'mesa_45.net')
+net_file = os.path.join(pym.NETS,'cno_extras_o18_to_mg26_plus_fe56.net')
 
                 
 # Net setup
@@ -316,50 +322,250 @@ which_rates[:] = rates_def.rates_jr_if_available.get()
 net_lib.net_set_which_rates(handle, which_rates, ierr)
 net_lib.net_setup_tables(handle, '', ierr)
 
+
+rates_lib.rates_warning_init(False,10.0)
 # End net setup
 
 
+#net_lib.show_net_reactions(handle,0,ierr)
+
 ierr=0
 
-y=rates_lib.rates_reaction_id('r_p30_pg_s31')
-print(y)
-if y==0:
-    raise ValueError("Bad reaction id")
+rate_names=['r34_pp2',
+'r34_pp3',
+'r_c12_ag_o16',
+'r_c12_ap_n15',
+'r_c12_pg_n13',
+'r_c13_pg_n14',
+'r_f17_ap_ne20',
+'r_f17_gp_o16',
+'r_f17_pa_o14',
+'r_f17_pg_ne18',
+'r_f17_wk_o17',
+'r_f18_gp_o17',
+'r_f18_pa_o15',
+'r_f18_pg_ne19',
+'r_f18_wk_o18',
+'r_f19_gp_o18',
+'r_f19_pa_o16',
+'r_f19_pg_ne20',
+'r_h1_he3_wk_he4',
+'r_he3_he3_to_h1_h1_he4',
+'r_he4_he4_he4_to_c12',
+'r_mg22_ga_ne18',
+'r_n13_ap_o16',
+'r_n13_gp_c12',
+'r_n13_pg_o14',
+'r_n13_wk_c13',
+'r_n14_ag_f18',
+'r_n14_ap_o17',
+'r_n14_gp_c13',
+'r_n14_pg_o15',
+'r_n15_ag_f19',
+'r_n15_ap_o18',
+'r_n15_pa_c12',
+'r_n15_pg_o16',
+'r_ne18_ag_mg22',
+'r_ne18_gp_f17',
+'r_ne18_wk_f18',
+'r_ne19_ga_o15',
+'r_ne19_gp_f18',
+'r_ne19_wk_f19',
+'r_ne20_ag_mg24',
+'r_ne20_gp_f19',
+'r_ne22_ag_mg26',
+'r_o14_ag_ne18',
+'r_o14_ap_f17',
+'r_o14_gp_n13',
+'r_o14_wk_n14',
+'r_o15_ag_ne19',
+'r_o15_ap_f18',
+'r_o15_gp_n14',
+'r_o15_wk_n15',
+'r_o16_ag_ne20',
+'r_o16_ap_f19',
+'r_o16_gp_n15',
+'r_o16_pg_f17',
+'r_o17_pa_n14',
+'r_o17_pg_f18',
+'r_o18_ag_ne22',
+'r_o18_pa_n15',
+'r_o18_pg_f19',
+'rbe7ec_li7_aux',
+'rbe7pg_b8_aux',
+'rc12ap_aux',
+'rn14ag_to_o18',
+'rn14pg_aux',
+'rna23pa_aux',
+'rna23pg_aux',
+'rne18ap_to_mg22',
+'rne19pg_to_mg22',
+'rne20ap_aux',
+'rne20ap_to_mg24',
+'rne20pg_to_mg22',
+'ro16gp_aux',
+'rpep_to_he3',
+'rpp_to_he3']
 
-extra_args={'reac_id':y}
+for rate in rate_names[24:]:
+#for rate in ['r_c12_ag_o16']:
+    print(rate)
+    y=rates_lib.rates_reaction_id(rate)
+    if y==0:
+        raise ValueError("Bad reaction id")
 
-# print(eval_x(test_var='r',arg='t',arg2='r',log=True,t=10**8.0,r=10**8,
-      # **extra_args,deriv=False))
+    extra_args={'reac_id':y,'handle':handle,'reac_name':rate}
+
+    num=20
+
+    xmin=10**8.0
+    xmax=10**10.0
+
+    plot2d(xmin,xmax,xmin,xmax,num,num,rate+'_dt.pdf',title=rate +' dR/dt',**extra_args,
+        test_var='t',arg='t',arg2='r',log=True,rev=True)
+
+    plot2d(xmin,xmax,xmin,xmax,num,num,rate+'_drho.pdf',title=rate + ' dR/drho',**extra_args,
+         test_var='r',arg='r',arg2='t',log=True,rev=False)
+
+    plotRaw(xmin,xmax,xmin,xmax,num,num,rate+'_rate.pdf',title=rate+' raw',**extra_args,
+        test_var='t',arg='t',arg2='r',log=True,rev=True,deriv=False,logvalue=True)
+        
+
+
+# subroutine net_get_rates_simple(handle,logT,logRho,reac_id, &
+            # rate_raw,rate_raw_dT,rate_raw_dRho)
+    
+        # use rates_def
+        # use net_def
+        # use net_eval
+         # integer, intent(in) :: handle, reac_id
+         # integer :: ierr
+         # real(dp), intent(in) :: logT,logRho
+         # real(dp), intent(out) :: rate_raw,rate_raw_dT,rate_raw_dRho
+
+         # real(dp), pointer, dimension(:) :: actual_Qs, actual_neuQs
+         # logical, pointer :: from_weaklib(:) ! ignore if null
+         # logical, parameter :: symbolic = .false.
+         # logical, parameter :: rates_only = .false.
+         # type (Net_General_Info), pointer :: g
+
+         # type(Net_Info),target :: n1
+            # type(Net_Info),pointer :: n
+
+         # real(dp)  :: abar  ! mean number of nucleons per nucleus
+         # real(dp)  :: zbar  ! mean charge per nucleus
+         # real(dp)  :: z2bar ! mean charge squared per nucleus
+         # real(dp)  :: ye    
+            # ! mean number free electrons per nucleon, assuming complete ionization
+            # ! d_dxdt_dx(i, j) is d_dxdt(i)_dx(j), 
+            # ! i.e., partial derivative of rate for i'th isotope wrt j'th isotope abundance
+         # real(dp)  :: eta, d_eta_dlnT, d_eta_dlnRho ! electron degeneracy from eos.
+            # ! this arg is only used for prot(e-nu)neut and neut(e+nu)prot.
+            # ! if your net doesn't include those, you can safely ignore this arg.
+         # real(dp), pointer :: rate_factors(:) ! (num_reactions)
+            # ! when rates are calculated, they are multiplied by the
+            # ! corresponding values in this array.
+            # ! rate_factors array is indexed by reaction number.
+            # ! use net_reaction_table to map reaction id to reaction number.
+         # real(dp) :: weak_rate_factor = 1.0
+         # real(dp), pointer :: reaction_Qs(:) ! (rates_reaction_id_max)
+         # real(dp), pointer :: reaction_neuQs(:) ! (rates_reaction_id_max)
+    
+
+         # logical :: reuse_rate_raw=.false., reuse_rate_screened=.false. ! if true. use given rate_screened
+
+         # real(dp) :: eps_nuc ! ergs/g/s from burning after subtract reaction neutrinos
+         # real(dp) :: d_eps_nuc_dT
+         # real(dp) :: d_eps_nuc_dRho
+         # real(dp),allocatable :: d_eps_nuc_dx(:),x(:) ! (num_isos) 
+            # ! partial derivatives wrt mass fractions
       
-num=100
+         # real(dp),allocatable:: dxdt(:) ! (num_isos)
+            # ! rate of change of mass fractions caused by nuclear reactions
+         # real(dp),allocatable :: d_dxdt_dRho(:) ! (num_isos)
+         # real(dp),allocatable :: d_dxdt_dT(:) ! (num_isos)
+         # real(dp),allocatable :: d_dxdt_dx(:,:) ! (num_isos, num_isos)
+            # ! partial derivatives of rates wrt mass fractions
+            
+         # real(dp) :: eps_nuc_categories(num_categories) ! (num_categories)
+            # ! eps_nuc subtotals for each reaction category
 
-xmin=10**8.0
-xmax=10**11.0
+         # real(dp) :: eps_neu_total ! ergs/g/s neutrinos from weak reactions
 
-plot2d(xmin,xmax,xmin,xmax,num,num,'rates_rev_t',title='dR/dt',**extra_args,
-    test_var='t',arg='t',arg2='r',log=True,rev=True)
+         # integer :: screening_mode = 0, num_isos
+         # ! if true, use the screening scheme defined in the following papers:
+            # ! DeWitt, Graboske, Cooper, "Screening Factors for Nuclear Reactions. 
+            # !    I. General Theory", ApJ, 181:439-456, 1973.
+            # ! Graboske, DeWitt, Grossman, Cooper, "Screening Factors for Nuclear Reactions. 
+            # !    II. Intermediate Screening and Astrophysical Applications", ApJ, 181:457-474, 1973.
+         # ! if false, use the screening scheme from Frank Timmes which is based on the following:
+            # !..graboske, dewit, grossman and cooper apj 181 457 1973, for weak screening. 
+            # !..alastuey and jancovici apj 226 1034 1978, for strong screening. 
+            # !..itoh et al apj 234 1079 1979, plasma parameters for strong screening. 
+            # !..see also, 
+            # !..wallace & woosley 1982, apj, 258, 696, appendix a.
+            # !..calder et al, 2007, apj, 656, 313.    
+         # real(dp)  :: theta_e_for_graboske_et_al = 0.d0
+            # ! if screening_mode is true,
+            # ! then theta_e is used to quantify the freezing-out of degenerate electrons
+            # ! (see paper I by DeWitt, Graboske, Cooper, equation number 5).
+            # ! theta_e goes to 1 for non-degenerate electrons and to 0 for large degeneracy.
+            # ! the mesa/eos routine eos_theta_e computes this as a function of T and eta.
+            
+         # integer :: lwork ! size of work >= result from calling net_work_size
+         # real(dp), pointer :: work(:) ! 
+         # integer :: info
 
-plot2d(xmin,xmax,xmin,xmax,num,num,'rates_rev_r',title='dR/drho',**extra_args,
-    test_var='r',arg='r',arg2='t',log=True,rev=False)
+         # actual_Qs => null()
+         # actual_neuQs => null()
+         # from_weaklib => null()
 
-plotRaw(xmin,xmax,xmin,xmax,num,num,'rates_rev',title='R',**extra_args,
-    test_var='t',arg='t',arg2='r',log=True,rev=True,deriv=False,logvalue=True)
+        # n => n1
+         
+         # lwork = net_work_size(handle,ierr)
+         # call get_net_ptr(handle, g, ierr)
+         
+         # num_isos = g%num_isos
+         
+         # allocate(dxdt(num_isos),d_dxdt_dRho(num_isos),x(num_isos),&
+                  # d_eps_nuc_dx(num_isos),d_dxdt_dT(num_isos),d_dxdt_dx(num_isos, num_isos))
 
+        # allocate(rate_factors(g%num_reactions),work(lwork))
 
-y=rates_def.rates_reaction_id('r_s31_gp_p30')
+        # x = 1d-99
+        # x(1) = 1.d0
 
-if y==0:
-    raise ValueError("Bad reaction id")
+        # rate_factors = 1.d0
 
-extra_args={'reac_id':y}
+        # reaction_Qs => std_reaction_qs
+       # reaction_neuQs => std_reaction_neuqs
 
-plot2d(xmin,xmax,xmin,xmax,num,num,'rates_t',title='dR/dt',**extra_args,
-    test_var='t',arg='t',arg2='r',log=True,rev=True)
+    
+        # abar = 10.d0
+        # zbar = 10.d0
+        # z2bar = 10.d0
+        # ye = 0.5d0
+        # eta = 0.d0
+        # d_eta_dlnT = 0.d0
+        # d_eta_dlnRho = 0.d0
 
-plot2d(xmin,xmax,xmin,xmax,num,num,'rates_r',title='dR/drho',**extra_args,
-    test_var='r',arg='r',arg2='t',log=True,rev=False)
+         
+         # call eval_net( &
+               # n, g, .true., .false., g%num_isos, g%num_reactions, g% num_wk_reactions, &
+               # x, exp10_cr(logT), logT, exp10_cr(logRho), logRho,  &
+               # abar, zbar, z2bar, ye, eta, d_eta_dlnT, d_eta_dlnRho, &
+               # rate_factors, weak_rate_factor, &
+               # reaction_Qs, reaction_neuQs, reuse_rate_raw, reuse_rate_screened, &
+               # eps_nuc, d_eps_nuc_dRho, d_eps_nuc_dT, d_eps_nuc_dx,  &
+               # dxdt, d_dxdt_dRho, d_dxdt_dT, d_dxdt_dx,  &
+               # screening_mode, theta_e_for_graboske_et_al,  &
+               # eps_nuc_categories, eps_neu_total, &
+               # lwork, work, actual_Qs, actual_neuQs, from_weaklib, symbolic, &
+               # ierr)
 
-plotRaw(xmin,xmax,xmin,xmax,num,num,'rates',title='R',**extra_args,
-    test_var='t',arg='t',arg2='r',log=True,rev=True,deriv=False,logvalue=True)
+            # info =  g% reaction_id(reac_id)
+            # rate_raw = n% rate_raw(info)
+            # rate_raw_dT =n% rate_raw_dt(info)
+            # rate_raw_dRho = n% rate_raw_drho(info)
 
-
+    # end subroutine net_get_rates_simple
