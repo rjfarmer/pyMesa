@@ -28,6 +28,9 @@ import subprocess
 # Dependacy check
 G2PY_MIN_VER='1.0.11'
 
+class FileNotFoundError(Exception):
+    pass
+
 try:
     G2PY_VER=gf.__version__
 except AttributeError:
