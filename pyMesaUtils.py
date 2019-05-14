@@ -28,8 +28,9 @@ import subprocess
 # Dependacy check
 G2PY_MIN_VER='1.0.11'
 
-class FileNotFoundError(Exception):
-    pass
+if sys.version_info[0] < 3:
+    FileNotFoundError = IOError
+
 
 try:
     G2PY_VER=gf.__version__
@@ -90,7 +91,7 @@ elif p == "darwin":
 else:
     raise Exception("Platform not support "+str(p))
 
-# The one function you actaully need
+# The one function you actually need
 def loadMod(module):
     
     if module =='crlibm':
