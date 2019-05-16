@@ -55,7 +55,7 @@ dlnkap_dlnT = 0.0
 ierr = 0
 
 if pym.MESA_VERSION >= 10398:
-    kap_res = kap_libkap_get(handle, zbar, X, Z, Zbase, XC, XN, XO, XNe, logRho, logT,
+    kap_res = kap_lib.kap_get(handle, zbar, X, Z, Zbase, XC, XN, XO, XNe, logRho, logT,
             lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT,
             frac_Type2, kap, dlnkap_dlnRho, dlnkap_dlnT, ierr)
 else:
