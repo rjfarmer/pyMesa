@@ -17,7 +17,9 @@ const_lib.const_init('',ierr)
 crlibm_lib.crlibm_init()
 chem_lib.chem_init('isotopes.data', ierr)
 
-if pym.MESA_VERSION >= 10398:
+if pym.MESA_VERSION >= 11354:
+    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,True,pym.KAP_CACHE,'',False,ierr)
+elif pym.MESA_VERSION >= 10398 and pym.MESA_VERSION < 11354:
     kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,True,pym.KAP_CACHE,'',ierr)
 else:
     kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,3.80,True,pym.KAP_CACHE,'',ierr)
