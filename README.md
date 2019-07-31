@@ -54,9 +54,7 @@ While we can use the individual MESA modules we can not currently run a full sta
 - 10000
 - 10108
 - 10398
-- >11035 (non released mesa version)
-
-Other versions can be supported upon request.
+-  Any version after 11035 (non released mesa version)
 
 If you want to play with fire and try with another version, then set the environment variable:
 
