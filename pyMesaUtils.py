@@ -22,6 +22,7 @@ import gfort2py as gf
 import numpy as np
 import os
 import sys
+import shutil
 import subprocess
 
 
@@ -48,13 +49,13 @@ if _versiontuple(G2PY_VER) < _versiontuple(G2PY_MIN_VER):
 if "MESA_DIR" not in os.environ:
     raise ValueError("Must set MESA_DIR environment variable")
 else:
-    MESA_DIR = os.environ.get('MESA_DIR')    
+    MESA_DIR = os.environ.get('MESA_DIR')
 
-    
+
 DATA_DIR = os.path.join(MESA_DIR,'data')
 LIB_DIR = os.path.join(MESA_DIR,'lib')
 INCLUDE_DIR = os.path.join(MESA_DIR,'include')
-    
+
 RATES_DATA=os.path.join(DATA_DIR,'rates_data')
 EOSDT_DATA=os.path.join(DATA_DIR,'eosDT_data')
 EOSPT_DATA=os.path.join(DATA_DIR,'eosPT_data')
@@ -75,13 +76,13 @@ MESASDK_ROOT=os.path.expandvars('$MESASDK_ROOT')
 with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
     v=f.readline().strip()
     MESA_VERSION=int(v)
-    
+
 if MESA_VERSION < 11035:
     if "LD_LIBRARY_PATH" not in os.environ:
         raise ValueError("Must set LD_LIBRARY_PATH environment variable")
     elif LIB_DIR not in os.environ['LD_LIBRARY_PATH']:
         raise ValueError("Must have $MESA_DIR/lib in LD_LIBRARY_PATH environment variable")
-    
+
 p=sys.platform.lower()
 
 if p == "linux" or p == "linux2":
@@ -93,20 +94,24 @@ else:
 
 # The one function you actually need
 def loadMod(module):
-    
+
+    MODULE_LIB = os.path.join(INCLUDE_DIR,module+"_lib.mod")
+    MODULE_DEF = os.path.join(INCLUDE_DIR,module+"_def.mod")
+
     if module =='crlibm':
         SHARED_LIB = os.path.join(LIB_DIR,"libf2crlibm."+LIB_EXT)
     elif module =='run_star_support':
          SHARED_LIB = os.path.join(LIB_DIR,"librun_star_support."+LIB_EXT)
+         MODULE_LIB = os.path.join(INCLUDE_DIR,"run_star_support.mod")
+    elif module =='run_star_extras':
+         SHARED_LIB = os.path.join(LIB_DIR,"librun_star_extras."+LIB_EXT)
+         MODULE_LIB = os.path.join(INCLUDE_DIR,"run_star_extras.mod")
     else:
         SHARED_LIB = os.path.join(LIB_DIR,"lib"+module+"."+LIB_EXT)
-        
-    MODULE_LIB = os.path.join(INCLUDE_DIR,module+"_lib.mod")  
-    MODULE_DEF = os.path.join(INCLUDE_DIR,module+"_def.mod")  
-    
+
     x = None
     y = None
-    
+
     try:
         x = gf.fFort(SHARED_LIB,MODULE_LIB,rerun=True)
     except FileNotFoundError:
@@ -123,7 +128,7 @@ def loadMod(module):
 def buildModule(module):
     cwd = os.getcwd()
     os.chdir(os.path.join(MESA_DIR,module))
-    
+
     try:
         x=subprocess.call("./clean >/dev/null 2>/dev/null",shell=True)
         if x:
@@ -138,7 +143,7 @@ def buildModule(module):
         raise
     finally:
         os.chdir(cwd)
-        
+
     if MESA_VERSION < 11035:
         os.chdir(LIB_DIR)
         try:
@@ -157,26 +162,35 @@ def buildRunStarSupport():
     os.chdir(os.path.join(MESA_DIR,'star','make'))
     try:
         compile_cmd = ['gfortran -Wno-uninitialized -fno-range-check',
-                      '-fmax-errors=12 -fPIC -shared -fprotect-parens',
-                      '-fno-sign-zero -fbacktrace -ggdb -finit-real=snan',
+                      '-fPIC -shared -fprotect-parens',
+                      '-fno-sign-zero -fbacktrace -ggdb',
                       '-fopenmp  -std=f2008 -Wno-error=tabs -I../public',
                       '-I../private -I../../include',
                       '-I'+os.path.join(MESASDK_ROOT,'include'),
-                      '-Wunused-value -Werror -W -Wno-compare-reals',
+                      '-Wunused-value -W -Wno-compare-reals',
                       '-Wno-unused-parameter -fimplicit-none  -O2',
                       '-ffree-form -x f95-cpp-input -I../defaults',
                       '-I../job -I../other ../job/run_star_support.f90',
                       '-Wl,-rpath=' + LIB_DIR,
-                      '-o librun_star_support.'+LIB_EXT]
-        
+                      '-o librun_star_support.'+LIB_EXT,
+                      '-L'+LIB_DIR,
+                      '-lstar -lgyre -lionization -latm -lcolors -lnet -leos',
+                      '-lkap -lrates -lneu -lchem -linterp_2d -linterp_1d',
+                      '-lnum -lmtx -lconst -lutils -lrun_star_extras']
+        if MESA_VERSION < 12202:
+            compile_cmd.append('-lf2crlibm -lcrlibm')
+
+        print(" ".join(compile_cmd))
         x = subprocess.call(" ".join(compile_cmd),shell=True)
         if x:
             raise ValueError("Build run_star_support failed")
+        shutil.copy2("librun_star_support."+LIB_EXT,os.path.join(LIB_DIR,"librun_star_support."+LIB_EXT))
+        shutil.copy2('run_star_support.mod',os.path.join(INCLUDE_DIR,'run_star_support.mod'))
     except:
         raise
     finally:
         os.chdir(cwd)
-        
+
     os.chdir(LIB_DIR)
     try:
         x = subprocess.call("chrpath -r librun_star_support."+LIB_EXT,shell=True)
@@ -186,5 +200,71 @@ def buildRunStarSupport():
         raise
     finally:
         os.chdir(cwd)
-        
+
     print("Built run_star_support")
+
+
+def buildRunStarExtras(rse=None):
+    filename = 'run_star_extras.f'
+    output = os.path.join(MESA_DIR,'star','make',filename)
+    if rse is None:
+        with open(output,'w') as f:
+            print('module run_star_extras',file=f)
+            print('use star_lib',file=f)
+            print('use star_def',file=f)
+            print('use const_def',file=f)
+            if MESA_VERSION < 12202:
+                print('use crlibm_lib',file=f)
+            print('implicit none',file=f)
+            print('contains',file=f)
+            print('include "standard_run_star_extras.inc"',file=f)
+            print('end module run_star_extras',file=f)
+    else:
+        shutil.copy2(rse,output)
+
+    cwd = os.getcwd()
+    os.chdir(os.path.join(MESA_DIR,'star','make'))
+    try:
+        compile_cmd = ['gfortran -Wno-uninitialized -fno-range-check',
+                      '-fPIC -shared -fprotect-parens',
+                      '-fno-sign-zero -fbacktrace -ggdb',
+                      '-fopenmp  -std=f2008 -Wno-error=tabs -I../public',
+                      '-I../private -I../../include',
+                      '-I'+os.path.join(MESASDK_ROOT,'include'),
+                      '-Wunused-value -W -Wno-compare-reals',
+                      '-Wno-unused-parameter -fimplicit-none  -O2',
+                      '-ffree-form -x f95-cpp-input -I../defaults',
+                      '-I../job -I../other',
+                      filename,
+                      '-Wl,-rpath=' + LIB_DIR,
+                      '-o librun_star_extras.'+LIB_EXT,
+                      '-L'+LIB_DIR,
+                      '-lstar -lconst']
+        if MESA_VERSION < 12202:
+            compile_cmd.append('-lf2crlibm -lcrlibm')
+
+        print(" ".join(compile_cmd))
+        x = subprocess.call(" ".join(compile_cmd),shell=True)
+        if x:
+            raise ValueError("Build run_star_extras failed")
+        shutil.copy2("librun_star_extras."+LIB_EXT,os.path.join(LIB_DIR,"librun_star_extras."+LIB_EXT))
+        shutil.copy2('run_star_extras.mod',os.path.join(INCLUDE_DIR,'run_star_extras.mod'))
+    except:
+        raise
+    finally:
+        os.chdir(cwd)
+
+    os.chdir(LIB_DIR)
+    try:
+        x = subprocess.call("chrpath -r librun_star_extras."+LIB_EXT,shell=True)
+        if x:
+            raise ValueError("chrpath failed")
+    except:
+        raise
+    finally:
+        os.chdir(cwd)
+
+    print("Built run_star_extras")
+
+class MesaError(Exception):
+    pass
