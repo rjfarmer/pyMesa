@@ -3,14 +3,18 @@ import numpy as np
 
 eos_lib, eos_def = pym.loadMod("eos")
 const_lib, const_def = pym.loadMod("const")
-crlibm_lib, _ = pym.loadMod("crlibm")
+if pym.MESA_VERSION < 12608:
+	crlibm_lib, _ = pym.loadMod("crlibm")
+	crlibm_lib.crlibm_init()
+else:
+	crlibm_lib, _ = pym.loadMod("math")
+	crlibm_lib.math_init()
 chem_lib, chem_def = pym.loadMod("chem")
 net_lib, net_def = pym.loadMod("net")
 rates_lib, rates_def = pym.loadMod("rates")
 
 ierr=0
 
-crlibm_lib.crlibm_init()
 const_lib.const_init(pym.MESA_DIR,ierr)
 chem_lib.chem_init('isotopes.data',ierr)
 
@@ -64,6 +68,8 @@ include_radiation = False
 always_skip_elec_pos = False
 always_include_elec_pos = False
 helm_res = np.zeros(eos_def.num_helm_results.get())
+
+# Function sig got changed and needs updating
 
 
 if pym.MESA_VERSION >= 10000:

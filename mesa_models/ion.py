@@ -2,12 +2,16 @@ import pyMesaUtils as pym
 import numpy as np
 
 const_lib, const_def = pym.loadMod("const")
-crlibm_lib, _ = pym.loadMod("crlibm")
+if pym.MESA_VERSION < 12608:
+	crlibm_lib, _ = pym.loadMod("crlibm")
+	crlibm_lib.crlibm_init()
+else:
+	crlibm_lib, _ = pym.loadMod("math")
+	crlibm_lib.math_init()
 ion_lib, ion_def = pym.loadMod("ionization")
 
 ierr=0
 
-crlibm_lib.crlibm_init()
 const_lib.const_init(pym.MESA_DIR,ierr)
 
 

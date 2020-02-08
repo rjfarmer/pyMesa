@@ -1,6 +1,13 @@
 import pyMesaUtils as pym
 import numpy as np
 
+if pym.MESA_VERSION < 12608:
+	crlibm_lib, _ = pym.loadMod("crlibm")
+	crlibm_lib.crlibm_init()
+else:
+	crlibm_lib, _ = pym.loadMod("math")
+	crlibm_lib.math_init()
+
 neu_lib,neu_def = pym.loadMod("neu")
 
 

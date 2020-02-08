@@ -6,7 +6,12 @@ pym.buildModule('kap')
 
 eos_lib, eos_def = pym.loadMod("eos")
 const_lib, const_def = pym.loadMod("const")
-crlibm_lib, _ = pym.loadMod("crlibm")
+if pym.MESA_VERSION < 12608:
+	crlibm_lib, _ = pym.loadMod("crlibm")
+	crlibm_lib.crlibm_init()
+else:
+	crlibm_lib, _ = pym.loadMod("math")
+	crlibm_lib.math_init()
 chem_lib, chem_def = pym.loadMod("chem")
 kap_lib,kap_def = pym.loadMod("kap")
 
@@ -14,7 +19,6 @@ ierr=0
 
 
 const_lib.const_init('',ierr)  
-crlibm_lib.crlibm_init()
 chem_lib.chem_init('isotopes.data', ierr)
 
 if pym.MESA_VERSION >= 11354:

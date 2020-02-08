@@ -5,7 +5,12 @@ import os
 
 eos_lib, eos_def = pym.loadMod("eos")
 const_lib, const_def = pym.loadMod("const")
-crlibm_lib, _ = pym.loadMod("crlibm")
+if pym.MESA_VERSION < 12608:
+	crlibm_lib, _ = pym.loadMod("crlibm")
+	crlibm_lib.crlibm_init()
+else:
+	crlibm_lib, _ = pym.loadMod("math")
+	crlibm_lib.math_init()
 chem_lib, chem_def = pym.loadMod("chem")
 net_lib, net_def = pym.loadMod("net")
 rates_lib, rates_def = pym.loadMod("rates")
@@ -14,7 +19,6 @@ ion_lib, ion_def = pym.loadMod("ionization")
 
 ierr=0
 
-crlibm_lib.crlibm_init()
 const_lib.const_init(pym.MESA_DIR,ierr)
 chem_lib.chem_init('isotopes.data',ierr)
 
