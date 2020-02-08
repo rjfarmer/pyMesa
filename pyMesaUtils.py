@@ -146,6 +146,7 @@ def buildModule(module):
 
     if MESA_VERSION < 11035:
         os.chdir(LIB_DIR)
+        checkcrpath()
         try:
             x = subprocess.call("chrpath -r lib"+module+"."+LIB_EXT,shell=True)
             if x:
@@ -192,6 +193,7 @@ def buildRunStarSupport():
         os.chdir(cwd)
 
     os.chdir(LIB_DIR)
+    checkcrpath()
     try:
         x = subprocess.call("chrpath -r librun_star_support."+LIB_EXT,shell=True)
         if x:
@@ -255,6 +257,7 @@ def buildRunStarExtras(rse=None):
         os.chdir(cwd)
 
     os.chdir(LIB_DIR)
+    checkcrpath()
     try:
         x = subprocess.call("chrpath -r librun_star_extras."+LIB_EXT,shell=True)
         if x:
@@ -268,3 +271,9 @@ def buildRunStarExtras(rse=None):
 
 class MesaError(Exception):
     pass
+
+
+def checkcrpath():
+	res = subprocess.call(["command","-v","chrpath"])
+	if res:
+		raise ValueError("Please install chrpath")
