@@ -23,6 +23,12 @@ class pyStar(object):
         self.controls = {}
         self.star_job = {}
         self._to_be_added_ctrls = {}
+      
+        self.hist_names = []
+        self.prof_names = []  
+        self.hist_data = []
+        self.prof_data = []
+        
 
     def error_check(self, res):
         if isinstance(res,dict) and 'ierr' in res:
@@ -33,7 +39,7 @@ class pyStar(object):
                 raise pym.MesaError('Non zero ierr='+str(res))
 
     def new_star(self, inlist='inlist'):
-        res = self.star_lib.alloc_star(1,0)
+        res = self.star_lib.alloc_star(self.star_id,0)
         self.error_check(res)
         self.star_id = res['id']
         if self.star_id <= 0:
@@ -132,7 +138,21 @@ class pyStar(object):
                 return False
 
         self.save()
+        
+        self._pysave()
+        
         return True
+        
+    def _pysave(self):
+        if len(self.hist_names):
+            self.hist_data.append({'model_number':self.model_number()})
+            for i in self.hist_names:
+                self.hist_data[-1][i] = self.get_hist(i)
+        if len(self.prof_names):
+            self.prof_data.append({'model_number':self.model_number()})
+            for i in self.prof_names:
+                self.prof_data[-1][i] = self.get_prof_nz(i)
+                
 
     def save(self):
         self.star.do_saves(self.star_id, 0)
@@ -235,20 +255,15 @@ class pyStar(object):
         if name not in self.controls:
             raise AttributeError("Not valid control parameter")
 
-        self._to_be_added_ctrls[name] = value
-
-
-    def _add_control():
-        if len(self._to_be_added_ctrls):
-            _, fname = tempfile.mkstemp()
-            with open(fname,'w') as f:
-                print('&controls',file=f)
-                for key, value in self._to_be_added_ctrls:
-                    print(str(name),' = ',self.controls[key]['type'](value),file=f)
-                print('/',file=f)
-            self.load_controls(fname)
-            os.remove(fname)
-            self.read_inlists()
+        _, fname = tempfile.mkstemp()
+        with open(fname,'w') as f:
+            print('&controls',file=f)
+            for key, value in self._to_be_added_ctrls:
+                print(str(name),' = ',self.controls[key]['type'](value),file=f)
+            print('/',file=f)
+        self.load_controls(fname)
+        os.remove(fname)
+        self.read_inlists()
 
     def add_star_job(self, name, value):
         if not len(self.star_job):
@@ -265,6 +280,24 @@ class pyStar(object):
         self.load_star_job(fname)
         os.remove(fname)
         self.read_inlists()
+        
+        
+    def add_hist(self, name):
+        self.hist_names.append(name)
+        
+    def add_prof(sef, name):
+        self.prof_names.append(name)
+        
+    def get_dt(self):
+        res = self.star.get_dt_next(self.star_id, 0, 0)
+        self.error_check(res)
+        return res['dt']
+        
+    def set_dt(self, dt):
+        res = self.star.set_dt_next(self.star_id, dt, 0)
+        
+    def __del__(self):
+        self.star.free_star(self.star_id,0)
 
 
 def basic():
@@ -286,25 +319,25 @@ def basic():
     plt.plot(mass,temp)
     plt.show()
 
-basic()
+#basic()
 
 
 def setinlist():
     s = pyStar()
     s.new_star()
-    s.add_control('initial_mass',100.0)
     s.before_evolve_loop()
     s.single_evolve() # One step
     print(s.get_hist('star_age'))
     print(s.get_prof('dm',1))
     print(s.get_hist('star_mass'))
     print(s.controls['initial_mass'])
+    print(s.get_dt())
+    s.set_dt(s.get_dt()/2.0)
+    print(s.get_dt())
+    s.star.star_set_v_flag(s.star_id, True, 0) # Can call any star_lib function that takes id instead of s
+    s.single_evolve() # One step
     s.after_evolve_loop() # End evolution
+    
+setinlist()
 
-# s = pyStar(rse='src/run_star_extras.f')
-# s.new_star(inlist='inlist')
-# s.evolve() # Run till end
-# s.get_hist('star_age')
-# s.get_prof('dm',1)
 
-#s.destroy_star()
