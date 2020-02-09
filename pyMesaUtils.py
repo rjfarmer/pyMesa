@@ -277,3 +277,14 @@ def checkcrpath():
 	res = subprocess.call(["command","-v","chrpath"])
 	if res:
 		raise ValueError("Please install chrpath")
+
+
+def make_basic_inlist():
+	with open('inlist','w') as f:
+		print('&star_job',file=f)
+		print('/',file=f)
+		print('&controls',file=f)
+		print('/',file=f)
+		print('&pgstar',file=f)
+		print('/',file=f)
+		

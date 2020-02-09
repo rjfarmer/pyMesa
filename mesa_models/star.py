@@ -9,6 +9,7 @@ class pyStar(object):
         pym.buildRunStarExtras(rse)
         pym.buildRunStarSupport()
         self.star_lib, self.star_def = pym.loadMod("star")
+        
         self.rse, _ = pym.loadMod('run_star_extras')
         self.star, _ = pym.loadMod("run_star_support")
 
@@ -16,8 +17,12 @@ class pyStar(object):
         self.first_try = True
         self.continue_evolve_loop = True
 
+        self.star_id = 0
+        self.inlist = 'inlist'
+
         self.controls = {}
         self.star_job = {}
+        self._to_be_added_ctrls = {}
 
     def error_check(self, res):
         if isinstance(res,dict) and 'ierr' in res:
@@ -28,19 +33,21 @@ class pyStar(object):
                 raise pym.MesaError('Non zero ierr='+str(res))
 
     def new_star(self, inlist='inlist'):
-        res = self.star_lib.alloc_star(0,0)
+        res = self.star_lib.alloc_star(1,0)
         self.error_check(res)
         self.star_id = res['id']
         if self.star_id <= 0:
             raise ValueError("New star init failed")
         self.inlist = inlist
-        res = self.star_lib.star_setup(self.star_id, self.inlist, 0)
+        res = self.star.read_star_job_id(self.star_id, self.inlist, 0)
+        self.error_check(res)
+        res = self.star.star_setup(self.star_id, self.inlist, 0)
         self.error_check(res)
 
     def before_evolve_loop(self):
-        res = self.star.before_evolve_loop(True,True,False,
+        res = self.star.before_evolve_loop(False,True,False,
                 self.star.null_binary_controls,self.rse.extras_controls,
-                self.star_id,self.inlist,'restart_photo',False,0,0,0)
+                0,self.inlist,'restart_photo',True,0,self.star_id,0)
         self.error_check(res)
 
     def single_step(self):
@@ -69,7 +76,7 @@ class pyStar(object):
         if step_result == self.star_def.keep_going:
             step_result = self.star_lib.star_check_model(self.star_id)
             if step_result == self.star_def.keep_going:
-                step_result = self.rse.extras_check_model(self.star_id, 0)
+                step_result = self.rse.extras_check_model(self.star_id)
                 if step_result == self.star_def.keep_going:
                     step_result = self.star_lib.star_pick_next_timestep(self.star_id)
                     if step_result == self.star_def.keep_going:
@@ -109,7 +116,7 @@ class pyStar(object):
         self.just_did_backup = False
         self.single_step()
 
-        res = self.star.after_step_loop(self.star_id, self.inlist, 0, False, result, 0)
+        res = self.star.after_step_loop(self.star_id, self.inlist, False, result, 0)
         self.error_check(res)
         res = res['result']
 
@@ -138,7 +145,7 @@ class pyStar(object):
         self.after_evolve_loop()
 
     def after_evolve_loop(self):
-        res = self.star.after_evolve_loop(self.star_id, 0, True, 0)
+        res = self.star.after_evolve_loop(self.star_id, True, 0)
         self.error_check(res)
 
     def destroy_star(self):
@@ -150,26 +157,32 @@ class pyStar(object):
         self.load_controls(self.inlist)
 
     def load_star_job(self, inlist):
-        #self.star_lib.read_star_job_id(self.star_id, inlist, 0)
+        self.star_lib.read_star_job_id(self.star_id, inlist, 0)
         res = self.star_lib.star_setup(self.star_id, inlist, 0)
         self.error_check(res)
 
     def load_controls(self, inlist):
         self.star_lib.star_read_controls(self.star_id, inlist, 0)
-        res = self.star_lib.star_setup(self.star_id, inlist, 0)
-        self.error_check(res)
 
     def get_hist(self, name):
-        return self.star_lib.star_get_history_output(self.star_id, name)
+        return self.star_lib.star_get_history_output_by_id(self.star_id, name)
 
     def nz(self):
-        return self.get_hist('num_zones')
+        return int(self.get_hist('num_zones'))
 
     def get_prof(self, name, zone):
         nz = self.nz()
         if zone > nz:
             raise ValueError("Zones out of range")
-        return self.star_lib.star_get_profile_output(self.star_id,name,zone)
+        return self.star_lib.star_get_profile_output_by_id(self.star_id,name,zone)
+        
+    def get_prof_nz(self, name):
+        nz = self.nz()
+        output = np.zeros(nz+1)
+        for i in range(1,nz+1):
+            output[i] = self.star_lib.star_get_profile_output_by_id(self.star_id,name,i)
+        return output
+
 
     def dump_controls(self, fname_star, fname_controls):
         self.star_lib.write_star_job_id(self.star_id, fname_star, 0)
@@ -222,14 +235,20 @@ class pyStar(object):
         if name not in self.controls:
             raise AttributeError("Not valid control parameter")
 
-        _, fname = tempfile.mkstemp()
-        with open(fname,'w') as f:
-            print('&controls',file=f)
-            print(str(name),' = ',self.controls[name]['type'](value),file=f)
-            print('/',file=f)
-        self.load_controls(fname)
-        os.remove(fname)
-        self.read_inlists()
+        self._to_be_added_ctrls[name] = value
+
+
+    def _add_control():
+        if len(self._to_be_added_ctrls):
+            _, fname = tempfile.mkstemp()
+            with open(fname,'w') as f:
+                print('&controls',file=f)
+                for key, value in self._to_be_added_ctrls:
+                    print(str(name),' = ',self.controls[key]['type'](value),file=f)
+                print('/',file=f)
+            self.load_controls(fname)
+            os.remove(fname)
+            self.read_inlists()
 
     def add_star_job(self, name, value):
         if not len(self.star_job):
@@ -247,24 +266,40 @@ class pyStar(object):
         os.remove(fname)
         self.read_inlists()
 
-s = pyStar()
-s.new_star()
-s.evolve() # Run till end
-s.get_hist('star_age')
-s.get_prof('dm',1)
 
-# s = pyStar()
-# s.new_star()
-# s.load_inlist()
-# s.add_control('initial_mass',100.0)
-# s.before_evolve_loop()
-# s.single_evolve() # One step
-# s.get_hist('star_age')
-# s.get_prof('dm',1)
-# s.get_hist('star_mass')
-# #s.after_evolve_loop() # End evolution
+def basic():
+    # Creates an empty inlist
+    #pym.make_basic_inlist() # Or have a file in cwd called 'inlist'
+
+    # Init
+    s = pyStar()
+
+    # Init new star
+    s.new_star()
+    s.evolve() # Run till end
+    s.get_hist('star_age')
+    s.get_prof('dm',1)
+    # Might need to ctrl+c to stop the run
+    mass=s.get_prof_nz('mass')
+    temp=s.get_prof_nz('logT')    
+    import matplotlib.pyplot as plt
+    plt.plot(mass,temp)
+    plt.show()
+
+basic()
 
 
+def setinlist():
+    s = pyStar()
+    s.new_star()
+    s.add_control('initial_mass',100.0)
+    s.before_evolve_loop()
+    s.single_evolve() # One step
+    print(s.get_hist('star_age'))
+    print(s.get_prof('dm',1))
+    print(s.get_hist('star_mass'))
+    print(s.controls['initial_mass'])
+    s.after_evolve_loop() # End evolution
 
 # s = pyStar(rse='src/run_star_extras.f')
 # s.new_star(inlist='inlist')
