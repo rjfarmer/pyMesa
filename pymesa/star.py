@@ -1,4 +1,4 @@
-from __future__ import print_function
+import pymesa.pyMesaUtils as pym
 import pyMesaUtils as pym
 import numpy as np
 import os
