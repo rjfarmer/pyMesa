@@ -1,0 +1,3 @@
+numpy
+matplotliblib
+gfort2py >='1.1.5'

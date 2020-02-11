@@ -26,25 +26,6 @@ import shutil
 import subprocess
 
 
-# Dependacy check
-G2PY_MIN_VER='1.0.11'
-
-if sys.version_info[0] < 3:
-    FileNotFoundError = IOError
-
-
-try:
-    G2PY_VER=gf.__version__
-except AttributeError:
-    # Old versions didn't set __version__
-    raise AttributeError("Must update gfort2py to at least version "+G2PY_MIN_VER)
-
-def _versiontuple(v):
-    return tuple(map(int, (v.split("."))))
-
-if _versiontuple(G2PY_VER) < _versiontuple(G2PY_MIN_VER):
-    raise AttributeError("Must update gfort2py to at least version "+G2PY_MIN_VER)
-
 #MESA DIR check and path set
 if "MESA_DIR" not in os.environ:
     raise ValueError("Must set MESA_DIR environment variable")
@@ -77,24 +58,24 @@ with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
     v=f.readline().strip()
     MESA_VERSION=int(v)
 
-if MESA_VERSION < 11035:
-    if "LD_LIBRARY_PATH" not in os.environ:
-        raise ValueError("Must set LD_LIBRARY_PATH environment variable")
-    elif LIB_DIR not in os.environ['LD_LIBRARY_PATH']:
-        raise ValueError("Must have $MESA_DIR/lib in LD_LIBRARY_PATH environment variable")
+if MESA_VERSION < 12708:
+	raise ValueError("MESA versions < 12708 not supported")
 
 p=sys.platform.lower()
 
 if p == "linux" or p == "linux2":
     LIB_EXT='so'
-elif p == "darwin":
-    LIB_EXT="dylib"
 else:
     raise Exception("Platform not support "+str(p))
+    
+    
+# Check we compiled with shared libraries
+if not os.path.exists(os.path.join(LIB_DIR,'libstar.'+LIB_EXT)):
+	raise ValueError("Recompile MESA with USED_SHARED = yes")
+    
+    
 
-# The one function you actually need
 def loadMod(module):
-
     MODULE_LIB = os.path.join(INCLUDE_DIR,module+"_lib.mod")
     MODULE_DEF = os.path.join(INCLUDE_DIR,module+"_def.mod")
 
