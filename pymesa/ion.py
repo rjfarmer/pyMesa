@@ -11,7 +11,7 @@ class ion(object):
         self.ion_lib.ionization_init('ion','',pym.ION_CACHE,False,0)
 
 
-    def getIon(self,T=10**9,Rho=10**9,Z=0.02,X=0.78):
+    def getIon(self,T,Rho,Z,X):
         log10Rho = np.log10(Rho)
         log10T = np.log10(T)
         res = np.zeros(self.ion_def.num_ion_vals.get())
