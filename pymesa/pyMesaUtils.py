@@ -269,3 +269,62 @@ def make_basic_inlist():
         print('&pgstar',file=f)
         print('/',file=f)
         
+
+def defaults():
+    defaults = {}
+    
+    # Chem
+    defaults['isotopes_filename'] = 'isotopes.data'
+    
+    # Colors
+    defaults['num_files'] = 1
+    defaults['fnames'] = np.array(['lcb98cor.dat'])
+    defaults['num_colors'] = 11
+    
+    # Const
+    defaults['mesa_dir_init'] = pym.MESA_DIR
+    
+    # Eos
+    defaults['eos_file_prefix'] = 'mesa'
+    defaults['eosDT_cache_dir'] = ''
+    defaults['eosPT_cache_dir'] = ''
+    defaults['eosDE_cache_dir'] = ''
+    defaults['eos_use_cache'] = True
+    
+    # Ion
+    defaults['file_prefix'] = 'ion'
+    defaults['Z1_suffix'] = ''
+    defaults['ionization_cache_dir'] = pym.ION_CACHE
+    defaults['ion_use_cache'] = True
+    
+    # Kap
+    defaults['kap_file_prefix'] = 'gs98'
+    defaults['CO_prefixdefaults'] = 'gs98_co'
+    defaults['lowT_prefix'] = 'lowT_fa05_gs98'
+    defaults['blend_logT_upper_bdy'] = 3.88
+    defaults['blend_logT_lower_bdy'] = 3.80
+    defaults['kap_use_cache'] = True
+    defaults['kap_cache_dir'] = pym.KAP_CACHE
+    defaults['kap_config_file'] = ''
+    defaults['kap_show_info'] = False
+    
+    # Net
+    # Nothing
+    
+    # Neu
+    # Nothing
+    
+    # Rates
+    defaults['reactionlist_filename'] = 'reactions.list'
+    defaults['jina_reaclib_filename'] = 'jina_reaclib_results_20130213default2'
+    defaults['rates_table_dir_in'] = 'rate_tables'
+    defaults['use_suzuki_weak_rates'] = False
+    defaults['use_special_weak_rates'] = False
+    defaults['special_weak_states_file'] = ''
+    defaults['special_weak_transitions_file'] = ''
+    defaults['rates_cache_dir'] = ''
+    
+    
+    
+    
+
