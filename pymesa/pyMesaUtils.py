@@ -285,7 +285,7 @@ defaults['fnames'] = np.array(['lcb98cor.dat'])
 defaults['num_colors'] = 11
 
 # Const
-defaults['mesa_dir'] = pym.MESA_DIR
+defaults['mesa_dir'] = MESA_DIR
 
 # Eos
 defaults['eos_file_prefix'] = 'mesa'
@@ -297,7 +297,7 @@ defaults['eos_use_cache'] = True
 # Ion
 defaults['file_prefix'] = 'ion'
 defaults['Z1_suffix'] = ''
-defaults['ionization_cache_dir'] = pym.ION_CACHE
+defaults['ionization_cache_dir'] = ION_CACHE
 defaults['ion_use_cache'] = True
 
 # Kap
@@ -307,7 +307,7 @@ defaults['lowT_prefix'] = 'lowT_fa05_gs98'
 defaults['blend_logT_upper_bdy'] = 3.88
 defaults['blend_logT_lower_bdy'] = 3.80
 defaults['kap_use_cache'] = True
-defaults['kap_cache_dir'] = pym.KAP_CACHE
+defaults['kap_cache_dir'] = KAP_CACHE
 defaults['kap_config_file'] = ''
 defaults['kap_show_info'] = False
 

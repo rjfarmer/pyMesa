@@ -1,5 +1,4 @@
 import pymesa.pyMesaUtils as pym
-import pyMesaUtils as pym
 import numpy as np
 import os
 import tempfile
@@ -17,7 +16,7 @@ class pyStar(object):
         self.first_try = True
         self.continue_evolve_loop = True
 
-        self.star_id = 0
+        self.star_id = self.star_lib.star_find_next_star_id()
         self.inlist = 'inlist'
 
         self.controls = {}
@@ -319,10 +318,8 @@ def basic():
     plt.plot(mass,temp)
     plt.show()
 
-#basic()
 
-
-def setinlist():
+def singlestepping():
     s = pyStar()
     s.new_star()
     s.before_evolve_loop()
@@ -338,6 +335,4 @@ def setinlist():
     s.single_evolve() # One step
     s.after_evolve_loop() # End evolution
     
-setinlist()
-
 

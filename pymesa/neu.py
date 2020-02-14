@@ -2,7 +2,7 @@ import pymesa.pyMesaUtils as pym
 import numpy as np
 
 class neu(object):
-    def __init__(sel, defaults=pym.defaults):
+    def __init__(self, defaults=pym.defaults):
         self.const_lib, self.const_def = pym.loadMod("const")
         self.const_lib.const_init(defaults['mesa_dir'],0)
         
