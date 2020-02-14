@@ -43,6 +43,8 @@ Edit $MESA_DIR/utils/makefile_header and set
 USE_SHARED = yes
 ````
 
+Then run ./clean and ./mk
+
 
 ## Usage
 
@@ -136,7 +138,7 @@ import pyMesa as pym
 import pyMesa.star as star
 
 pym.make_basic_inlist() # Or have a file in cwd called 'inlist'
-s = star.pyStar()
+s = star.star()
 
 # Init new star
 s.new_star()
@@ -161,7 +163,7 @@ import pyMesa.star as star
 
 pym.make_basic_inlist() # Or have a file in cwd called 'inlist'
 
-s = pyStar()
+s = star()
 s.new_star()
 s.before_evolve_loop()
 

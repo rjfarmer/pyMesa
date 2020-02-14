@@ -3,7 +3,7 @@ import numpy as np
 import os
 import tempfile
 
-class pyStar(object):
+class star(object):
     def __init__(self, rse = None, defaults=pym.defaults):
         pym.buildRunStarExtras(rse)
         pym.buildRunStarSupport()
@@ -308,7 +308,7 @@ def basic():
     #pym.make_basic_inlist() # Or have a file in cwd called 'inlist'
 
     # Init
-    s = pyStar()
+    s = star()
 
     # Init new star
     s.new_star()
@@ -324,7 +324,7 @@ def basic():
 
 
 def singlestepping():
-    s = pyStar()
+    s = star()
     s.new_star()
     s.before_evolve_loop()
     s.single_evolve() # One step
