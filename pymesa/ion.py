@@ -2,14 +2,17 @@ import pymesa.pyMesaUtils as pym
 import numpy as np
 
 class ion(object):
-    def __init__(self):
+    def __init__(self, defaults=pym.defaults):
         self.const_lib, self.const_def = pym.loadMod("const")
+        self.const_lib.const_init(defaults['mesa_dir'],0)
+        
         self.crlibm_lib, _ = pym.loadMod("math")
         self.crlibm_lib.math_init()
-        self.const_lib.const_init(pym.MESA_DIR,0)
+            
         self.ion_lib, self.ion_def = pym.loadMod("ionization")
-        self.ion_lib.ionization_init('ion','',pym.ION_CACHE,False,0)
-
+        self.ion_lib.ionization_init(defaults['file_prefix'],
+                        defaults['Z1_suffix'],defaults['ionization_cache_dir'],
+                        defaults['ion_use_cache'],0)
 
     def getIon(self,T,Rho,Z,X):
         log10Rho = np.log10(Rho)

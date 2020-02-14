@@ -2,13 +2,15 @@ import pymesa.pyMesaUtils as pym
 import numpy as np
 
 class chem(object):
-    def __init__(self):
+    def __init__(self, defaults=pym.defaults):
         self.const_lib, self.const_def = pym.loadMod("const")
+        self.const_lib.const_init(defaults['mesa_dir'],0)
+        
         self.crlibm_lib, _ = pym.loadMod("math")
         self.crlibm_lib.math_init()
-        self.const_lib.const_init(pym.MESA_DIR,0)
+        
         self.chem_lib,self.chem_def = pym.loadMod("chem")
-        self.chem_lib.chem_init('isotopes.data',0)
+        self.chem_lib.chem_init(defaults['isotopes_filename'],0)
         
         self._choices = {'AG89':self.chem_def.AG89_zfracs,
                        'GN93':self.chem_def.GN93_zfracs,

@@ -4,22 +4,20 @@ import numpy as np
 
 
 class eos(object):
-    def __init__(self):
-        self.eos_lib, self.eos_def = pym.loadMod("eos")
+    def __init__(self, defaults=pym.defaults):
         self.const_lib, self.const_def = pym.loadMod("const")
+        self.const_lib.const_init(defaults['mesa_dir'],0)
+        
         self.crlibm_lib, _ = pym.loadMod("math")
         self.crlibm_lib.math_init()
+            
         self.chem_lib, self.chem_def = pym.loadMod("chem")
-        self.net_lib, self.net_def = pym.loadMod("net")
-        self.rates_lib, self.rates_def = pym.loadMod("rates")
-        self.const_lib.const_init(pym.MESA_DIR,0)
-        self.chem_lib.chem_init('isotopes.data',0)
+        self.chem_lib.chem_init(defaults['isotopes_filename'],0)
 
-        self.rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
-                    'rate_tables',False,'','','',0)
-
-        self.net_lib.net_init(0)
-        self.eos_lib.eos_init('mesa','','','',False,0)
+        self.eos_lib, self.eos_def = pym.loadMod("eos")
+        self.eos_lib.eos_init(defaults['eos_file_prefix'],
+                defaults['eosDT_cache_dir'],defaults['eosPT_cache_dir'],
+                defaults['eosDE_cache_dir'],defaults['eos_use_cache'],0)
                 
         self.eos_handle = self.eos_lib.alloc_eos_handle(0)
 

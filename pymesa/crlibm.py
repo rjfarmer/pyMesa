@@ -7,6 +7,6 @@ import pymesa.pyMesaUtils as pym
 
 
 class crlibm(object):
-    def __init__(self):
+    def __init__(self, defaults=pym.defaults
         self.crlibm_lib, _ = pym.loadMod("math")
         crlibm_lib.math_init()

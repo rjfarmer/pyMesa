@@ -5,7 +5,7 @@ import os
 import tempfile
 
 class pyStar(object):
-    def __init__(self, rse = None):
+    def __init__(self, rse = None, defaults=pym.defaults):
         pym.buildRunStarExtras(rse)
         pym.buildRunStarSupport()
         self.star_lib, self.star_def = pym.loadMod("star")
