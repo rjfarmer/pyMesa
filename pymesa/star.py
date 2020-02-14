@@ -15,8 +15,11 @@ class pyStar(object):
         self.just_did_backup = False
         self.first_try = True
         self.continue_evolve_loop = True
+        
+        if not self.star_def.have_initialized_star_handles:
+            self.star_lib.star_init_star_handles()
 
-        self.star_id = self.star_lib.star_find_next_star_id()
+        self.star_id = 0
         self.inlist = 'inlist'
 
         self.controls = {}
@@ -38,6 +41,7 @@ class pyStar(object):
                 raise pym.MesaError('Non zero ierr='+str(res))
 
     def new_star(self, inlist='inlist'):
+        self.star_id = self.star_lib.star_find_next_star_id()
         res = self.star_lib.alloc_star(self.star_id,0)
         self.error_check(res)
         self.star_id = res['id']
