@@ -1,14 +1,4 @@
-import pyMesaUtils as pym
-import sys
-
-utils_lib, utils_def = pym.loadMod("utils")
-
-utils_lib.utils_omp_get_max_threads()
-utils_lib.utils_omp_get_thread_num()
-
-
 import pymesa.pyMesaUtils as pym
-
 
 class utils(object):
 	def __init__(self):
