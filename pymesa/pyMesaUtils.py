@@ -273,6 +273,9 @@ def make_basic_inlist():
 def defaults():
     defaults = {}
     
+    # Atm
+    defaults['atm_use_cache'] = True
+    
     # Chem
     defaults['isotopes_filename'] = 'isotopes.data'
     
