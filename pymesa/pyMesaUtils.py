@@ -59,7 +59,7 @@ with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
     MESA_VERSION=int(v)
 
 if MESA_VERSION < 12708:
-	raise ValueError("MESA versions < 12708 not supported")
+    raise ValueError("MESA versions < 12708 not supported")
 
 p=sys.platform.lower()
 
@@ -71,7 +71,7 @@ else:
     
 # Check we compiled with shared libraries
 if not os.path.exists(os.path.join(LIB_DIR,'libstar.'+LIB_EXT)):
-	raise ValueError("Recompile MESA with USED_SHARED = yes")
+    raise ValueError("Recompile MESA with USED_SHARED = yes")
     
     
 
@@ -255,17 +255,17 @@ class MesaError(Exception):
 
 
 def checkcrpath():
-	res = subprocess.call(["command","-v","chrpath"], stdout=open(os.devnull, 'wb'))
-	if res:
-		raise ValueError("Please install chrpath")
+    res = subprocess.call(["command","-v","chrpath"], stdout=open(os.devnull, 'wb'))
+    if res:
+        raise ValueError("Please install chrpath")
 
 
 def make_basic_inlist():
-	with open('inlist','w') as f:
-		print('&star_job',file=f)
-		print('/',file=f)
-		print('&controls',file=f)
-		print('/',file=f)
-		print('&pgstar',file=f)
-		print('/',file=f)
-		
+    with open('inlist','w') as f:
+        print('&star_job',file=f)
+        print('/',file=f)
+        print('&controls',file=f)
+        print('/',file=f)
+        print('&pgstar',file=f)
+        print('/',file=f)
+        

@@ -3,29 +3,29 @@ import pymesa.pyMesaUtils as pym
 
 
 class kap(object):
-	def __init__(self):
-		self.const_lib, self.const_def = pym.loadMod("const")
-		
-		self.crlibm_lib, _ = pym.loadMod("math")
-		self.crlibm_lib.math_init()
-		
-		self.chem_lib, self.chem_def = pym.loadMod("chem")
-		self.chem_lib.chem_init('isotopes.data',0)
-		
+    def __init__(self):
+        self.const_lib, self.const_def = pym.loadMod("const")
+        
+        self.crlibm_lib, _ = pym.loadMod("math")
+        self.crlibm_lib.math_init()
+        
+        self.chem_lib, self.chem_def = pym.loadMod("chem")
+        self.chem_lib.chem_init('isotopes.data',0)
+        
 
-		self.kap_lib, self.kap_def = pym.loadMod("eos")
-		self.kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,True,pym.KAP_CACHE,'',False,0)
+        self.kap_lib, self.kap_def = pym.loadMod("eos")
+        self.kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,True,pym.KAP_CACHE,'',False,0)
 
-		self.kap_handle = self.kap_lib.alloc_kap_handle(0)
+        self.kap_handle = self.kap_lib.alloc_kap_handle(0)
 
-		self.kap_lib.kap_set_choices(self.kap_handle,False,False,True,True,True,0.71,0.70,0.001,0.01,0)
+        self.kap_lib.kap_set_choices(self.kap_handle,False,False,True,True,True,0.71,0.70,0.001,0.01,0)
 
 
-	def __del__(self):
-		self.kap_lib.kap_shutdown()
-		
-		
-	
+    def __del__(self):
+        self.kap_lib.kap_shutdown()
+        
+        
+    
 
 
 

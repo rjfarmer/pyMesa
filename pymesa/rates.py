@@ -4,41 +4,41 @@ import numpy as np
 
 
 class rates(object):
-	def __init__(self):
-		self.const_lib, self.const_def = pym.loadMod("const")
-		
-		self.crlibm_lib, _ = pym.loadMod("math")
-		self.crlibm_lib.math_init()
-		
-		self.chem_lib, self.chem_def = pym.loadMod("chem")
-		self.chem_lib.chem_init('isotopes.data',0)
-	
-		self.rates_lib, self.rates_def = pym.loadMod("rates")
-		self.rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
+    def __init__(self):
+        self.const_lib, self.const_def = pym.loadMod("const")
+        
+        self.crlibm_lib, _ = pym.loadMod("math")
+        self.crlibm_lib.math_init()
+        
+        self.chem_lib, self.chem_def = pym.loadMod("chem")
+        self.chem_lib.chem_init('isotopes.data',0)
+    
+        self.rates_lib, self.rates_def = pym.loadMod("rates")
+        self.rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
                     'rate_tables',False,'','','',0)
 
 
-	def show_raw_rates(self,rate='r_c12_ag_o16'):
-		# Get raw rate
+    def show_raw_rates(self,rate='r_c12_ag_o16'):
+        # Get raw rate
 
-		#self.rates_lib.show_reaction_rates_from_cache(os.path.join(pym.RATES_CACHE,rate),ierr)
+        #self.rates_lib.show_reaction_rates_from_cache(os.path.join(pym.RATES_CACHE,rate),ierr)
 
-		rate_id=rates_lib.rates_reaction_id(rate)
+        rate_id=rates_lib.rates_reaction_id(rate)
 
-		logT=np.linspace(7.0,10.0,10000)
-		r=[]
-		for lt in logT:
-			 temp=10**lt
-			 tf={}
-			 res=self.rates_lib.eval_tfactors(tf, lt, temp)
-			 tf=res['tf']
-			 raw_rate=0
-			 ierr=0    
-			 res = self.rates_lib.get_raw_rate(1, c12o16_id, temp, tf, raw_rate, ierr)
-			 r.append(res['raw_rate'])
+        logT=np.linspace(7.0,10.0,10000)
+        r=[]
+        for lt in logT:
+             temp=10**lt
+             tf={}
+             res=self.rates_lib.eval_tfactors(tf, lt, temp)
+             tf=res['tf']
+             raw_rate=0
+             ierr=0    
+             res = self.rates_lib.get_raw_rate(1, c12o16_id, temp, tf, raw_rate, ierr)
+             r.append(res['raw_rate'])
 
-		plt.plot(logT,np.log10(r))
-		plt.show()
+        plt.plot(logT,np.log10(r))
+        plt.show()
 
 
 # # Get screening factors

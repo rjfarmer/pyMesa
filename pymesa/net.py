@@ -4,63 +4,63 @@ import numpy as np
 
 
 class net(object):
-	def __init__(self,net_file=os.path.join(pym.NETS,'mesa_45.net')):
-		self.const_lib, self.const_def = pym.loadMod("const")
-		
-		self.crlibm_lib, _ = pym.loadMod("math")
-		self.crlibm_lib.math_init()
-		
-		self.chem_lib, self.chem_def = pym.loadMod("chem")
-		self.chem_lib.chem_init('isotopes.data',0)
-		
-		self.atm_lib,self.atm_def = pym.loadMod("atm")
-		
-		self.ion_lib, self.ion_def = pym.loadMod("ionization")
-		self.ion_lib.ionization_init('ion','',pym.ION_CACHE,False,0)
+    def __init__(self,net_file=os.path.join(pym.NETS,'mesa_45.net')):
+        self.const_lib, self.const_def = pym.loadMod("const")
+        
+        self.crlibm_lib, _ = pym.loadMod("math")
+        self.crlibm_lib.math_init()
+        
+        self.chem_lib, self.chem_def = pym.loadMod("chem")
+        self.chem_lib.chem_init('isotopes.data',0)
+        
+        self.atm_lib,self.atm_def = pym.loadMod("atm")
+        
+        self.ion_lib, self.ion_def = pym.loadMod("ionization")
+        self.ion_lib.ionization_init('ion','',pym.ION_CACHE,False,0)
 
-		self.eos_lib, self.eos_def = pym.loadMod("eos")
-		self.eos_lib.eos_init('mesa','','','',False,0)
-	
-		self.kap_lib, self.kap_def = pym.loadMod("eos")
-		self.kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,True,pym.KAP_CACHE,'',False,0)
-	
-		
-		self.rates_lib, self.rates_def = pym.loadMod("rates")
-		self.rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
+        self.eos_lib, self.eos_def = pym.loadMod("eos")
+        self.eos_lib.eos_init('mesa','','','',False,0)
+    
+        self.kap_lib, self.kap_def = pym.loadMod("eos")
+        self.kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,True,pym.KAP_CACHE,'',False,0)
+    
+        
+        self.rates_lib, self.rates_def = pym.loadMod("rates")
+        self.rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
                     'rate_tables',False,'','','',0)
-		
-				
-		self.net_lib, self.net_def = pym.loadMod("net")
-		self.net_lib.net_init(0)
+        
+                
+        self.net_lib, self.net_def = pym.loadMod("net")
+        self.net_lib.net_init(0)
      
-		self.net_file = net_file
+        self.net_file = net_file
 
         init = 0
-		# Net setup
-		self.net_handle=net_lib.alloc_net_handle(ierr)
-		self.net_lib.net_start_def(self.net_handle, ierr)
-		self.net_lib.read_net_file(self.net_file,self.net_handle, ierr)
-		self.net_lib.net_finish_def(self.net_handle, ierr)
+        # Net setup
+        self.net_handle=net_lib.alloc_net_handle(ierr)
+        self.net_lib.net_start_def(self.net_handle, ierr)
+        self.net_lib.read_net_file(self.net_file,self.net_handle, ierr)
+        self.net_lib.net_finish_def(self.net_handle, ierr)
 
-		self.net_lib.net_set_logtcut(self.net_handle, -1,-1, ierr)
-		self.net_lib.net_set_fe56ec_fake_factor(self.net_handle, 10**-7, 3.0*10**9, ierr)
+        self.net_lib.net_set_logtcut(self.net_handle, -1,-1, ierr)
+        self.net_lib.net_set_fe56ec_fake_factor(self.net_handle, 10**-7, 3.0*10**9, ierr)
 
 # Accessing the g pointer is broken
 # g={}
 # res = net_lib.net_ptr(handle, g, ierr)
 # g=res['g'] # Note this is only a copy of the pointer, changes wont propagate back to mesa
 
-		species = net_lib.net_num_isos(self.net_handle, ierr)
-		num_reactions =  net_lib.net_num_reactions(self.net_handle, ierr)
+        species = net_lib.net_num_isos(self.net_handle, ierr)
+        num_reactions =  net_lib.net_num_reactions(self.net_handle, ierr)
 
-		rates_reaction_id_max = rates_def.rates_reaction_id_max.get()
+        rates_reaction_id_max = rates_def.rates_reaction_id_max.get()
 
-		which_rates = np.zeros(rates_def.rates_reaction_id_max.get())
-		reaction_id = np.zeros(num_reactions)
-		which_rates[:] = rates_def.rates_jr_if_available.get()
-		#rates_lib.set_which_rates(ierr)
-		self.net_lib.net_set_which_rates(self.net_handle, which_rates, ierr)
-		self.net_lib.net_setup_tables(self.net_handle, '', ierr)
+        which_rates = np.zeros(rates_def.rates_reaction_id_max.get())
+        reaction_id = np.zeros(num_reactions)
+        which_rates[:] = rates_def.rates_jr_if_available.get()
+        #rates_lib.set_which_rates(ierr)
+        self.net_lib.net_set_which_rates(self.net_handle, which_rates, ierr)
+        self.net_lib.net_setup_tables(self.net_handle, '', ierr)
 
 # End net setup
 

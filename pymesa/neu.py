@@ -2,13 +2,13 @@ import pymesa.pyMesaUtils as pym
 
 
 class net(object):
-	def __init__(self):
-		self.const_lib, self.const_def = pym.loadMod("const")
-		
-		self.crlibm_lib, _ = pym.loadMod("math")
-		self.crlibm_lib.math_init()
-		
-		self.neu_lib,self.neu_def = pym.loadMod("neu")
+    def __init__(self):
+        self.const_lib, self.const_def = pym.loadMod("const")
+        
+        self.crlibm_lib, _ = pym.loadMod("math")
+        self.crlibm_lib.math_init()
+        
+        self.neu_lib,self.neu_def = pym.loadMod("neu")
 
 
 
