@@ -163,7 +163,7 @@ def buildRunStarSupport():
             compile_cmd.append('-lf2crlibm -lcrlibm')
 
         print(" ".join(compile_cmd))
-        x = subprocess.call(" ".join(compile_cmd),shell=True)
+        x = subprocess.call(" ".join(compile_cmd),shell=True, stdout=open(os.devnull, 'wb'))
         if x:
             raise ValueError("Build run_star_support failed")
         shutil.copy2("librun_star_support."+LIB_EXT,os.path.join(LIB_DIR,"librun_star_support."+LIB_EXT))
@@ -176,7 +176,7 @@ def buildRunStarSupport():
     os.chdir(LIB_DIR)
     checkcrpath()
     try:
-        x = subprocess.call("chrpath -r librun_star_support."+LIB_EXT,shell=True)
+        x = subprocess.call("chrpath -r librun_star_support."+LIB_EXT,shell=True, stdout=open(os.devnull, 'wb'))
         if x:
             raise ValueError("chrpath failed")
     except:
@@ -227,7 +227,7 @@ def buildRunStarExtras(rse=None):
             compile_cmd.append('-lf2crlibm -lcrlibm')
 
         print(" ".join(compile_cmd))
-        x = subprocess.call(" ".join(compile_cmd),shell=True)
+        x = subprocess.call(" ".join(compile_cmd),shell=True, stdout=open(os.devnull, 'wb'))
         if x:
             raise ValueError("Build run_star_extras failed")
         shutil.copy2("librun_star_extras."+LIB_EXT,os.path.join(LIB_DIR,"librun_star_extras."+LIB_EXT))
@@ -240,7 +240,7 @@ def buildRunStarExtras(rse=None):
     os.chdir(LIB_DIR)
     checkcrpath()
     try:
-        x = subprocess.call("chrpath -r librun_star_extras."+LIB_EXT,shell=True)
+        x = subprocess.call("chrpath -r librun_star_extras."+LIB_EXT,shell=True, stdout=open(os.devnull, 'wb'))
         if x:
             raise ValueError("chrpath failed")
     except:
@@ -255,7 +255,7 @@ class MesaError(Exception):
 
 
 def checkcrpath():
-	res = subprocess.call(["command","-v","chrpath"])
+	res = subprocess.call(["command","-v","chrpath"], stdout=open(os.devnull, 'wb'))
 	if res:
 		raise ValueError("Please install chrpath")
 
