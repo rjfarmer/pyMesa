@@ -1,0 +1,1 @@
+19.11.2 https://zenodo.org/record/3560869/files/mesasdk-x86_64-macos-19.11.2.pkg md5:71eb45117b712f99a2d33772c284d285

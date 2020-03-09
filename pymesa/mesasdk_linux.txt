@@ -1,0 +1,2 @@
+20.3.1 http://www.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-20.3.1.tar.gz tar.gz md5:b32d90f5040b5410568f60d4a5c5e6e7
+20190830 https://zenodo.org/record/3560834/files/mesasdk-x86_64-linux-20190830.tar.gz tar.gz md5:8d618120df849d6a04c479544965c137

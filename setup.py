@@ -22,6 +22,7 @@ setup(name='pyMesa',
       url='https://github.com/rjfarmer/pyMesa',
       keywords='MESA',
       packages=find_packages(),
+      include_package_data = True,
       classifiers=[
 			"Development Status :: 3 - Alpha",
 			"License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)",
