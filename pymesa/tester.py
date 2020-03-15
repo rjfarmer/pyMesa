@@ -17,4 +17,7 @@ print(c.basic_composition_info({'h1':0.5,'he4':0.5}))
 print(c.chem_lib.chem_get_element_id('h1'))
 
 
-
+e=pm.eos.eos(p.defaults)
+print(e.eos_def.i_lnPgas)
+print(e.getEosDT({'h1':0.5,'he4':0.5},10**7,10**4))
+print()
