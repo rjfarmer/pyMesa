@@ -1,15 +1,15 @@
 import pymesa.pyMesaUtils as pym
 
+from . import const
+from . import math
+
 
 class atm(object):
-    def __init__(self, defaults=pym.defaults):
-        self.const_lib, self.const_def = pym.loadMod("const")
-        self.const_lib.const_init(defaults['mesa_dir'],0)
-        
-        self.crlibm_lib, _ = pym.loadMod("math")
-        self.crlibm_lib.math_init()
+    def __init__(self, defaults):
+        self.const = const.const(defaults)
+        self.math = math.math(defaults)
 
-        self.atm_lib,self.atm_def = pym.loadMod("atm")
+        self.atm_lib,self.atm_def = pym.loadMod("atm",defaults)
         self.atm_lib.init(True, 0)
         
         

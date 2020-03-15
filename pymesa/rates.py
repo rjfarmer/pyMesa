@@ -2,27 +2,28 @@ import pymesa.pyMesaUtils as pym
 import matplotlib.pyplot as plt
 import numpy as np
 
+from . import const
+from . import math
+from . import rates
 
 class rates(object):
-    def __init__(self, defaults=pym.defaults):
-        self.const_lib, self.const_def = pym.loadMod("const")
-        self.const_lib.const_init(defaults['mesa_dir'],0)
-        
-        self.crlibm_lib, _ = pym.loadMod("math")
-        self.crlibm_lib.math_init()
-        
-        self.chem_lib, self.chem_def = pym.loadMod("chem")
-        self.chem_lib.chem_init('isotopes.data',0)
+    def __init__(self, defaults):        
+        self.const = const.const(defaults)
+        self.math = math.math(defaults)
+        self.chem = chem.chem(defaults)
     
-        self.rates_lib, self.rates_def = pym.loadMod("rates")
-        self.rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
-                    'rate_tables',False,'','','',0)
+        self.rates_lib, self.rates_def = pym.loadMod("rates",defaults)
+        self.rates_lib.rates_init(defaults['reactionlist_filename'],defaults['jina_reaclib_filename'],
+                    defaults['rates_table_dir_in'],defaults['use_suzuki_weak_rates'],
+                    defaults['special_weak_states_file'],defaults['special_weak_transitions_file'],
+                    defaults['rates_cache_dir'],0)
 
 
     def show_raw_rates(self,rate='r_c12_ag_o16'):
-        # Get raw rate
+        """
+        Get raw rate
 
-        #self.rates_lib.show_reaction_rates_from_cache(os.path.join(pym.RATES_CACHE,rate),ierr)
+        """
 
         rate_id=rates_lib.rates_reaction_id(rate)
 
@@ -40,6 +41,9 @@ class rates(object):
 
         plt.plot(logT,np.log10(r))
         plt.show()
+        
+    def get_rate_from_cache(self,rate):
+        return self.rates_lib.show_reaction_rates_from_cache(os.path.join(pym.RATES_CACHE,rate),ierr)
 
 
 # # Get screening factors

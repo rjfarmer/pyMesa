@@ -1,15 +1,15 @@
 import pymesa.pyMesaUtils as pym
 import numpy as np
 
+from . import const
+from . import math
+
 class neu(object):
-    def __init__(self, defaults=pym.defaults):
-        self.const_lib, self.const_def = pym.loadMod("const")
-        self.const_lib.const_init(defaults['mesa_dir'],0)
+    def __init__(self, defaults):
+        self.const = const.const(defaults)
+        self.math = math.math(defaults)
         
-        self.crlibm_lib, _ = pym.loadMod("math")
-        self.crlibm_lib.math_init()
-        
-        self.neu_lib,self.neu_def = pym.loadMod("neu")
+        self.neu_lib,self.neu_def = pym.loadMod("neu",defaults)
 
     def getNeu(self,T,Rho,abar,zbar,z2bar,log10_Tlim=7.5):
         log10T = np.log10(T)

@@ -3,18 +3,17 @@ import pymesa.pyMesaUtils as pym
 import numpy as np
 
 
-class eos(object):
-    def __init__(self, defaults=pym.defaults):
-        self.const_lib, self.const_def = pym.loadMod("const")
-        self.const_lib.const_init(defaults['mesa_dir'],0)
-        
-        self.crlibm_lib, _ = pym.loadMod("math")
-        self.crlibm_lib.math_init()
-            
-        self.chem_lib, self.chem_def = pym.loadMod("chem")
-        self.chem_lib.chem_init(defaults['isotopes_filename'],0)
+from . import const
+from . import math
+from . import chem
 
-        self.eos_lib, self.eos_def = pym.loadMod("eos")
+class eos(object):
+    def __init__(self, defaults):
+        self.const = const.const(defaults)
+        self.math = math.math(defaults)
+        self.chem = chem.chem(defaults)
+
+        self.eos_lib, self.eos_def = pym.loadMod("eos",defaults)
         self.eos_lib.eos_init(defaults['eos_file_prefix'],
                 defaults['eosDT_cache_dir'],defaults['eosPT_cache_dir'],
                 defaults['eosDE_cache_dir'],defaults['eos_use_cache'],0)

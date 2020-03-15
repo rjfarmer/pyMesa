@@ -32,7 +32,54 @@ import io
 import svn.remote
 import pathlib
 
+from . import atm
+from . import chem
+from . import colors
+from . import const
+from . import gyre
+from . import ion
+from . import kap
+from . import net
+from . import neu
+from . import rates
+from . import star
+
+
 MIN_VERSION = 12780
+
+def loadMod(module, defaults):
+    SHARED_LIB = None
+    MODULE_LIB = None
+    MODULE_DEF = None
+    
+    if module == 'run_star_support':
+        SHARED_LIB = os.path.join(defaults['LIB_DIR'],"librun_star_support." + defaults['LIB_EXT'])
+        MODULE_LIB = os.path.join(defaults['INCLUDE_DIR'],"run_star_support.mod")
+    elif module =='run_star_extras':
+        SHARED_LIB = os.path.join(defaults['LIB_DIR'],"librun_star_extras." + defaults['LIB_EXT'])
+        MODULE_LIB = os.path.join(defaults['INCLUDE_DIR'],"run_star_extras.mod")
+    elif module in ['math','gyre']:
+        MODULE_LIB = os.path.join(defaults['INCLUDE_DIR'],module+"_lib.mod")
+        SHARED_LIB = os.path.join(defaults['LIB_DIR'],"lib"+module+"."+defaults['LIB_EXT'])
+
+    else:
+        MODULE_LIB = os.path.join(defaults['INCLUDE_DIR'],module+"_lib.mod")
+        MODULE_DEF = os.path.join(defaults['INCLUDE_DIR'],module+"_def.mod")
+        SHARED_LIB = os.path.join(defaults['LIB_DIR'],"lib"+module+"."+defaults['LIB_EXT'])
+
+    x = None
+    y = None
+
+    if SHARED_LIB is not None:
+        if MODULE_LIB is not None:
+            x = gf.fFort(SHARED_LIB,MODULE_LIB,rerun=True)
+
+        if MODULE_DEF is not None:
+            y = gf.fFort(SHARED_LIB,MODULE_DEF,rerun=True)
+
+    return x, y
+
+
 
 class mesa(object):
     def __init__(self,MESA_DIR=None,MESASDK_ROOT=None,nonsdk=False):
@@ -115,35 +162,7 @@ class mesa(object):
                 
         with open(filename,'w') as f:
             f.writelines(lines)
-    
-    def loadMod(module):
-        MODULE_LIB = os.path.join(self.INCLUDE_DIR,module+"_lib.mod")
-        MODULE_DEF = os.path.join(self.INCLUDE_DIR,module+"_def.mod")
-
-        if module == 'run_star_support':
-             SHARED_LIB = os.path.join(self.LIB_DIR,"librun_star_support." + self.LIB_EXT)
-             MODULE_LIB = os.path.join(self.INCLUDE_DIR,"run_star_support.mod")
-        elif module =='run_star_extras':
-             SHARED_LIB = os.path.join(self.LIB_DIR,"librun_star_extras." + self.LIB_EXT)
-             MODULE_LIB = os.path.join(self.INCLUDE_DIR,"run_star_extras.mod")
-        else:
-            SHARED_LIB = os.path.join(self.LIB_DIR,"lib"+module+"."+self.LIB_EXT)
-
-        x = None
-        y = None
-
-        try:
-            x = gf.fFort(SHARED_LIB,MODULE_LIB,rerun=True)
-        except FileNotFoundError:
-            pass
-
-        try:
-            y = gf.fFort(SHARED_LIB,MODULE_DEF,rerun=True)
-        except FileNotFoundError:
-            pass
-
-        return x, y
-        
+            
         
     def clean(self,folder):
         print(folder)
@@ -523,6 +542,8 @@ class mesa(object):
 
     @property
     def defaults(self):
+        self.set_paths()
+        
         defaults = {}
 
         # Atm
@@ -579,7 +600,30 @@ class mesa(object):
         defaults['special_weak_transitions_file'] = ''
         defaults['rates_cache_dir'] = ''
 
+
+        # Paths
+        defaults['DATA_DIR']= self.DATA_DIR
+        defaults['LIB_DIR']= self.LIB_DIR
+        defaults['INCLUDE_DIR']= self.INCLUDE_DIR
+
+        defaults['RATES_DATA']=self.RATES_DATA
+        defaults['EOSDT_DATA']=self.EOSDT_DATA
+        defaults['EOSPT_DATA']=self.EOSPT_DATA
+        defaults['ION_DATA']=self.ION_DATA
+        defaults['KAP_DATA']=self.KAP_DATA
+        defaults['NET_DATA']=self.NET_DATA
+
+        defaults['RATES_CACHE']=self.RATES_CACHE
+        defaults['EOSDT_CACHE']=self.EOSDT_CACHE
+        defaults['EOSPT_CACHE']=self.EOSPT_DATA
+        defaults['ION_CACHE']=self.ION_CACHE
+        defaults['KAP_CACHE']=self.KAP_CACHE
+        defaults['NETS']=self.NETS
+
+        defaults['LIB_EXT'] = self.LIB_EXT
+
         return defaults
+        
 
         
 class MesaError(Exception):

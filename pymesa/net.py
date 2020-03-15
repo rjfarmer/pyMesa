@@ -2,37 +2,37 @@ import pymesa.pyMesaUtils as pym
 import os
 import numpy as np
 
+from . import const
+from . import math
+from . import chem
+from . import atm
+from . import ion
+from . import eos
+from . import kap
+from . import rates
 
 class net(object):
-    def __init__(self, defaults=pym.defaults):
-        self.const_lib, self.const_def = pym.loadMod("const")
-        self.const_lib.const_init(defaults['mesa_dir'],0)
-        
-        self.crlibm_lib, _ = pym.loadMod("math")
-        self.crlibm_lib.math_init()
-        
-        self.chem_lib, self.chem_def = pym.loadMod("chem")
-        self.chem_lib.chem_init('isotopes.data',0)
-        
-        self.atm_lib,self.atm_def = pym.loadMod("atm")
-        
-        self.ion_lib, self.ion_def = pym.loadMod("ionization")
-        self.ion_lib.ionization_init('ion','',pym.ION_CACHE,False,0)
-
-        self.eos_lib, self.eos_def = pym.loadMod("eos")
-        self.eos_lib.eos_init('mesa','','','',False,0)
+    def __init__(self, defaults):
+        self.const = const.const(defaults)
+        self.math = math.math(defaults)
+        self.chem = chem.chem(defaults)
+        self.atm = atm.atm(defaults)
+        self.ion = ion.ion(defaults)
+        self.eos = eos.eos(defaults)
+        self.kap = kap.kap(defaults)
+        self.rates = rates.rates(defaults)
     
-        self.kap_lib, self.kap_def = pym.loadMod("eos")
-        self.kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,True,pym.KAP_CACHE,'',False,0)
-    
-        
-        self.rates_lib, self.rates_def = pym.loadMod("rates")
-        self.rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
-                    'rate_tables',False,'','','',0)
-        
-                
-        self.net_lib, self.net_def = pym.loadMod("net")
+        self.net_lib, self.net_def = pym.loadMod("net",defaults)
         self.net_lib.net_init(0)
+        
+        
+        
+        
+        
+        
+        
+        
+        
      
         # self.net_file = net_file
 

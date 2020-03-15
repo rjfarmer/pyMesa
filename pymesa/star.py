@@ -4,13 +4,13 @@ import os
 import tempfile
 
 class star(object):
-    def __init__(self, rse = None, defaults=pym.defaults):
+    def __init__(self, defaults, rse = None):
         pym.buildRunStarExtras(rse)
         pym.buildRunStarSupport()
-        self.star_lib, self.star_def = pym.loadMod("star")
+        self.star_lib, self.star_def = pym.loadMod("star",defaults)
         
-        self.rse, _ = pym.loadMod('run_star_extras')
-        self.star, _ = pym.loadMod("run_star_support")
+        self.rse, _ = pym.loadMod('run_star_extras',defaults)
+        self.star, _ = pym.loadMod("run_star_support",defaults)
 
         self.just_did_backup = False
         self.first_try = True

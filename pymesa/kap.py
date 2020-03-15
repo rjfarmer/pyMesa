@@ -1,26 +1,42 @@
-
 import pymesa.pyMesaUtils as pym
 
+from . import const
+from . import math
+from . import chem
 
 class kap(object):
-    def __init__(self, defaults=pym.defaults):
-        self.const_lib, self.const_def = pym.loadMod("const")
-        self.const_lib.const_init(defaults['mesa_dir'],0)
-        
-        self.crlibm_lib, _ = pym.loadMod("math")
-        self.crlibm_lib.math_init()
-        
-        self.chem_lib, self.chem_def = pym.loadMod("chem")
-        self.chem_lib.chem_init('isotopes.data',0)
+    def __init__(self, defaults):
+        self.const = const.const(defaults)
+        self.math = math.math(defaults)
+        self.chem = chem.chem(defaults)
         
 
-        self.kap_lib, self.kap_def = pym.loadMod("eos")
-        self.kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,True,pym.KAP_CACHE,'',False,0)
+        self.kap_lib, self.kap_def = pym.loadMod("eos",defaults)
+        self.kap_lib.kap_init(defaults['kap_file_prefix'],defaults['CO_prefixdefaults'],
+                            defaults['lowT_prefix'],defaults['blend_logT_upper_bdy'],
+                            defaults['blend_logT_lower_bdy'],defaults['kap_use_cache'],
+                            defaults['kap_cache_dir'], defaults['kap_config_file'],
+                            defaults['kap_show_info'], 0
+                            )
 
         self.kap_handle = self.kap_lib.alloc_kap_handle(0)
+        self.kap.kap_set_choices()
 
-        self.kap_lib.kap_set_choices(self.kap_handle,False,False,True,True,True,0.71,0.70,0.001,0.01,0)
 
+    def kap_set_choices(self,cubic_interpolation_in_X=False, cubic_interpolation_in_Z=False, 
+            include_electron_conduction=True, 
+            use_Zbase_for_Type1=True, use_Type2_opacities=True, 
+            kap_Type2_full_off_X=0.71, kap_Type2_full_on_X=0.70,
+            kap_Type2_full_off_dZ=0.001, kap_Type2_full_on_dZ=0.01):
+                
+        self.kap_lib.kap_set_choices(self.kap_handle,cubic_interpolation_in_X, 
+            cubic_interpolation_in_Z, 
+            include_electron_conduction, 
+            use_Zbase_for_Type1, use_Type2_opacities,
+            kap_Type2_full_off_X, kap_Type2_full_on_X, 
+            kap_Type2_full_off_dZ, kap_Type2_full_on_dZ, 
+            0
+            )
 
     def __del__(self):
         if 'kap_lib' in self.__dict__:
