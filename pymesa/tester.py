@@ -30,3 +30,10 @@ comp = c.basic_composition_info({'h1':0.5,'he4':0.25,'c12':0.25})
 
 print(kap.kap_get(comp['zbar'],comp['xh'],comp['z'],comp['z'],0.25,0.0,0.0,0.0,
         3.0,7.0,0.0,0.0,0.0))
+
+
+
+import pymesa as pm 
+p=pm.mesa('./mesa','./mesasdk')
+defaults = p.defaults
+s = pm.star.star(p.defaults)

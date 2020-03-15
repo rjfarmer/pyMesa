@@ -45,7 +45,7 @@ from . import rates
 from . import star
 
 
-MIN_VERSION = 12780
+MIN_VERSION = 12829
 
 def loadMod(module, defaults):
     SHARED_LIB = None
@@ -87,6 +87,15 @@ def error_check(res):
     else:
         if int(res) != 0:
             raise MesaError('Non zero ierr='+str(res))
+            
+def _checkcrpath():
+    res = subprocess.call(["command","-v","chrpath"], stdout=open(os.devnull, 'wb'))
+    if res:
+        raise ValueError("Please install chrpath")
+        
+def _runcrpath(filename,folder):
+    subprocess.check_call(["chrpath","-r",str(filename)],cwd=folder)
+        
 
 class mesa(object):
     def __init__(self,MESA_DIR=None,MESASDK_ROOT=None,nonsdk=False):
@@ -98,7 +107,7 @@ class mesa(object):
             self.MESASDK_ROOT = None
         self.LIB_EXT = self._platform_check()
         
-        self._checkcrpath()
+        _checkcrpath()
         self.setOMPThreads()
         
         
@@ -172,7 +181,6 @@ class mesa(object):
             
         
     def clean(self,folder):
-        print(folder)
         self._runCmd('./clean',folder)
  
     def mk(self,folder):
@@ -209,113 +217,6 @@ class mesa(object):
         self.buildTestCase(test_case)
         self.rn(test_case)
 
-    def _checkcrpath(self):
-        res = subprocess.call(["command","-v","chrpath"], stdout=open(os.devnull, 'wb'))
-        if res:
-            raise ValueError("Please install chrpath")
-  
-    def _makeBasicRSE(self,filename):
-        with open(filename,'w') as f:
-            print('module run_star_extras',file=f)
-            print('use star_lib',file=f)
-            print('use star_def',file=f)
-            print('use const_def',file=f)
-            print('use math_lib',file=f)
-            print('implicit none',file=f)
-            print('contains',file=f)
-            print('include "standard_run_star_extras.inc"',file=f)
-            print('end module run_star_extras',file=f)
-  
-    def _makeBasicInlist(self,filename):
-        with open(filename,'w') as f:
-            print('&star_job',file=f)
-            print('/',file=f)
-            print('&controls',file=f)
-            print('/',file=f)
-            print('&pgstar',file=f)
-            print('/',file=f)
-            
-
-    def buildRunStarSupport():
-        cwd = os.getcwd()
-        os.chdir(os.path.join(MESA_DIR,'star','make'))
-        try:
-            compile_cmd = ['gfortran -Wno-uninitialized -fno-range-check',
-                          '-fPIC -shared -fprotect-parens',
-                          '-fno-sign-zero -fbacktrace -ggdb',
-                          '-fopenmp  -std=f2008 -Wno-error=tabs -I../public',
-                          '-I../private -I../../include',
-                          '-I'+os.path.join(self.MESASDK_ROOT,'include'),
-                          '-Wunused-value -W -Wno-compare-reals',
-                          '-Wno-unused-parameter -fimplicit-none  -O2',
-                          '-ffree-form -x f95-cpp-input -I../defaults',
-                          '-I../job -I../other ../job/run_star_support.f90',
-                          '-Wl,-rpath=' + self.LIB_DIR,
-                          '-o librun_star_support.' + self.LIB_EXT,
-                          '-L' + self.LIB_DIR,
-                          '-lstar -lgyre -lionization -latm -lcolors -lnet -leos',
-                          '-lkap -lrates -lneu -lchem -linterp_2d -linterp_1d',
-                          '-lnum -lmtx -lconst -lutils -lrun_star_extras']
-
-            #print(" ".join(compile_cmd))
-            x = subprocess.call(" ".join(compile_cmd),shell=True, stdout=open(os.devnull, 'wb'))
-            if x:
-                raise ValueError("Build run_star_support failed")
-            shutil.copy2("librun_star_support."+LIB_EXT,os.path.join(self.LIB_DIR,"librun_star_support." + self.LIB_EXT))
-            shutil.copy2('run_star_support.mod',os.path.join(self.INCLUDE_DIR,'run_star_support.mod'))
-        except:
-            raise
-        finally:
-            os.chdir(cwd)
-
-        self._runcrpath("librun_star_support." + self.LIB_EXT)
-
-
-    def buildRunStarExtras(rse=None):
-        filename = 'run_star_extras.f'
-        output = os.path.join(self.MESA_DIR,'star','make',filename)
-        if rse is None:
-            self._makeBasicRSE(filename)
-        else:
-            shutil.copy2(rse,output)
-
-        cwd = os.getcwd()
-        os.chdir(os.path.join(self.MESA_DIR,'star','make'))
-        try:
-            compile_cmd = ['gfortran -Wno-uninitialized -fno-range-check',
-                          '-fPIC -shared -fprotect-parens',
-                          '-fno-sign-zero -fbacktrace -ggdb',
-                          '-fopenmp  -std=f2008 -Wno-error=tabs -I../public',
-                          '-I../private -I../../include',
-                          '-I'+os.path.join(self.MESASDK_ROOT,'include'),
-                          '-Wunused-value -W -Wno-compare-reals',
-                          '-Wno-unused-parameter -fimplicit-none  -O2',
-                          '-ffree-form -x f95-cpp-input -I../defaults',
-                          '-I../job -I../other',
-                          filename,
-                          '-Wl,-rpath=' + self.LIB_DIR,
-                          '-o librun_star_extras.' + self.LIB_EXT,
-                          '-L' + self.LIB_DIR,
-                          '-lstar -lconst']
-
-            x = subprocess.call(" ".join(compile_cmd),shell=True, stdout=open(os.devnull, 'wb'))
-            if x:
-                raise ValueError("Build run_star_extras failed")
-            shutil.copy2("librun_star_extras." + self.LIB_EXT,os.path.join(self.LIB_DIR,"librun_star_extras." + self.LIB_EXT))
-            shutil.copy2('run_star_extras.mod',os.path.join(self.INCLUDE_DIR,'run_star_extras.mod'))
-        except:
-            raise
-        finally:
-            os.chdir(cwd)
-
-        self._runcrpath("librun_star_extras." + self.LIB_EXT)
-        
-
-    def _runcrpath(self,filename):
-        if subprocess.call(["chrpath","-r",str(filename)],shell=True, stdout=open(os.devnull, 'wb'),cwd=self.LIB_DIR):
-            raise ValueError("chrpath failed on " + str(filename))  
-            
-
     def setNonSDK(self):
         self.nonsdk = True
         self._sdk_path = None
@@ -330,8 +231,6 @@ class mesa(object):
             raise ValueError("Must set MESASDK_ROOT first")
             
         subprocess.Popen('source '+self._sdk_path, shell=True, executable="/bin/bash")
-
-        
                         
     def downloadZip(self,version=-1):
         data = self._getMesaData()
@@ -565,7 +464,7 @@ class mesa(object):
         defaults['num_colors'] = 11
 
         # Const
-        defaults['mesa_dir'] = self.MESA_DIR
+        defaults['mesa_dir'] = os.path.realpath(self.MESA_DIR)
 
         # Eos
         defaults['eos_file_prefix'] = 'mesa'
@@ -628,6 +527,11 @@ class mesa(object):
         defaults['NETS']=self.NETS
 
         defaults['LIB_EXT'] = self.LIB_EXT
+        
+        if self.nonsdk:
+            defaults['MESASDK_ROOT'] = ''
+        else:
+            defaults['MESASDK_ROOT'] = os.path.realpath(self.MESASDK_ROOT)
 
         return defaults
         

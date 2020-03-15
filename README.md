@@ -25,7 +25,7 @@ matplotlib
 
 chrpath
 
-MESA > 12708
+MESA > 12829
  
 ## Building
 
@@ -38,9 +38,9 @@ python3 setup.py install --user
 ### Basic usage
 
 ````python
-import pymesa as pm
+import pymesa as pym
 
-p=pm.mesa(MESA_DIR,MESASDK_ROOT)
+p=pym.mesa(MESA_DIR,MESASDK_ROOT)
 
 ````
 
@@ -51,9 +51,9 @@ are installed, or where you want them installed.
 ## Installing MESA
 
 ````python
-import pymesa as pm
+import pymesa as pym
 
-p=pm.mesa(MESA_DIR,MESASDK_ROOT) 
+p=pym.mesa(MESA_DIR,MESASDK_ROOT) 
 # MESA_DIR and MESASDK_ROOT do not need to exist yet but their parent folder should
 
 # Lists available MESA or MESASDK versions
@@ -83,14 +83,14 @@ modules are interfaced in a different way.
 A number of modules have wrappers around the MESA functions
 
 ````python
-import pymesa as pm
+import pymesa as pym
 
-p=pm.mesa(MESA_DIR,MESASDK_ROOT)
+p=pym.mesa(MESA_DIR,MESASDK_ROOT)
 
 # This is a dict containing a number of default options for all the modules
 defaults = p.defaults
 
-eos = pm.eos.eos(p.defaults)
+eos = pym.eos.eos(p.defaults)
 
 composition = {'h1':0.5,'he4':0.5}
 temp = 10**7
@@ -106,20 +106,20 @@ If the function does not have a wrapper, then the functions and
 parameters are exposed via module.module_lib and module.module_def objects:
 
 ````python
-import pymesa as pm
+import pymesa as pym
 
-p=pm.mesa(MESA_DIR,MESASDK_ROOT)
+p=pym.mesa(MESA_DIR,MESASDK_ROOT)
 
 defaults = p.defaults
 
 # Initialize a module
-const = pm.const.const(p.defaults) 
+const = pym.const.const(p.defaults) 
 
 # Access a variable inside the modules _def.f90 file
 print(const.const_def.amu) 
 
 # Access a function/subroutine inside a _lib.f90 file
-chem = pm.chem.chem(p.defaults) 
+chem = pym.chem.chem(p.defaults) 
 chem.chem_lib.chem_get_element_id('h1')
 ````
 
@@ -166,16 +166,16 @@ Star is special as star_lib and star_def are not that useful on there own, inste
 
 
 ````python
-import pymesa as pm
+import pymesa as pym
 
-p=pm.mesa(MESA_DIR,MESASDK_ROOT)
+p=pym.mesa(MESA_DIR,MESASDK_ROOT)
 
 defaults = p.defaults
 
 # Initialize a module
-s = pm.star.star(defaults) 
+s = pym.star.star(defaults) 
 
-pm.make_basic_inlist() # Or have a file in the current directory called 'inlist'
+pym.make_basic_inlist() # Or have a file in the current directory called 'inlist'
 
 
 # Init new star
@@ -199,16 +199,16 @@ plt.show()
 Or if you want to run step by step
 
 ````python
-import pymesa as pm
+import pymesa as pym
 
-p=pm.mesa(MESA_DIR,MESASDK_ROOT)
+p=pym.mesa(MESA_DIR,MESASDK_ROOT)
 
 defaults = p.defaults
 
 # Initialize a module
-s = pm.star.star(p.defaults) 
+s = pym.star.star(p.defaults) 
 
-pm.make_basic_inlist() # Or have a file in the current directory called 'inlist'
+pym.make_basic_inlist() # Or have a file in the current directory called 'inlist'
 
 s.new_star()
 s.before_evolve_loop()

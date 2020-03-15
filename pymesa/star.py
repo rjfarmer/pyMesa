@@ -1,12 +1,22 @@
 import pymesa.pyMesaUtils as pym
 import numpy as np
 import os
+import glob
 import tempfile
+import subprocess
+import shutil
 
 class star(object):
     def __init__(self, defaults, rse = None):
-        pym.buildRunStarExtras(rse)
-        pym.buildRunStarSupport()
+        self.defaults = defaults
+        
+        self.MESA_DIR = os.path.realpath(defaults['mesa_dir'])
+        self.MESASDK_ROOT = os.path.realpath(defaults['MESASDK_ROOT'])
+        self.LIB_DIR = os.path.realpath(defaults['LIB_DIR'])
+        self.INCLUDE_DIR = os.path.realpath(defaults['INCLUDE_DIR'])
+        
+        self.buildRunStarExtras(rse)
+        self.buildRunStarSupport()
         self.star_lib, self.star_def = pym.loadMod("star",defaults)
         
         self.rse, _ = pym.loadMod('run_star_extras',defaults)
@@ -31,7 +41,101 @@ class star(object):
         self.hist_data = []
         self.prof_data = []
         
+    def buildRunStarSupport(self):
+        cwd = os.getcwd()
+        os.chdir(os.path.join(self.MESA_DIR,'star','make'))
+        try:
+            compile_cmd = ['gfortran -Wno-uninitialized -fno-range-check',
+                          '-fPIC -shared -fprotect-parens',
+                          '-fno-sign-zero -fbacktrace -ggdb',
+                          '-fopenmp  -std=f2008 -Wno-error=tabs -I../public',
+                          '-I../private -I../../include',
+                          '-I'+os.path.join(self.MESASDK_ROOT,'include'),
+                          '-Wunused-value -W -Wno-compare-reals',
+                          '-Wno-unused-parameter -fimplicit-none  -O2',
+                          '-ffree-form -x f95-cpp-input -I../defaults',
+                          '-I../job -I../other ../job/run_star_support.f90',
+                          '-Wl,-rpath=' + self.LIB_DIR,
+                          '-o librun_star_support.' + self.defaults['LIB_EXT'],
+                          '-L' + self.LIB_DIR,
+                          '-lstar -lgyre -lionization -latm -lcolors -lnet -leos',
+                          '-lkap -lrates -lneu -lchem -linterp_2d -linterp_1d',
+                          '-lnum -lmtx -lconst -lutils -lrun_star_extras']
 
+            #print(" ".join(compile_cmd))
+            x = subprocess.call(" ".join(compile_cmd),shell=True, stdout=open(os.devnull, 'wb'))
+            if x:
+                raise ValueError("Build run_star_support failed")
+            shutil.copy2("librun_star_support."+self.defaults['LIB_EXT'],os.path.join(self.LIB_DIR,"librun_star_support." + self.defaults['LIB_EXT']))
+            shutil.copy2('run_star_support.mod',os.path.join(self.INCLUDE_DIR,'run_star_support.mod'))
+        except:
+            raise
+        finally:
+            os.chdir(cwd)
+
+        pym._runcrpath("librun_star_support." + self.defaults['LIB_EXT'],self.defaults['LIB_DIR'])
+
+
+    def buildRunStarExtras(self,rse=None):
+        filename = 'run_star_extras.f90'
+        output = os.path.join(self.MESA_DIR,'star','make',filename)
+        if rse is None:
+            self._makeBasicRSE(output)
+        else:
+            shutil.copy2(rse,output)
+            
+        cwd = os.getcwd()
+        os.chdir(os.path.join(self.MESA_DIR,'star','make'))
+        try:
+            compile_cmd = ['gfortran -Wno-uninitialized -fno-range-check',
+                          '-fPIC -shared -fprotect-parens',
+                          '-fno-sign-zero -fbacktrace -ggdb',
+                          '-fopenmp  -std=f2008 -Wno-error=tabs -I../public',
+                          '-I../private -I../../include',
+                          '-I'+os.path.join(self.MESASDK_ROOT,'include'),
+                          '-Wunused-value -W -Wno-compare-reals',
+                          '-Wno-unused-parameter -fimplicit-none  -O2',
+                          '-ffree-form -x f95-cpp-input -I../defaults',
+                          '-I../job -I../other',
+                          filename,
+                          '-Wl,-rpath=' + self.LIB_DIR,
+                          '-o librun_star_extras.' + self.defaults['LIB_EXT'],
+                          '-L' + self.LIB_DIR,
+                          '-lstar -lconst']
+
+            x = subprocess.call(" ".join(compile_cmd),shell=True, stdout=open(os.devnull, 'wb'))
+            if x:
+                raise ValueError("Build run_star_extras failed")
+            shutil.copy2("librun_star_extras." + self.defaults['LIB_EXT'],os.path.join(self.LIB_DIR,"librun_star_extras." + self.defaults['LIB_EXT']))
+            shutil.copy2('run_star_extras.mod',os.path.join(self.INCLUDE_DIR,'run_star_extras.mod'))
+        except:
+            raise
+        finally:
+            os.chdir(cwd)
+
+        pym._runcrpath("librun_star_extras." + self.defaults['LIB_EXT'],self.LIB_DIR)
+   
+    def _makeBasicRSE(self,filename):
+        with open(filename,'w') as f:
+            print('module run_star_extras',file=f)
+            print('use star_lib',file=f)
+            print('use star_def',file=f)
+            print('use const_def',file=f)
+            print('use math_lib',file=f)
+            print('implicit none',file=f)
+            print('contains',file=f)
+            print('include "standard_run_star_extras.inc"',file=f)
+            print('end module run_star_extras',file=f)
+  
+    def _makeBasicInlist(self,filename):
+        with open(filename,'w') as f:
+            print('&star_job',file=f)
+            print('/',file=f)
+            print('&controls',file=f)
+            print('/',file=f)
+            print('&pgstar',file=f)
+            print('/',file=f)
+                        
     def new_star(self, inlist='inlist'):
         self.star_id = self.star_lib.star_find_next_star_id()
         res = self.star_lib.alloc_star(self.star_id,0)
@@ -292,7 +396,8 @@ class star(object):
         res = self.star.set_dt_next(self.star_id, dt, 0)
         
     def __del__(self):
-        self.star.free_star(self.star_id,0)
+        if 'star' in self.__dict__:
+            self.star.free_star(self.star_id,0)
 
 
 def basic():
