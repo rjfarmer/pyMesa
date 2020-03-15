@@ -4,11 +4,18 @@
 
 
 # pyMesa
-Allows python to interface with MESA stellar evolution code. Current stable version is 2.0.0
+pyMesa is a library allowing for the interface of the MESA stellar evolution tool with python.
+
+It contains:
+* Tools for downloading and install MESA and the MESASDK
+* Interface to the individual MESA modules (eos, kap etc)
+* Interface into mesastar, allowing for full control over the evolution of a star
+
+Current stable version is 2.0.0
 
 
 ## Requirements:
-Note: pyMesa currently only works on linux, macs will fail to build.
+Note: pyMesa currently only works on linux.
 
 [gfort2py](https://github.com/rjfarmer/gfort2py) (Also available via pip) (needs version >= 1.1.5)
 
@@ -28,88 +35,113 @@ MESA > 12708
 python3 setup.py install --user
 ````
 
-
-### SDK's
-
-Grab the most recent sdk from:
-
-[mesasdk](http://www.astro.wisc.edu/~townsend/static.php?ref=mesasdk)
-
-### MESA patching
-
-Edit $MESA_DIR/utils/makefile_header and set 
-
-````
-USE_SHARED = yes
-````
-
-Then run ./clean and ./mk
-
-
-## Usage
-
-Each mesa module can be imported separately:
-
-````
-import pyMesa as pym
-import pyMesa.const as const
-````
-
-then you can access the functions/variables as:
-
-````
-c = cosnt.const()
-c.const_def.agesol
-c.const_lib.const_init(pym.MESA_DIR, 0)
-````
-
-In general you don't need to run any init function yourself, that will be called when you initialize an object.
-
-
-Some modules will have easier to use wrappers which are accessed at the top level of each object:
-
-````
-import pyMesa.ion as ion
-
-
-ionize = ion.ion()
-ionize.getIon()
-
-````
-
+### Basic usage
 
 ````python
-# pyMesa module defines a number of useful MESA paths as pym.SOMETHING.
-print(pym.MESA_DIR) # Print MESA_DIR
-print(pym.MESA_VERSION) # Print MESA version number
+import pymesa as pm
 
-
-# When calling a function we must either set the value we want (for intent(in/inout) variables) or an empty variable for intent(out).
-ierr=0
-# Calls a function
-res = c.const_lib.const_init(pym.MESA_DIR,ierr)
-
-
-# If the call was a subroutine then res is a dict with the intent out variables in there
-# else it contains the result of the function call
-
-# Accessing a variable defined in a module is simply:
-c.const_def.mev_to_ergs
-
-# If the variable is not a parameter then you can change it with:
-c.const_def.standard_cgrav = 5.0
-
-# When passing a derived type, you should pass a dict to the function (filled with anything you want set)
-x = {}
-# or
-x = {'a':1,'b':'abc','c':{'d':1}}
-
-# Functions accepting arrays should pass a numpy array of the size it expects (if the function allocates the array, then just pass an array of size 1)
-x = np.zeros(size)
-
-# Arrays inside derived types are unstable at the moment and don't completely work.
+p=pm.mesa(MESA_DIR,MESASDK_ROOT)
 
 ````
+
+Where MESA_DIR and MESASDK_ROOT are strings containing the path to where MESA_DIR and MESASDK_ROOT
+are installed, or where you want them installed.
+
+
+## Installing MESA
+
+````python
+import pymesa as pm
+
+p=pm.mesa(MESA_DIR,MESASDK_ROOT)
+
+# Lists available MESA or MESASDK versions
+p.listMesaVersions()
+p.listSDKVersions()
+
+
+# Both preinstall functions take a version argument, leave empty to get the newest version
+
+p.preinstallSDK() # Download latest SDK
+p.installSDK() # Install SDK
+
+# Downloads MESA, pass zip_src=True to get ZIP folder (release versions of mesa)
+# or zip_src=False to download from SVN. Defaults to True
+
+p.preinstallMesa() # Download MESA
+p.installMesa() # Installs MESA
+
+````
+
+
+## MESA Modules
+
+This is for interfacing with modules like eos, kap, rates etc. The star and binary
+modules are interfaced in a different way.
+
+A number of modules have wrappers around the MESA functions
+
+````python
+import pymesa as pm
+
+p=pm.mesa(MESA_DIR,MESASDK_ROOT)
+
+# This is a dict containing a number of default options for all the modules
+defaults = p.defaults() 
+
+eos = pm.eos.eos(p.defaults)
+
+composition = {'h1':0.5,'he4':0.5}
+temp = 10**7
+rho= 10**3
+
+eos.getEosDT(composition,temp,rho))
+````
+
+This then returns a dict containing the results of eosDT_get().
+
+
+If the function does not have a wrapper, then the functions and 
+parameters are exposed via module.module_lib and module.module_def objects:
+
+````python
+import pymesa as pm
+
+p=pm.mesa(MESA_DIR,MESASDK_ROOT)
+
+defaults = p.defaults() 
+
+# Initialize a module
+const = pm.const.const(p.defaults) 
+
+# Access a variable inside the modules _def.f90 file
+print(const.const_ded.amu) 
+
+# Access a function/subroutine inside a _lib.f90 file
+
+chem = pm.chem.chem(p.defaults) 
+chem.chem_lib.chem_get_element_id('h1')
+````
+
+
+### Accessing low level functions
+
+When calling a function from a lib.f90, you must provide a variable for
+all arguments the function takes, even if the argument is intent inout or out,
+in which case they can be a null variable (0,'',np.zeros(1)). Otherwise
+the variable you pass should be of the same type as what fortran expects:
+
+| Fortran | Python |
+|---------|--------|
+| integer | int    |
+| real    | float  |
+| real(dp)| float  |
+| logical | boolean|
+| character| str    |
+| dimension(n) or 
+dimension(5) | np.array(5)  |
+
+Derived types and arrays with dimension(:) are not supported at the moment.
 
 Function names and module variables are all tab completable.
 
@@ -128,17 +160,23 @@ mesa_array[mesa_module.i_mesa_const-1]
 ````
 
 
-### Star
+### Running a full star
 
 Star is special as star_lib and star_def are not that useful on there own, instead there is a wrapper to evolve a star:
 
 
 ````python
-import pyMesa as pym
-import pyMesa.star as star
+import pymesa as pm
 
-pym.make_basic_inlist() # Or have a file in cwd called 'inlist'
-s = star.star()
+p=pm.mesa(MESA_DIR,MESASDK_ROOT)
+
+defaults = p.defaults() 
+
+# Initialize a module
+s = pm.star.star(p.defaults) 
+
+pm.make_basic_inlist() # Or have a file in the current directory called 'inlist'
+
 
 # Init new star
 s.new_star()
@@ -148,8 +186,11 @@ s.evolve() # Run till end or hit ctrl+c
 s.get_hist('star_age')
 s.get_prof('dm',1)
 
+
 mass=s.get_prof_nz('mass')
 temp=s.get_prof_nz('logT')    
+
+# Plot output
 import matplotlib.pyplot as plt
 plt.plot(mass,temp)
 plt.show()
@@ -158,12 +199,17 @@ plt.show()
 Or if you want to run step by step
 
 ````python
-import pyMesa as pym
-import pyMesa.star as star
+import pymesa as pm
 
-pym.make_basic_inlist() # Or have a file in cwd called 'inlist'
+p=pm.mesa(MESA_DIR,MESASDK_ROOT)
 
-s = star()
+defaults = p.defaults() 
+
+# Initialize a module
+s = pm.star.star(p.defaults) 
+
+pm.make_basic_inlist() # Or have a file in the current directory called 'inlist'
+
 s.new_star()
 s.before_evolve_loop()
 
@@ -179,7 +225,7 @@ print(s.get_dt())
 s.set_dt(s.get_dt()/2.0)
 print(s.get_dt())
 
-s.star.star_set_v_flag(s.star_id, True, 0) # Can call any star_lib function that takes id instead of s
+s.star_set_v_flag(s.star_id, True, 0) # Can call any star_lib function that takes id instead of s
 
 s.single_evolve() # One step
 
@@ -198,11 +244,9 @@ Bug reports should go to the issue tracker on github. Please include mesa versio
 
 ## Contributing
 
-In general most of the development should go towards the gfort2py project to add new
-fortran features. This repository just handles building mesa for python support. 
-
 Bug reports, if mesa versions don't work, or new examples are welcome as either pull requests
-or issues on the github tracker.
+or issues on the github tracker. Wrappers around commonly used MESA functions are also welcome,
+see the eos.py or neu.py for examples.
 
 ## Citating
 
