@@ -53,7 +53,8 @@ are installed, or where you want them installed.
 ````python
 import pymesa as pm
 
-p=pm.mesa(MESA_DIR,MESASDK_ROOT)
+p=pm.mesa(MESA_DIR,MESASDK_ROOT) 
+# MESA_DIR and MESASDK_ROOT do not need to exist yet but their parent folder should
 
 # Lists available MESA or MESASDK versions
 p.listMesaVersions()
@@ -87,7 +88,7 @@ import pymesa as pm
 p=pm.mesa(MESA_DIR,MESASDK_ROOT)
 
 # This is a dict containing a number of default options for all the modules
-defaults = p.defaults() 
+defaults = p.defaults
 
 eos = pm.eos.eos(p.defaults)
 
@@ -95,7 +96,7 @@ composition = {'h1':0.5,'he4':0.5}
 temp = 10**7
 rho= 10**3
 
-eos.getEosDT(composition,temp,rho))
+eos.getEosDT(composition,temp,rho)
 ````
 
 This then returns a dict containing the results of eosDT_get().
@@ -109,16 +110,15 @@ import pymesa as pm
 
 p=pm.mesa(MESA_DIR,MESASDK_ROOT)
 
-defaults = p.defaults() 
+defaults = p.defaults
 
 # Initialize a module
 const = pm.const.const(p.defaults) 
 
 # Access a variable inside the modules _def.f90 file
-print(const.const_ded.amu) 
+print(const.const_def.amu) 
 
 # Access a function/subroutine inside a _lib.f90 file
-
 chem = pm.chem.chem(p.defaults) 
 chem.chem_lib.chem_get_element_id('h1')
 ````
@@ -138,7 +138,7 @@ the variable you pass should be of the same type as what fortran expects:
 | real(dp)| float  |
 | logical | boolean|
 | character| str    |
-| dimension(n) or 
+| dimension(n) | np.array(n) where you know how big n is already | 
 dimension(5) | np.array(5)  |
 
 Derived types and arrays with dimension(:) are not supported at the moment.
@@ -170,10 +170,10 @@ import pymesa as pm
 
 p=pm.mesa(MESA_DIR,MESASDK_ROOT)
 
-defaults = p.defaults() 
+defaults = p.defaults
 
 # Initialize a module
-s = pm.star.star(p.defaults) 
+s = pm.star.star(defaults) 
 
 pm.make_basic_inlist() # Or have a file in the current directory called 'inlist'
 
@@ -203,7 +203,7 @@ import pymesa as pm
 
 p=pm.mesa(MESA_DIR,MESASDK_ROOT)
 
-defaults = p.defaults() 
+defaults = p.defaults
 
 # Initialize a module
 s = pm.star.star(p.defaults) 
