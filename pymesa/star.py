@@ -32,32 +32,24 @@ class star(object):
         self.prof_data = []
         
 
-    def error_check(self, res):
-        if isinstance(res,dict) and 'ierr' in res:
-            if res['ierr'] is not 0:
-                raise pym.MesaError('Non zero ierr='+str(res['ierr']))
-        else:
-            if int(res) != 0:
-                raise pym.MesaError('Non zero ierr='+str(res))
-
     def new_star(self, inlist='inlist'):
         self.star_id = self.star_lib.star_find_next_star_id()
         res = self.star_lib.alloc_star(self.star_id,0)
-        self.error_check(res)
+        pym.error_check(res)
         self.star_id = res['id']
         if self.star_id <= 0:
             raise ValueError("New star init failed")
         self.inlist = inlist
         res = self.star.read_star_job_id(self.star_id, self.inlist, 0)
-        self.error_check(res)
+        pym.error_check(res)
         res = self.star.star_setup(self.star_id, self.inlist, 0)
-        self.error_check(res)
+        pym.error_check(res)
 
     def before_evolve_loop(self):
         res = self.star.before_evolve_loop(False,True,False,
                 self.star.null_binary_controls,self.rse.extras_controls,
                 0,self.inlist,'restart_photo',True,0,self.star_id,0)
-        self.error_check(res)
+        pym.error_check(res)
 
     def single_step(self):
         res = self.star.star_evolve_step(self.star_id, self.first_try, self.just_did_backup)
@@ -69,7 +61,7 @@ class star(object):
 
     def before_step_loop(self):
         res = self.star.before_step_loop(self.star_id, 0)
-        self.error_check(res)
+        pym.error_check(res)
 
     def star_check_model(self):
         return self.star_lib.star_check_model(self.star_id)
@@ -126,7 +118,7 @@ class star(object):
         self.single_step()
 
         res = self.star.after_step_loop(self.star_id, self.inlist, False, result, 0)
-        self.error_check(res)
+        pym.error_check(res)
         res = res['result']
 
         if res != self.star_def.keep_going:
@@ -136,7 +128,7 @@ class star(object):
             else:
                 # Need to check s%result_reason
                 res = self.star.terminate_normal_evolve_loop(self.star_id, 0, False, res, 0)
-                self.error_check(res)
+                pym.error_check(res)
                 self.continue_evolve_loop = False
                 return False
 
@@ -169,7 +161,7 @@ class star(object):
 
     def after_evolve_loop(self):
         res = self.star.after_evolve_loop(self.star_id, True, 0)
-        self.error_check(res)
+        pym.error_check(res)
 
     def destroy_star(self):
         self.star_lib.free_star(self.star_id, 0)
@@ -182,7 +174,7 @@ class star(object):
     def load_star_job(self, inlist):
         self.star_lib.read_star_job_id(self.star_id, inlist, 0)
         res = self.star_lib.star_setup(self.star_id, inlist, 0)
-        self.error_check(res)
+        pym.error_check(res)
 
     def load_controls(self, inlist):
         self.star_lib.star_read_controls(self.star_id, inlist, 0)
@@ -293,7 +285,7 @@ class star(object):
         
     def get_dt(self):
         res = self.star.get_dt_next(self.star_id, 0, 0)
-        self.error_check(res)
+        pym.error_check(res)
         return res['dt']
         
     def set_dt(self, dt):

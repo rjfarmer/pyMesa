@@ -90,6 +90,8 @@ class eos(object):
                Rho, log10Rho, T, log10T, 
                res, d_dlnRho_const_T, d_dlnT_const_Rho, 
                d_dabar_const_TRho, d_dzbar_const_TRho, ierr)
+               
+        pym.error_check(eos_res)
          
         output = {}
         output['res'] = self.unpackEosBasicResults(eos_res['res'])
@@ -138,6 +140,8 @@ class eos(object):
                dlnT_dlnE_c_Rho, dlnT_dlnd_c_E, 
                dlnPgas_dlnE_c_Rho, dlnPgas_dlnd_c_E, 
                0)
+    
+        pym.error_check(eos_res)
          
         output = {}
         output['T'] = eos_res['t']
@@ -155,7 +159,7 @@ class eos(object):
         return output
         
         
-   def getEosPT(self,compostion,energy,Pgas,T):
+    def getEosPT(self,compostion,energy,Pgas,T):
         comp = self.chem.basic_composition_info(composition)
     
         X = comp['xh']
@@ -166,7 +170,7 @@ class eos(object):
         ids, xa = self.chem.chem_ids(composition)
         log10T = self.const.const_def.arg_not_provided
         log10Pgas = self.const.const_def.arg_not_provided
-
+    
         net_iso = np.arange(1,species+1)
     
         res = np.zeros(self.eos_def.num_eos_basic_results)
@@ -181,7 +185,7 @@ class eos(object):
         log10Rho = 0
         
         ierr = 0
-
+    
         eos_res = self.eos_lib.eosPT_get(
                self.eos_handle, Z, X, abar, zbar, 
                species, chem_id, net_iso, xa, 
@@ -189,7 +193,8 @@ class eos(object):
                Rho, log10Rho, dlnRho_dlnPgas_const_T, dlnRho_dlnT_const_Pgas, 
                res, d_dlnRho_const_T, d_dlnT_const_Rho, 
                d_dabar_const_TRho, d_dzbar_const_TRho, 0)
-
+    
+        pym.error_check(eos_res)
          
         output = {}
         output['rho'] = eos_res['Rho']
@@ -201,10 +206,10 @@ class eos(object):
         output['d_dlnt_const_rho'] = self.unpackEosBasicResults(eos_res['d_dlnt_const_rho'])
         output['d_dabar_const_trho'] = self.unpackEosBasicResults(eos_res['d_dabar_const_trho'])
         output['d_dzbar_const_trho'] = self.unpackEosBasicResults(eos_res['d_dzbar_const_trho'])
-
+    
         return output
-
-
+    
+    
     def getEosDT_ideal_gas(self,composition,T,Rho):
         
         comp = self.chem.basic_composition_info(composition)
@@ -217,7 +222,7 @@ class eos(object):
         ids, xa = self.chem.chem_ids(composition)
         log10Rho = self.const.const_def.arg_not_provided
         log10T = self.const.const_def.arg_not_provided
-
+    
         net_iso = np.arange(1,species+1)
     
         res = np.zeros(self.eos_def.num_eos_basic_results)
@@ -226,13 +231,15 @@ class eos(object):
         d_dabar_const_TRho = np.zeros(self.eos_def.num_eos_basic_results)
         d_dzbar_const_TRho = np.zeros(self.eos_def.num_eos_basic_results)
         ierr = 0
-
+    
         eos_res = self.eos_lib.eosDT_ideal_gas_get(
                self.eos_handle, Z, X, abar, zbar, 
                species, ids, net_iso, xa, 
                Rho, log10Rho, T, log10T, 
                res, d_dlnRho_const_T, d_dlnT_const_Rho, 
                d_dabar_const_TRho, d_dzbar_const_TRho, ierr)
+               
+        pym.error_check(eos_res)
          
         output = {}
         output['res'] = self.unpackEosBasicResults(eos_res['res'])
@@ -240,6 +247,6 @@ class eos(object):
         output['d_dlnt_const_rho'] = self.unpackEosBasicResults(eos_res['d_dlnt_const_rho'])
         output['d_dabar_const_trho'] = self.unpackEosBasicResults(eos_res['d_dabar_const_trho'])
         output['d_dzbar_const_trho'] = self.unpackEosBasicResults(eos_res['d_dzbar_const_trho'])
-
+    
         return output
          

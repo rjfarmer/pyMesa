@@ -38,6 +38,8 @@ class chem(object):
         
         res = self.chem_lib.basic_composition_info(num_isos, ids, xa,
                 0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0)
+                
+        pym.error_check(res)
         
         return res
         

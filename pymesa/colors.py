@@ -17,4 +17,6 @@ class colors(object):
             self.colors_lib.colors_shutdown()
             
     def get_bc(self,bandpass,logT,logg,MdivH):
-        return self.colors_lib.get_bc_by_name(bandpass, logT, logg, MdivH, 0)
+        res = self.colors_lib.get_bc_by_name(bandpass, logT, logg, MdivH, 0)
+        pym.error_check(res)
+        return res

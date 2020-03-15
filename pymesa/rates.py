@@ -19,15 +19,17 @@ class rates(object):
                     defaults['rates_cache_dir'],0)
 
 
-    def show_raw_rates(self,rate='r_c12_ag_o16'):
+    def get_raw_rate(self,rate):
         """
-        Get raw rate
+        Get raw rate given rate name like 'r_c12_ag_o16'
+        
+        Returns array of logT and rate
 
         """
 
         rate_id=rates_lib.rates_reaction_id(rate)
 
-        logT=np.linspace(7.0,10.0,10000)
+        logT=np.linspace(7.0,10.0,1000)
         r=[]
         for lt in logT:
              temp=10**lt
@@ -36,15 +38,25 @@ class rates(object):
              tf=res['tf']
              raw_rate=0
              ierr=0    
-             res = self.rates_lib.get_raw_rate(1, c12o16_id, temp, tf, raw_rate, ierr)
+             res = self.rates_lib.get_raw_rate(1, rate_id, temp, tf, raw_rate, ierr)
              r.append(res['raw_rate'])
 
-        plt.plot(logT,np.log10(r))
-        plt.show()
+        return logT,res
         
     def get_rate_from_cache(self,rate):
         return self.rates_lib.show_reaction_rates_from_cache(os.path.join(pym.RATES_CACHE,rate),ierr)
 
+
+    def which_screening(self,option):
+        pass
+        # MESA needs fixing
+        #res = self.rate_lib.screening_option(which_screening_option, 0)
+        
+        
+
+    def __del__(self):
+        if 'rates_lib' in self.__dict__:
+            self.rates_lib.rates_shutdown()
 
 # # Get screening factors
 # max_z_to_cache = 2

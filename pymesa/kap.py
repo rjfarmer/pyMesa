@@ -11,7 +11,7 @@ class kap(object):
         self.chem = chem.chem(defaults)
         
 
-        self.kap_lib, self.kap_def = pym.loadMod("eos",defaults)
+        self.kap_lib, self.kap_def = pym.loadMod("kap",defaults)
         self.kap_lib.kap_init(defaults['kap_file_prefix'],defaults['CO_prefixdefaults'],
                             defaults['lowT_prefix'],defaults['blend_logT_upper_bdy'],
                             defaults['blend_logT_lower_bdy'],defaults['kap_use_cache'],
@@ -20,7 +20,7 @@ class kap(object):
                             )
 
         self.kap_handle = self.kap_lib.alloc_kap_handle(0)
-        self.kap.kap_set_choices()
+        self.kap_set_choices()
 
 
     def kap_set_choices(self,cubic_interpolation_in_X=False, cubic_interpolation_in_Z=False, 
@@ -29,7 +29,7 @@ class kap(object):
             kap_Type2_full_off_X=0.71, kap_Type2_full_on_X=0.70,
             kap_Type2_full_off_dZ=0.001, kap_Type2_full_on_dZ=0.01):
                 
-        self.kap_lib.kap_set_choices(self.kap_handle,cubic_interpolation_in_X, 
+        res = self.kap_lib.kap_set_choices(self.kap_handle,cubic_interpolation_in_X, 
             cubic_interpolation_in_Z, 
             include_electron_conduction, 
             use_Zbase_for_Type1, use_Type2_opacities,
@@ -37,6 +37,27 @@ class kap(object):
             kap_Type2_full_off_dZ, kap_Type2_full_on_dZ, 
             0
             )
+        pym.error_check(res)
+
+
+    def kap_get(self, zbar, X, Z, Zbase, XC, XN, XO, XNe,logRho,logT,
+                lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT):
+                    
+        frac_Type2 = 0.0
+        dlnkap_dlnRho = 0.0
+        dlnkap_dlnT = 0.0
+        k = 0
+    
+        res = self.kap_lib.kap_get(
+            self.kap_handle, zbar, X, Z, Zbase, XC, XN, XO, XNe, logRho, logT, 
+            lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT, 
+            frac_Type2, k, dlnkap_dlnRho, dlnkap_dlnT, 0)
+            
+        pym.error_check(res)
+        
+        return {'frac_Type2':res['frac_type2'],'kap':res['kap'],
+                'dlnkap_dlnrho':res['dlnkap_dlnrho'], 'dlnkap_dlnt':res['dlnkap_dlnt']}
+
 
     def __del__(self):
         if 'kap_lib' in self.__dict__:

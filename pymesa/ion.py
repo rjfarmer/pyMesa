@@ -21,6 +21,8 @@ class ion(object):
         ierr = 0
 
         res = self.ion_lib.eval_ionization(Z, X, Rho, log10Rho, T, log10T, res, ierr)
+        pym.error_check(res)
+
         res = res['res']
         # Unpack res into a dict
         state = {}
