@@ -127,7 +127,7 @@ class star(object):
             print('include "standard_run_star_extras.inc"',file=f)
             print('end module run_star_extras',file=f)
   
-    def _makeBasicInlist(self,filename):
+    def makeBasicInlist(self,filename='inlist'):
         with open(filename,'w') as f:
             print('&star_job',file=f)
             print('/',file=f)
@@ -156,7 +156,7 @@ class star(object):
         pym.error_check(res)
 
     def single_step(self):
-        res = self.star.star_evolve_step(self.star_id, self.first_try, self.just_did_backup)
+        res = self.star.star_evolve_step(self.star_id, self.first_try)
         return self.check_step(res)
 
     def model_number(self):
@@ -194,11 +194,6 @@ class star(object):
             step_result = self.star_lib.star_prepare_to_redo(self.star_id)
         if step_result == self.star_def.retry:
             step_result = self.star_lib.star_prepare_to_retry(self.star_id)
-        if step_result == self.star_def.backup:
-            step_result = self.star_lib.star_do1_backup(self.star_id)
-            self.just_did_backup = True
-        else:
-            self.just_did_backup = False
         if step_result == self.star_def.terminate:
             self.continue_evolve_loop = False
             return False

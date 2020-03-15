@@ -174,6 +174,8 @@ defaults = p.defaults
 
 # Initialize a module
 s = pym.star.star(defaults) 
+# star can also accept a path to a run_star_extras.f90 to use, use rse=path
+
 
 pym.make_basic_inlist() # Or have a file in the current directory called 'inlist'
 
@@ -225,7 +227,8 @@ print(s.get_dt())
 s.set_dt(s.get_dt()/2.0)
 print(s.get_dt())
 
-s.star_set_v_flag(s.star_id, True, 0) # Can call any star_lib function that takes id instead of s
+res = s.star_lib.star_set_v_flag(s.star_id, True, 0) # Can call any star_lib function that takes id instead of s
+pym.error_check(res) # Things that have ierr should be checked with error_check
 
 s.single_evolve() # One step
 

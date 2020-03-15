@@ -33,7 +33,9 @@ print(kap.kap_get(comp['zbar'],comp['xh'],comp['z'],comp['z'],0.25,0.0,0.0,0.0,
 
 
 
-import pymesa as pm 
-p=pm.mesa('./mesa','./mesasdk')
+import pymesa as pym 
+p=pym.mesa('./mesa','./mesasdk')
 defaults = p.defaults
-s = pm.star.star(p.defaults)
+s = pym.star.star(p.defaults)
+s.makeBasicInlist()
+s.new_star()

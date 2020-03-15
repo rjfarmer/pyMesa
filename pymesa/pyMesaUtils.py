@@ -83,7 +83,7 @@ def error_check(res):
     if isinstance(res,dict):
         if 'ierr' in res:
             if res['ierr'] is not 0:
-                raise pym.MesaError('Non zero ierr='+str(res['ierr']))
+                raise MesaError('Non zero ierr='+str(res['ierr']))
     else:
         if int(res) != 0:
             raise MesaError('Non zero ierr='+str(res))
