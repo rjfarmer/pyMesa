@@ -25,4 +25,15 @@ p=pym.mesa()
 defaults = p.defaults
 
 class TestNet(unittest.TestCase):
-	pass
+	@unittest.skip("Skipping as we seg fault")	
+	def test_net_basic(self):
+		net=pym.net.net(defaults)
+		net.net_setup('mesa_45.net')
+		g = net.get_net_general_info()
+		g.in_use
+		try:
+			g.weaklib_ids
+		except pym.gf.errors.AllocationError:
+			pass
+			
+		net.net_get({'h1':0.25,'he4':0.25,'c12':0.25,'o16':0.25},10**9,10**5)

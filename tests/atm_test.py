@@ -26,4 +26,8 @@ defaults = p.defaults
 
 
 class TestAtm(unittest.TestCase):
-	pass
+	def test_atm_basic(self):
+		atm = pym.atm.atm(defaults)
+
+		atm.atm_Teff(1, 1)
+		atm.atm_L(5777, 1)

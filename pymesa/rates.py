@@ -51,11 +51,10 @@ class rates(object):
         output=out.strip()
         return output
 
-    def which_screening(self,option):
-        pass
-        # MESA needs fixing
-        #res = self.rate_lib.screening_option(which_screening_option, 0)
-        
+    def which_screening(self, option):
+        res = self.rates_lib.screening_option(option, 0)
+        pym.error_check(res)
+        return res.result
         
 
     def __del__(self):

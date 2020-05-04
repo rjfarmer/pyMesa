@@ -22,8 +22,8 @@ class neu(object):
 
         res = self.neu_lib.neu_get(T, log10T, Rho, log10Rho, abar, zbar, z2bar, log10_Tlim, flags, loss, sources, 0)
         
-        l = res['loss']
-        s = res['sources']
+        l = res.args['loss']
+        s = res.args['sources']
         
         neu_types = {'pair_neu_type':self.neu_def.pair_neu_type-1,
                     'plas_neu_type':self.neu_def.plas_neu_type-1,

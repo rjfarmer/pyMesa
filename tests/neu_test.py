@@ -25,4 +25,6 @@ p=pym.mesa()
 defaults = p.defaults
 
 class TestNeu(unittest.TestCase):
-	pass
+	def test_neu_basic(self):
+		neu = pym.neu.neu(defaults)
+		x = neu.getNeu(10**8,10**5,5,5,5)

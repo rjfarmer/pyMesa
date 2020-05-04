@@ -25,4 +25,22 @@ p=pym.mesa()
 defaults = p.defaults
 
 class TestKap(unittest.TestCase):
-	pass
+	def test_kap_basic(self):
+		kap = pym.kap.kap(p.defaults)
+				
+		zbar = 1.0
+		X = 0.78
+		Z = 0.02
+		Zbase = 0.02
+		XC = 0.0
+		XN = 0.0
+		XO = 0.0
+		XNe = 0.0
+		logRho = 9.0
+		logT = 9.0
+		lnfree_e = 0.0
+		d_lnfree_e_dlnRho= 0.0
+		d_lnfree_e_dlnT= 0.0
+		
+		kap.kap_get(zbar, X, Z, Zbase, XC, XN, XO, XNe,logRho,logT,
+                lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT)
