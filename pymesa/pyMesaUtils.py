@@ -87,7 +87,7 @@ def error_check(res):
 	try:
 		ierr = res.args['ierr']
 	except (AttributeError, KeyError):
-		ierr = res
+		ierr = res.result
 	if ierr != 0:
 		raise MesaError('Non zero ierr '+str(res))
             

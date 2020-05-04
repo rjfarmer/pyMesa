@@ -27,4 +27,4 @@ defaults = p.defaults
 class TestConst(unittest.TestCase):
 	def test_const_basic(self):
 		const = pym.const.const(p.defaults)
-		print(const.const_def.amu)
+		amu = const.const_def.amu

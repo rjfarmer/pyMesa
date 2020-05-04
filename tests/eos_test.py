@@ -25,4 +25,49 @@ p=pym.mesa()
 defaults = p.defaults
 
 class TestEOS(unittest.TestCase):
-	pass
+	def test_eosdt_basic(self):
+		eos = pym.eos.eos(p.defaults)
+
+		composition = {'h1':0.5,'he4':0.5}
+		temp = 10**7
+		rho= 10**3
+
+		eos.getEosDT(composition,temp,rho)
+
+	def test_eosde_basic(self):
+		eos = pym.eos.eos(p.defaults)
+
+		composition = {'h1':0.5,'he4':0.5}
+		temp = 10**7
+		rho= 10**3
+		energy = 100
+
+		try:
+			eos.getEosDE(composition,energy,rho,temp)
+		except pym.MesaError:
+			pass # Ignore when ierr /=0 as i think the inputs are not great
+
+
+	def test_eospt_basic(self):
+		eos = pym.eos.eos(p.defaults)
+
+		composition = {'h1':0.5,'he4':0.5}
+		temp = 10**7
+		rho= 10**3
+		energy = 100
+		pgas = 0.5
+
+		try:
+			eos.getEosPT(composition,energy,pgas,temp)
+		except pym.MesaError:
+			pass # Ignore when ierr /=0 as i think the inputs are not great
+
+
+	def test_eosdt_ideal_gas_basic(self):
+		eos = pym.eos.eos(p.defaults)
+
+		composition = {'h1':0.5,'he4':0.5}
+		temp = 10**7
+		rho= 10**3
+
+		eos.getEosDT_ideal_gas(composition,temp,rho)

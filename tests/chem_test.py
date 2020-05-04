@@ -28,6 +28,8 @@ class TestChem(unittest.TestCase):
 	def test_chem_basic(self):
 		chem = pym.chem.chem(p.defaults)
 		chem.chem_lib.chem_get_element_id('h1')
+		
+		chem.chem_lib.chem_get_iso_id('he4')
 	
 	def test_chem_basic_composition_info(self):
 		chem = pym.chem.chem(p.defaults)
