@@ -141,7 +141,9 @@ the variable you pass should be of the same type as what fortran expects:
 | dimension(n) | np.array(n) where you know how big n is already | 
 dimension(5) | np.array(5)  |
 
-Derived types and arrays with dimension(:) are not supported at the moment.
+Derived types should pass a dict 
+
+Arrays with dimension(:) should pass an array of the same shape as what fortran expects
 
 Function names and module variables are all tab completable.
 

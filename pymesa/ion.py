@@ -17,13 +17,13 @@ class ion(object):
     def getIon(self,T,Rho,Z,X):
         log10Rho = np.log10(Rho)
         log10T = np.log10(T)
-        res = np.zeros(self.ion_def.num_ion_vals.get())
+        res = np.zeros(self.ion_def.num_ion_vals)
         ierr = 0
 
-        res = self.ion_lib.eval_ionization(Z, X, Rho, log10Rho, T, log10T, res, ierr)
-        pym.error_check(res)
+        result = self.ion_lib.eval_ionization(Z, X, Rho, log10Rho, T, log10T, res, ierr)
+        pym.error_check(result)
 
-        res = res['res']
+        res = result.args['res']
         # Unpack res into a dict
         state = {}
         state['ion_ilogPgas'] = res[self.ion_def.ion_ilogPgas-1]

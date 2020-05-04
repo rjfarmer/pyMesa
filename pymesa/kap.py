@@ -19,7 +19,7 @@ class kap(object):
                             defaults['kap_show_info'], 0
                             )
 
-        self.kap_handle = self.kap_lib.alloc_kap_handle(0)
+        self.kap_handle = self.kap_lib.alloc_kap_handle(0).result
         self.kap_set_choices()
 
 
@@ -48,12 +48,14 @@ class kap(object):
         dlnkap_dlnT = 0.0
         k = 0
     
-        res = self.kap_lib.kap_get(
+        result = self.kap_lib.kap_get(
             self.kap_handle, zbar, X, Z, Zbase, XC, XN, XO, XNe, logRho, logT, 
             lnfree_e, d_lnfree_e_dlnRho, d_lnfree_e_dlnT, 
             frac_Type2, k, dlnkap_dlnRho, dlnkap_dlnT, 0)
             
-        pym.error_check(res)
+        pym.error_check(result)
+        
+        res = result.args
         
         return {'frac_Type2':res['frac_type2'],'kap':res['kap'],
                 'dlnkap_dlnrho':res['dlnkap_dlnrho'], 'dlnkap_dlnt':res['dlnkap_dlnt']}

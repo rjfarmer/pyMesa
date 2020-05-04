@@ -26,42 +26,37 @@ class net(object):
         self.net_lib.net_init(0)
         
         
-        
-        
-        
-        
-        
-        
-        
-     
-        # self.net_file = net_file
+    def net_setup(self, net_file):
+        self.net_file = net_file
 
-        # init = 0
-        # # Net setup
-        # self.net_handle=net_lib.alloc_net_handle(ierr)
-        # self.net_lib.net_start_def(self.net_handle, ierr)
-        # self.net_lib.read_net_file(self.net_file,self.net_handle, ierr)
-        # self.net_lib.net_finish_def(self.net_handle, ierr)
+        ierr=0
+        # Net setup
+        self.net_handle=net_lib.alloc_net_handle(ierr)
+        self.net_lib.net_start_def(self.net_handle, ierr)
+        self.net_lib.read_net_file(self.net_file,self.net_handle, ierr)
+        self.net_lib.net_finish_def(self.net_handle, ierr)
 
-        # self.net_lib.net_set_logtcut(self.net_handle, -1,-1, ierr)
-        # self.net_lib.net_set_fe56ec_fake_factor(self.net_handle, 10**-7, 3.0*10**9, ierr)
+        self.net_lib.net_set_logtcut(self.net_handle, -1,-1, ierr)
+        self.net_lib.net_set_fe56ec_fake_factor(self.net_handle, 10**-7, 3.0*10**9, ierr)
+
+        species = net_lib.net_num_isos(self.net_handle, ierr)
+        num_reactions =  net_lib.net_num_reactions(self.net_handle, ierr)
+
+        rates_reaction_id_max = rates_def.rates_reaction_id_max.get()
+
+        which_rates = np.zeros(rates_def.rates_reaction_id_max.get())
+        reaction_id = np.zeros(num_reactions)
+        which_rates[:] = self.rates_def.rates_jr_if_available.get()
+        rates_lib.set_which_rates(ierr)
+        self.net_lib.net_set_which_rates(self.net_handle, which_rates, ierr)
+        self.net_lib.net_setup_tables(self.net_handle, '', ierr)
+
 
 # # Accessing the g pointer is broken
 # # g={}
 # # res = net_lib.net_ptr(handle, g, ierr)
 # # g=res['g'] # Note this is only a copy of the pointer, changes wont propagate back to mesa
 
-        # species = net_lib.net_num_isos(self.net_handle, ierr)
-        # num_reactions =  net_lib.net_num_reactions(self.net_handle, ierr)
-
-        # rates_reaction_id_max = rates_def.rates_reaction_id_max.get()
-
-        # which_rates = np.zeros(rates_def.rates_reaction_id_max.get())
-        # reaction_id = np.zeros(num_reactions)
-        # which_rates[:] = rates_def.rates_jr_if_available.get()
-        # #rates_lib.set_which_rates(ierr)
-        # self.net_lib.net_set_which_rates(self.net_handle, which_rates, ierr)
-        # self.net_lib.net_setup_tables(self.net_handle, '', ierr)
 
 # End net setup
 

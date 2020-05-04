@@ -41,7 +41,7 @@ class chem(object):
                 
         pym.error_check(res)
         
-        return res
+        return res.args
         
     def chem_ids(self,composition):
         num_isos = len(composition)
@@ -50,7 +50,7 @@ class chem(object):
         
         j=0
         for k,v in composition.items():
-           c = self.chem_lib.chem_get_iso_id(k)
+           c = self.chem_lib.chem_get_iso_id(k).result
            if c <= 0:
                raise ValueError("Bad chem id "+str(k)+" got "+str(c))
            ids[j] = c
@@ -70,6 +70,6 @@ class chem(object):
             
         zc = self._choices[zfrac_choice]
         
-        return self.chem_lib.chem_M_div_h(x,z,zc)
+        return self.chem_lib.chem_M_div_h(x,z,zc).result
         
         

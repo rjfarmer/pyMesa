@@ -1,23 +1,25 @@
 import pymesa.pyMesaUtils as pym
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 
 from . import const
+from . import chem
 from . import math
 from . import rates
 
 class rates(object):
-    def __init__(self, defaults):        
+    def __init__(self, defaults):   
+        self.defaults = defaults     
         self.const = const.const(defaults)
         self.math = math.math(defaults)
         self.chem = chem.chem(defaults)
     
         self.rates_lib, self.rates_def = pym.loadMod("rates",defaults)
         self.rates_lib.rates_init(defaults['reactionlist_filename'],defaults['jina_reaclib_filename'],
-                    defaults['rates_table_dir_in'],defaults['use_suzuki_weak_rates'],
+                    defaults['rates_table_dir_in'],defaults['use_suzuki_weak_rates'],defaults['use_special_weak_rates'],
                     defaults['special_weak_states_file'],defaults['special_weak_transitions_file'],
                     defaults['rates_cache_dir'],0)
-
 
     def get_raw_rate(self,rate):
         """
@@ -27,7 +29,7 @@ class rates(object):
 
         """
 
-        rate_id=rates_lib.rates_reaction_id(rate)
+        rate_id=self.rates_lib.rates_reaction_id(rate)
 
         logT=np.linspace(7.0,10.0,1000)
         r=[]
@@ -41,11 +43,13 @@ class rates(object):
              res = self.rates_lib.get_raw_rate(1, rate_id, temp, tf, raw_rate, ierr)
              r.append(res['raw_rate'])
 
-        return logT,res
+        return logT,r
         
     def get_rate_from_cache(self,rate):
-        return self.rates_lib.show_reaction_rates_from_cache(os.path.join(pym.RATES_CACHE,rate),ierr)
-
+        with pym.captureStdOut() as out:
+            self.rates_lib.show_reaction_rates_from_cache(os.path.join(self.defaults['RATES_CACHE'],rate),0)
+        output=out.strip()
+        return output
 
     def which_screening(self,option):
         pass

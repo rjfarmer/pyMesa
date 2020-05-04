@@ -18,7 +18,7 @@ class eos(object):
                 defaults['eosDT_cache_dir'],defaults['eosPT_cache_dir'],
                 defaults['eosDE_cache_dir'],defaults['eos_use_cache'],0)
                 
-        self.eos_handle = self.eos_lib.alloc_eos_handle(0)
+        self.eos_handle = self.eos_lib.alloc_eos_handle(0).result
         
     def unpackEosBasicResults(self,array):
         res = {}
@@ -64,7 +64,7 @@ class eos(object):
         
     def getEosDT(self,composition,T,Rho):
         
-        comp = self.chem.basic_composition_info(composition)
+        comp = self.chem.basic_composition_info(composition).result
     
         X = comp['xh']
         Z = comp['z']

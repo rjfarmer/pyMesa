@@ -18,7 +18,6 @@
 #along with pyMesa. If not, see <http://www.gnu.org/licenses/>.
 
 from __future__ import print_function
-import gfort2py as gf
 import numpy as np
 import os
 import sys
@@ -31,7 +30,12 @@ import tarfile
 import io
 import svn.remote
 import pathlib
+import collections
+from contextlib import contextmanager
+from io import StringIO
+from io import BytesIO
 
+import gfort2py as gf
 from . import atm
 from . import chem
 from . import colors
@@ -80,13 +84,12 @@ def loadMod(module, defaults):
     return x, y
 
 def error_check(res):
-    if isinstance(res,dict):
-        if 'ierr' in res:
-            if res['ierr'] is not 0:
-                raise MesaError('Non zero ierr='+str(res['ierr']))
-    else:
-        if int(res) != 0:
-            raise MesaError('Non zero ierr='+str(res))
+	try:
+		ierr = res.args['ierr']
+	except (AttributeError, KeyError):
+		ierr = res
+	if ierr != 0:
+		raise MesaError('Non zero ierr '+str(res))
             
 def _checkcrpath():
     res = subprocess.call(["command","-v","chrpath"], stdout=open(os.devnull, 'wb'))
@@ -541,7 +544,24 @@ class MesaError(Exception):
     pass
 
 
-        
+
+@contextmanager
+def captured_output():
+    """
+    For use when we need to grab the stdout/stderr from fortran
+    Use as:
+    with captured_output() as (out,err):
+        func()
+    output=out.getvalue().strip()
+    error=err.getvalue().strip()
+    """
+    new_out, new_err = StringIO(),StringIO()
+    old_out,old_err = sys.stdout, sys.stderr
+    try:
+        sys.stdout, sys.stderr = new_out, new_err
+        yield sys.stdout, sys.stderr
+    finally:
+        sys.stdout, sys.stderr = old_out, old_err
 
 
     
