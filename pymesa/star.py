@@ -137,10 +137,10 @@ class star(object):
             print('/',file=f)
                         
     def new_star(self, inlist='inlist'):
-        self.star_id = self.star_lib.star_find_next_star_id()
+        self.star_id = self.star_lib.star_find_next_star_id().result
         res = self.star_lib.alloc_star(self.star_id,0)
         pym.error_check(res)
-        self.star_id = res['id']
+        self.star_id = res.args['id']
         if self.star_id <= 0:
             raise ValueError("New star init failed")
         self.inlist = inlist

@@ -34,3 +34,10 @@ class TestChem(unittest.TestCase):
 	def test_chem_basic_composition_info(self):
 		chem = pym.chem.chem(p.defaults)
 		chem.basic_composition_info({'h1':0.25,'he4':0.25,'c12':0.25,'o16':0.25})
+
+
+	# def test_reaction_Qtotal(self):
+		# isos_in = ['h1','c12']
+		# isos_out = ['n13']
+		# chem = pym.chem.chem(p.defaults)
+		# chem.reaction_Qtotal(isos_in, isos_out)

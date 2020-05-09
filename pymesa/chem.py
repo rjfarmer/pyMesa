@@ -51,7 +51,7 @@ class chem(object):
         
         j=0
         for k,v in composition.items():
-           c = self.chem_lib.chem_get_iso_id(k).result
+           c = self.chem_id(k)
            if c <= 0:
                raise ValueError("Bad chem id "+str(k)+" got "+str(c))
            ids[j] = c
@@ -72,5 +72,22 @@ class chem(object):
         zc = self._choices[zfrac_choice]
         
         return self.chem_lib.chem_M_div_h(x,z,zc).result
+
+    def chem_id(self, iso):
+        return self.chem_lib.chem_get_iso_id(iso).result
         
+    @property
+    def chem_isos(self):
+        return self.chem_def.chem_isos
         
+    def get_mass_excess(self, iso):
+        return self.chem_lib.get_mass_excess(self.chem_isos, self.chem_id(iso)).result
+
+
+    # def reaction_Qtotal(self, isos_in, isos_out):
+        # chems_in, _ = self.chem_ids({i:1 for i in isos_in})
+        # chems_out, _ = self.chem_ids({i:1 for i in isos_out})
+        
+        # all_chems = chems_in + chems_out
+        
+        # return self.chem_lib.reaction_Qtotal(len(isos_in), len(isos_out), all_chems, self.chem_isos).result

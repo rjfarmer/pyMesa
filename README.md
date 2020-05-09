@@ -212,7 +212,7 @@ defaults = p.defaults
 # Initialize a module
 s = pym.star.star(p.defaults) 
 
-pym.make_basic_inlist() # Or have a file in the current directory called 'inlist'
+s.makeBasicInlist() # Or have a file in the current directory called 'inlist'
 
 s.new_star()
 s.before_evolve_loop()

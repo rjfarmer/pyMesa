@@ -14,11 +14,17 @@ class eos(object):
         self.chem = chem.chem(defaults)
 
         self.eos_lib, self.eos_def = pym.loadMod("eos",defaults)
-        self.eos_lib.eos_init(defaults['eos_file_prefix'],
-                defaults['eosDT_cache_dir'],defaults['eosPT_cache_dir'],
+        self.eos_lib.eos_init(defaults['eosDT_cache_dir'],defaults['eosPT_cache_dir'],
                 defaults['eosDE_cache_dir'],defaults['eos_use_cache'],0)
                 
         self.eos_handle = self.eos_lib.alloc_eos_handle(0).result
+        
+        
+    def __del__(self):
+        if 'eos_lib' in self.__dict__:
+            self.eos_lib.eos_shutdown()
+            
+        
         
     def unpackEosBasicResults(self,array):
         res = {}
