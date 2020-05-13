@@ -29,7 +29,7 @@ class rates(object):
 
         """
 
-        rate_id=self.rates_lib.rates_reaction_id(rate)
+        rate_id=self.rates_id(rate)
 
         logT=np.linspace(7.0,10.0,1000)
         r=[]
@@ -44,6 +44,13 @@ class rates(object):
              r.append(res['raw_rate'])
 
         return logT,r
+        
+
+    def rates_id(self, rate):
+        rid = self.rates_lib.rates_reaction_id(rate).result
+        if rid ==0:
+            raise ValueError("Can not find rate {}".format(rate))
+        
         
     def get_rate_from_cache(self,rate):
         with pym.captureStdOut() as out:
