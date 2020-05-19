@@ -28,3 +28,7 @@ class TestKap(unittest.TestCase):
 	def test_ion_basic(self):
 		ion=pym.ion.ion(p.defaults)
 		ion.getIon(5000.0,10**3,0.02,0.75)
+
+	def test_eval_typical_charge(self):
+		ion=pym.ion.ion(p.defaults)
+		ion.eval_typical_charge('fe56', {'h1':0.5,'he4':0.5}, 15777.0, 10**1)
