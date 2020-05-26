@@ -17,7 +17,7 @@ class eos(object):
         self.eos_lib.eos_init(defaults['eosDT_cache_dir'],defaults['eosPT_cache_dir'],
                 defaults['eosDE_cache_dir'],defaults['eos_use_cache'],0)
                 
-        if eosinlist is not None:
+        if eosinlist is None:
             self.eos_handle = self.eos_lib.alloc_eos_handle(0).result
         else:
             self.loadEosInlist(eosinlist)
@@ -27,11 +27,16 @@ class eos(object):
             self.eos_lib.eos_shutdown()
             
     def loadEosInlist(self,filename='inlist_eos'):
-        self.eos_handle = self.eos_lib.alloc_eos_handle_using_inlist(filename,ierr).result
+        x = self.eos_lib.alloc_eos_handle_using_inlist(filename,0).result
+        pym.error_check(x)
+        self.eos_handle = x
         
+    def getEosHandle(self):
+        return self.eos_def.eos_handles[self.eos_handle]
+
         
     def unpackEosBasicResults(self,array):
-        res = {}
+        result = {}
         
         if len(array)==1:
             return array[0]
@@ -53,24 +58,24 @@ class eos(object):
         i_gamma1 = self.eos_def.i_gamma1 - 1
         i_gamma3 = self.eos_def.i_gamma3 - 1 
         
-        res['i_lnPgas'] = array[i_lnPgas]
-        res['i_lnE'] = array[i_lnE]
-        res['i_lnS'] = array[i_lnS]
-        res['i_mu'] = array[i_mu]
-        res['i_lnfree_e'] = array[i_lnfree_e]
-        res['i_eta'] = array[i_eta]
-        res['i_grad_ad'] = array[i_grad_ad]
-        res['i_chiRho'] = array[i_chiRho]
-        res['i_chiT'] = array[i_chiT]
-        res['i_Cp'] = array[i_Cp]
-        res['i_Cv'] = array[i_Cv]
-        res['i_dE_dRho'] = array[i_dE_dRho]
-        res['i_dS_dT'] = array[i_dS_dT]
-        res['i_dS_dRho'] = array[i_dS_dRho]
-        res['i_gamma1'] = array[i_gamma1]
-        res['i_gamma3'] = array[i_gamma3]        
+        result['i_lnPgas'] = array[i_lnPgas]
+        result['i_lnE'] = array[i_lnE]
+        result['i_lnS'] = array[i_lnS]
+        result['i_mu'] = array[i_mu]
+        result['i_lnfree_e'] = array[i_lnfree_e]
+        result['i_eta'] = array[i_eta]
+        result['i_grad_ad'] = array[i_grad_ad]
+        result['i_chiRho'] = array[i_chiRho]
+        result['i_chiT'] = array[i_chiT]
+        result['i_Cp'] = array[i_Cp]
+        result['i_Cv'] = array[i_Cv]
+        result['i_dE_dRho'] = array[i_dE_dRho]
+        result['i_dS_dT'] = array[i_dS_dT]
+        result['i_dS_dRho'] = array[i_dS_dRho]
+        result['i_gamma1'] = array[i_gamma1]
+        result['i_gamma3'] = array[i_gamma3]        
         
-        return res
+        return result
         
     def getEosDT(self,composition,T,Rho):
         
@@ -88,7 +93,7 @@ class eos(object):
 
         net_iso = np.arange(1,species+1)
     
-        res = np.zeros(self.eos_def.num_eos_basic_results)
+        result = np.zeros(self.eos_def.num_eos_basic_results)
         d_dlnRho_const_T = np.zeros(self.eos_def.num_eos_basic_results)
         d_dlnT_const_Rho = np.zeros(self.eos_def.num_eos_basic_results)
         d_dabar_const_TRho = np.zeros(self.eos_def.num_eos_basic_results)
@@ -99,13 +104,13 @@ class eos(object):
                self.eos_handle, Z, X, abar, zbar, z53bar,
                species, ids, net_iso, xa, 
                Rho, log10Rho, T, log10T, 
-               res, d_dlnRho_const_T, d_dlnT_const_Rho, 
+               result, d_dlnRho_const_T, d_dlnT_const_Rho, 
                d_dabar_const_TRho, d_dzbar_const_TRho, ierr)         
                
         pym.error_check(eos_res)
          
         output = {}
-        output['res'] = self.unpackEosBasicResults(eos_res.args['res'])
+        output['result'] = self.unpackEosBasicResults(eos_res.args['res'])
         output['d_dlnrho_const_t'] = self.unpackEosBasicResults(eos_res.args['d_dlnrho_const_t'])
         output['d_dlnt_const_rho'] = self.unpackEosBasicResults(eos_res.args['d_dlnt_const_rho'])
         output['d_dabar_const_trho'] = self.unpackEosBasicResults(eos_res.args['d_dabar_const_trho'])
