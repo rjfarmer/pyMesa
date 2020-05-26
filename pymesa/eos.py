@@ -8,7 +8,7 @@ from . import math
 from . import chem
 
 class eos(object):
-    def __init__(self, defaults):
+    def __init__(self, defaults,eosinlist=None):
         self.const = const.const(defaults)
         self.math = math.math(defaults)
         self.chem = chem.chem(defaults)
@@ -17,13 +17,17 @@ class eos(object):
         self.eos_lib.eos_init(defaults['eosDT_cache_dir'],defaults['eosPT_cache_dir'],
                 defaults['eosDE_cache_dir'],defaults['eos_use_cache'],0)
                 
-        self.eos_handle = self.eos_lib.alloc_eos_handle(0).result
-        
-        
+        if eosinlist is not None:
+            self.eos_handle = self.eos_lib.alloc_eos_handle(0).result
+        else:
+            self.loadEosInlist(eosinlist)
+      
     def __del__(self):
         if 'eos_lib' in self.__dict__:
             self.eos_lib.eos_shutdown()
             
+    def loadEosInlist(self,filename='inlist_eos'):
+        self.eos_handle = self.eos_lib.alloc_eos_handle_using_inlist(filename,ierr).result
         
         
     def unpackEosBasicResults(self,array):
