@@ -71,3 +71,17 @@ class TestEOS(unittest.TestCase):
 		rho= 10**3
 
 		eos.getEosDT_ideal_gas(composition,temp,rho)
+
+
+
+	def test_eosdt_basic2(self):
+		eos = pym.eos.eos(p.defaults)
+
+		composition = {'h1':0.5,'he4':0.5}
+		temp = 10**7
+		rho= 10**3
+
+		e=eos.getEosHandle()
+		e.dbg=True
+
+		eos.getEosDT(composition,temp,rho)

@@ -11,13 +11,13 @@ It contains:
 * Interface to the individual MESA modules (eos, kap etc)
 * Interface into mesastar, allowing for full control over the evolution of a star
 
-Current stable version is 2.0.0
+Current version is 2.0.0
 
 
 ## Requirements:
 Note: pyMesa currently only works on linux.
 
-[gfort2py](https://github.com/rjfarmer/gfort2py) (Also available via pip) (needs version >= 1.1.5)
+[gfort2py](https://github.com/rjfarmer/gfort2py) (Also available via pip) (needs version >= 2.0.0)
 
 numpy
 
@@ -26,6 +26,8 @@ matplotlib
 chrpath
 
 MESA > 12829
+
+Bigfloat (pip) Needed if you want to access quad precision variables
  
 ## Building
 
@@ -44,8 +46,8 @@ p=pym.mesa(MESA_DIR,MESASDK_ROOT)
 
 ````
 
-Where MESA_DIR and MESASDK_ROOT are strings containing the path to where MESA_DIR and MESASDK_ROOT
-are installed, or where you want them installed.
+Where MESA_DIR and MESASDK_ROOT are optional strings containing the path to where MESA_DIR and MESASDK_ROOT are installed, or where you want them installed. If they are not set, then we
+look for the shell environment variables  MESA_DIR and MESASDK_ROOT.
 
 
 ## Installing MESA
@@ -128,7 +130,7 @@ chem.chem_lib.chem_get_element_id('h1')
 
 When calling a function from a lib.f90, you must provide a variable for
 all arguments the function takes, even if the argument is intent inout or out,
-in which case they can be a null variable (0,'',np.zeros(1)). Otherwise
+in which case they can be a null variable (i.e 0,'',np.zeros(1)). Otherwise
 the variable you pass should be of the same type as what fortran expects:
 
 | Fortran | Python |
@@ -147,6 +149,9 @@ Arrays with dimension(:) should pass an array of the same shape as what fortran 
 
 Function names and module variables are all tab completable.
 
+Setting or passing function pointers, then you should pass the low level fortran function i.e,
+to pass eosDT_get() as a pointer then use "eos.eos_lib.eosDT_get" as the argument
+
 ## Arrays
 
 Remember that fortran has 1-based arrays while numpy uses 0-based. This comes
@@ -164,7 +169,7 @@ mesa_array[mesa_module.i_mesa_const-1]
 
 ### Running a full star
 
-Star is special as star_lib and star_def are not that useful on there own, instead there is a wrapper to evolve a star:
+Star is special as star_lib and star_def are not that useful on their own, instead there is a wrapper to evolve a star:
 
 
 ````python
@@ -255,8 +260,7 @@ see the eos.py or neu.py for examples.
 
 ## Citating
 
-People who use pyMESA in papers should cite this using the zenodo link for the version they used. If you use pyMesa in a project (research or teaching), let me know and i can help advertise here (also useful for me to help
-with funding requests). Current versions citation is in the CITATION file.
+People who use pyMESA in papers should cite this using the zenodo link for the version they used. If you use pyMesa in a project (research or teaching), let me know and I can help advertise here (also useful for me to help with funding requests). Current versions citation is in the CITATION file.
 
 ## Known Projects using pyMesa
 

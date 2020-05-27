@@ -69,7 +69,7 @@ class ion(object):
     def eval_typical_charge(self, iso, composition, T, Rho):
 
         eosResult = self.eos.getEosDT(composition,T,Rho)
-        free_e = np.exp(eosResult['res']['i_lnfree_e'])
+        free_e = np.exp(eosResult['result']['i_lnfree_e'])
 
         cid = self.chem.chem_ids({iso:1.0})[0][0]
         abar = self.chem.basic_composition_info({iso:1.0})['abar']
