@@ -7,3 +7,5 @@ class gyre(object):
         self.namelist = namelist
         self.gyre_lib.gyre_init(namelist)
 
+    def read_model(self, filename):
+        self.gyre_lib.gyre_read_model(filename)

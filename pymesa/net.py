@@ -24,6 +24,8 @@ class net(object):
         self.rates = rates.rates(defaults)
     
         self.net_lib, self.net_def = pym.loadMod("net",defaults)
+
+        self.n = self.net_lib.allocate_dt('net_info')
         self.net_lib.net_init(0)
         self.setup = False
         
@@ -93,10 +95,11 @@ class net(object):
         self.work = np.zeros(self.lwork)
         
         self.setup = True
-            
+
+        self.g = self.get_net_general_info()
             
     def get_net_info(self):
-        pass
+        return self.n
 
     def get_net_general_info(self):
         if not self.setup:
@@ -149,7 +152,7 @@ class net(object):
         eps_nuc_categories = np.zeros(self.chem.chem_def.num_categories)
         
 
-        result = self.net_lib.net_get(self.net_handle, just_dxdt, n,
+        result = self.net_lib.net_get(self.net_handle, just_dxdt, self.n,
                                     self.species, self.num_reactions,
                                     xa, temp, log10T, rho, log10Rho,
                                     abar, zbar, z2bar, ye,
