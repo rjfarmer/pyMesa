@@ -24,5 +24,18 @@ import pymesa as pym
 p=pym.mesa()
 defaults = p.defaults
 
+colors=pym.colors.colors(defaults)
+
 class TestColors(unittest.TestCase):
-	pass
+	def test_basic(self):
+		x=colors.get_bc('V',4.0,4.0,0.0)
+		y=colors.get_bc('V',4.5,4.0,0.0)
+		self.assertFalse(x==y)
+		y2=colors.get_bc('B',4.5,4.0,0.0)
+		self.assertFalse(y2==y)
+
+		colors.get_abs_mag('V',4.5,4.0,0.0,1.0) 
+		colors.get_lum('V',4.5,4.0,0.0,1.0)
+		colors.available_names()
+		colors.get_abs_bolo_mag(1.0) 
+		#colors.mdivh({'h1':0.25,'he4':0.25,'c12':0.25,'o16':0.25})

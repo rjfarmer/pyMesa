@@ -463,8 +463,8 @@ class mesa(object):
 
         # Colors
         defaults['num_files'] = 1
-        defaults['fnames'] = np.array(['lcb98cor.dat'])
-        defaults['num_colors'] = 11
+        defaults['fnames'] = np.array(['lcb98cor.dat'],dtype='|S12')
+        defaults['num_colors'] = np.array([11])
 
         # Const
         defaults['mesa_dir'] = os.path.realpath(self.MESA_DIR)

@@ -248,6 +248,25 @@ There is limited support for changing options, the best bet is to put it in a in
 
 You can only access history or profile data for output, there is no generic access to the star_type derived type.
 
+## Modules that work
+
+- [x] atm.py
+- [ ] binary.py
+- [x] chem.py
+- [x] colors.py
+- [x] const.py
+- [x] math.py 
+- [x] eos.py
+- [x] ion.py
+- [x] kap.py
+- [ ] net.py (partial support)
+- [x] neu.py
+- [x] rates.py
+- [x] utils.py
+- [ ] star.py (partial support no access to star_type yet)
+
+
+
 ## Bug reports:
 
 Bug reports should go to the issue tracker on github. Please include mesa version, gfortran version, gfort2py version and pyMesa version 
