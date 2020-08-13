@@ -21,7 +21,9 @@ class rates(object):
                     defaults['special_weak_states_file'],defaults['special_weak_transitions_file'],
                     defaults['rates_cache_dir'],0)
 
-    def get_raw_rate(self,rate):
+        self.rates_lib.rates_warning_init(True,10.0)
+
+    def get_raw_rate(self,rate,logTmin=7.0,logTmax=10.0,which_rate=1):
         """
         Get raw rate given rate name like 'r_c12_ag_o16'
         
@@ -31,25 +33,26 @@ class rates(object):
 
         rate_id=self.rates_id(rate)
 
-        logT=np.linspace(7.0,10.0,1000)
+        logT=np.linspace(logTmin,logTmax,1000)
         r=[]
         for lt in logT:
              temp=10**lt
-             tf={}
+             tf = self.rates_lib.allocate_dt('T_factors')
              res=self.rates_lib.eval_tfactors(tf, lt, temp)
-             tf=res['tf']
+             tf=res.args['tf']
              raw_rate=0
-             ierr=0    
-             res = self.rates_lib.get_raw_rate(1, rate_id, temp, tf, raw_rate, ierr)
-             r.append(res['raw_rate'])
+             ierr=0
+             res = self.rates_lib.get_raw_rate(rate_id, which_rate, temp, tf, raw_rate, ierr)
+             r.append(res.args['raw_rate'])
 
-        return logT,r
+        return np.array(logT),np.array(r)
         
 
     def rates_id(self, rate):
         rid = self.rates_lib.rates_reaction_id(rate).result
-        if rid ==0:
+        if rid == 0:
             raise ValueError("Can not find rate {}".format(rate))
+        return rid
         
         
     def get_rate_from_cache(self,rate):
