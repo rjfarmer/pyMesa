@@ -75,13 +75,15 @@ MESASDK_ROOT=os.path.expandvars('$MESASDK_ROOT')
 
 with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
     v=f.readline().strip()
-    MESA_VERSION=int(v)
-
-if MESA_VERSION < 11035:
-    if "LD_LIBRARY_PATH" not in os.environ:
-        raise ValueError("Must set LD_LIBRARY_PATH environment variable")
-    elif LIB_DIR not in os.environ['LD_LIBRARY_PATH']:
-        raise ValueError("Must have $MESA_DIR/lib in LD_LIBRARY_PATH environment variable")
+    try:
+        MESA_VERSION=int(v)
+        if MESA_VERSION < 11035:
+            if "LD_LIBRARY_PATH" not in os.environ:
+                raise ValueError("Must set LD_LIBRARY_PATH environment variable")
+            elif LIB_DIR not in os.environ['LD_LIBRARY_PATH']:
+                raise ValueError("Must have $MESA_DIR/lib in LD_LIBRARY_PATH environment variable")
+    except ValueError:
+        MESA_VERSION=v
 
 p=sys.platform.lower()
 
@@ -287,4 +289,3 @@ def make_basic_inlist():
 		print('/',file=f)
 		print('&pgstar',file=f)
 		print('/',file=f)
-		
