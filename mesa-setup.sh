@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Tool to build mesa with python support
-# Copyright (C) 2017  Robert Farmer <r.j.farmer@uva.nl>
+# Copyright (C) 2017  Robert Farmer <robert.j.farmer37@gmail.com>
 
 #This file is part of pyMesa.
 
@@ -34,8 +34,6 @@ if [[ ! "$PATH" == *"$MESASDK_ROOT"* ]];then
     exit 1
 fi
 
-DO_NOTHING=0
-
 MESA_VERSION=$(<"$MESA_DIR/data/version_number")
 
 export SHARED_LIB=so
@@ -62,54 +60,58 @@ then
     MESA_VERSION="$PYMESA_OVERRIDE"
 fi
 
+re_int='^[0-9]+$' # Test if MESA is pre git and thus the version number is an int
 
-if [[ "$MESA_VERSION" == 9793 ]]
-then
-    for i in 0001-Build-shared-libraries.patch  0002-bug-fixes.patch  0003-crlibm-shared-library.patch;
-    do
-        cp patches/$i "$MESA_DIR"/patches/.
-    done 
-    
-    if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
-        cp patches/0004-sdk-with-lapack.patch "$MESA_DIR"/patches/.
+if  [[ $MESA_VERSION =~ $re_int ]] ; then
+
+    if [[ "$MESA_VERSION" == 9793 ]]
+    then
+        for i in 0001-Build-shared-libraries.patch  0002-bug-fixes.patch  0003-crlibm-shared-library.patch;
+        do
+            cp patches/$i "$MESA_DIR"/patches/.
+        done 
+        
+        if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
+            cp patches/0004-sdk-with-lapack.patch "$MESA_DIR"/patches/.
+        fi
+    elif [[ "$MESA_VERSION" == 10000 ]]
+    then
+        for i in 0001-build-shared-libs-10000.patch 0002-build-crlibm-10000.patch;
+        do
+            cp patches/$i "$MESA_DIR"/patches/.
+        done  
+        
+        if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
+            cp patches/0003-sdk-with-lapack-10000.patch "$MESA_DIR"/patches/.
+        fi
+    elif [[ "$MESA_VERSION" == 10108 ]]
+    then
+        for i in 0001-build-shared-libs-10108.patch 0002-build-crlibm-10108.patch;
+        do
+            cp patches/$i "$MESA_DIR"/patches/.
+        done  
+        
+        if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
+            cp patches/0003-sdk-with-lapack-10000.patch "$MESA_DIR"/patches/.
+        fi
+    elif [[ "$MESA_VERSION" == 10398 ]]
+    then
+        for i in 0001-build-shared-libs-10398.patch 0002-build-crlibm-10398.patch;
+        do
+            cp patches/$i "$MESA_DIR"/patches/.
+        done  
+        
+        #if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
+            #cp patches/0003-sdk-with-lapack-10000.patch "$MESA_DIR"/patches/.
+        #fi
+    elif [[ "$MESA_VERSION" -gt 11035 ]]
+    then
+        cp patches/0001-turn-shared-on.patch "$MESA_DIR"/patches/.
+    else
+        echo "MESA version $MESA_VERSION is not supported"
+        echo "Open an issue on github to request your mesa version"
+        exit 1
     fi
-elif [[ "$MESA_VERSION" == 10000 ]]
-then
-    for i in 0001-build-shared-libs-10000.patch 0002-build-crlibm-10000.patch;
-    do
-        cp patches/$i "$MESA_DIR"/patches/.
-    done  
-    
-    if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
-        cp patches/0003-sdk-with-lapack-10000.patch "$MESA_DIR"/patches/.
-    fi
-elif [[ "$MESA_VERSION" == 10108 ]]
-then
-    for i in 0001-build-shared-libs-10108.patch 0002-build-crlibm-10108.patch;
-    do
-        cp patches/$i "$MESA_DIR"/patches/.
-    done  
-    
-    if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
-        cp patches/0003-sdk-with-lapack-10000.patch "$MESA_DIR"/patches/.
-    fi
-elif [[ "$MESA_VERSION" == 10398 ]]
-then
-    for i in 0001-build-shared-libs-10398.patch 0002-build-crlibm-10398.patch;
-    do
-        cp patches/$i "$MESA_DIR"/patches/.
-    done  
-    
-    #if [[ "$SDK_HAS_LAPACK_SO" == "1" ]]; then
-        #cp patches/0003-sdk-with-lapack-10000.patch "$MESA_DIR"/patches/.
-    #fi
-elif [[ "$MESA_VERSION" -gt 11035 ]]
-then
-    cp patches/0001-turn-shared-on.patch "$MESA_DIR"/patches/.
-else
-    echo "MESA version $MESA_VERSION is not supported"
-    echo "Open an issue on github to request your mesa version"
-    exit 1
 fi
 
 if [[ "$PYMESA_PATCH_INIT" == 1 ]]
@@ -118,30 +120,32 @@ then
 fi
 
 
-cd "$MESA_DIR"
+cd "$MESA_DIR" 
 echo "Clean MESA"
 ./clean
 
-if [[ "$MESA_VERSION" -lt 11035 ]]
-then
-    #Skip Tests in star as we can't run a full model yet
-    /usr/bin/touch star/skip_test
-    /usr/bin/touch binary/skip_test
-fi
-
-if [ -z "$PYMESA_SKIP_PATCH" ]
-then
-	echo "Patching mesa"
-	
+if  [[ $MESA_VERSION =~ $re_int ]] ; then
     if [[ "$MESA_VERSION" -lt 11035 ]]
     then
-        mkdir -p "$MESA_DIR/crlibm/crlibm-patches"
-	fi
-    
-	for i in patches/*;
-	do
-	    patch -f -p1 < $i
-	done
+        #Skip Tests in star as we can't run a full model yet
+        /usr/bin/touch star/skip_test
+        /usr/bin/touch binary/skip_test
+    fi
+
+    if [ -z "$PYMESA_SKIP_PATCH" ]
+    then
+        echo "Patching mesa"
+        
+        if [[ "$MESA_VERSION" -lt 11035 ]]
+        then
+            mkdir -p "$MESA_DIR/crlibm/crlibm-patches"
+        fi
+        
+        for i in patches/*;
+        do
+            patch -f -p1 < $i
+        done
+    fi
 fi
 
 echo "Building mesa"
@@ -151,17 +155,18 @@ then
     exit 0
 fi
 
-if [[ "$MESA_VERSION" -lt 11035 ]]
-then
-    if [[ "$(uname)" == "Darwin" ]];then
-        export DYLD_LIBRARY_PATH=../../make:../make:$MESA_DIR/lib:$DYLD_LIBRARY_PATH
-    else
-        export LD_LIBRARY_PATH=../../make:../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
+if  [[ $MESA_VERSION =~ $re_int ]] ; then
+    if [[ "$MESA_VERSION" -lt 11035 ]]
+    then
+        if [[ "$(uname)" == "Darwin" ]];then
+            export DYLD_LIBRARY_PATH=../../make:../make:$MESA_DIR/lib:$DYLD_LIBRARY_PATH
+        else
+            export LD_LIBRARY_PATH=../../make:../make:$MESA_DIR/lib:$LD_LIBRARY_PATH
+        fi
     fi
 fi
 
-
-./mk
+./install
 if [[ $? != 0 ]] || [[ ! -f "$MESA_DIR/lib/libstar.$SHARED_LIB" ]]  ;then
     echo
     echo
@@ -174,40 +179,52 @@ if [[ $? != 0 ]] || [[ ! -f "$MESA_DIR/lib/libstar.$SHARED_LIB" ]]  ;then
     echo
     exit 1
 fi
+if  [[ $MESA_VERSION =~ $re_int ]] ; then
+    if [[ "$MESA_VERSION" -lt 11035 ]]
+    then
+        echo
+        echo
+        echo
+        echo "****************************************************************"
+        echo "pyMESA build was succesfull"
+        if [[ "$(uname)" == "Darwin" ]];then
+            echo "Each time you wish to use this you must set the DYLD_LIBRARAY_PATH variable"
+        else
+            echo "Each time you wish to use this you must set the LD_LIBRARAY_PATH variable"
+        fi
+        echo "After the mesasdk has been initilized:"
+        if [[ "$(uname)" == "Darwin" ]];then
+            echo 'export DYLD_LIBRARY_PATH=$MESA_DIR/lib:$DYLD_LIBRARY_PATH'
+        else
+            echo 'export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH'
+        fi
+        echo "Do not run this script again on the same MESA_DIR"
+        echo "****************************************************************"
+        echo
+        echo
+        echo
+    else
+        echo
+        echo
+        echo
+        echo "****************************************************************"
+        echo "pyMESA build was succesfull"
+        echo "****************************************************************"
+        echo
+        echo
+        echo
 
-if [[ "$MESA_VERSION" -lt 11035 ]]
-then
-    echo
-    echo
-    echo
-    echo "****************************************************************"
-    echo "pyMESA build was succesfull"
-    if [[ "$(uname)" == "Darwin" ]];then
-        echo "Each time you wish to use this you must set the DYLD_LIBRARAY_PATH variable"
-    else
-        echo "Each time you wish to use this you must set the LD_LIBRARAY_PATH variable"
     fi
-    echo "After the mesasdk has been initilized:"
-    if [[ "$(uname)" == "Darwin" ]];then
-        echo 'export DYLD_LIBRARY_PATH=$MESA_DIR/lib:$DYLD_LIBRARY_PATH'
-    else
-        echo 'export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH'
-    fi
-    echo "Do not run this script again on the same MESA_DIR"
-    echo "****************************************************************"
-    echo
-    echo
-    echo
 else
-    echo
-    echo
-    echo
-    echo "****************************************************************"
-    echo "pyMESA build was succesfull"
-    echo "****************************************************************"
-    echo
-    echo
-    echo
+        echo
+        echo
+        echo
+        echo "****************************************************************"
+        echo "pyMESA build was succesfull"
+        echo "****************************************************************"
+        echo
+        echo
+        echo
 
-fi
+    fi
     

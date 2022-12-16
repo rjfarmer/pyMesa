@@ -75,13 +75,15 @@ MESASDK_ROOT=os.path.expandvars('$MESASDK_ROOT')
 
 with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
     v=f.readline().strip()
-    MESA_VERSION=int(v)
-
-if MESA_VERSION < 11035:
-    if "LD_LIBRARY_PATH" not in os.environ:
-        raise ValueError("Must set LD_LIBRARY_PATH environment variable")
-    elif LIB_DIR not in os.environ['LD_LIBRARY_PATH']:
-        raise ValueError("Must have $MESA_DIR/lib in LD_LIBRARY_PATH environment variable")
+    try:
+        MESA_VERSION=int(v)
+        if MESA_VERSION < 11035:
+            if "LD_LIBRARY_PATH" not in os.environ:
+                raise ValueError("Must set LD_LIBRARY_PATH environment variable")
+            elif LIB_DIR not in os.environ['LD_LIBRARY_PATH']:
+                raise ValueError("Must have $MESA_DIR/lib in LD_LIBRARY_PATH environment variable")
+    except ValueError:
+        MESA_VERSION=str(v)
 
 p=sys.platform.lower()
 
@@ -144,17 +146,18 @@ def buildModule(module):
     finally:
         os.chdir(cwd)
 
-    if MESA_VERSION < 11035:
-        os.chdir(LIB_DIR)
-        checkcrpath()
-        try:
-            x = subprocess.call("chrpath -r lib"+module+"."+LIB_EXT,shell=True)
-            if x:
-                raise ValueError("chrpath failed")
-        except:
-            raise
-        finally:
-            os.chdir(cwd)
+    if isinstance(MESA_VERSION,int):
+        if MESA_VERSION < 11035:
+            os.chdir(LIB_DIR)
+            checkcrpath()
+            try:
+                x = subprocess.call("chrpath -r lib"+module+"."+LIB_EXT,shell=True)
+                if x:
+                    raise ValueError("chrpath failed")
+            except:
+                raise
+            finally:
+                os.chdir(cwd)
 
     print("Built "+str(module))
 
@@ -178,8 +181,10 @@ def buildRunStarSupport():
                       '-lstar -lgyre -lionization -latm -lcolors -lnet -leos',
                       '-lkap -lrates -lneu -lchem -linterp_2d -linterp_1d',
                       '-lnum -lmtx -lconst -lutils -lrun_star_extras']
-        if MESA_VERSION < 12202:
-            compile_cmd.append('-lf2crlibm -lcrlibm')
+
+        if isinstance(MESA_VERSION,int):
+            if MESA_VERSION < 12202:
+                compile_cmd.append('-lf2crlibm -lcrlibm')
 
         print(" ".join(compile_cmd))
         x = subprocess.call(" ".join(compile_cmd),shell=True)
@@ -287,4 +292,3 @@ def make_basic_inlist():
 		print('/',file=f)
 		print('&pgstar',file=f)
 		print('/',file=f)
-		
