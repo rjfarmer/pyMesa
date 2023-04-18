@@ -181,8 +181,9 @@ rm -rf $MESA_DIR/crlibm/crlibm-patches $MESA_DIR/{star,binary}/skip_test
 
 ````
 
-If using MESA >= 11035, then in utils/makefile_header switch USE_SHARED=YES to USE_SHARED=NO and do a ./clean
-and ./mk in $MESA_DIR
+If using MESA >= 11035, then in utils/makefile_header switch USE_SHARED=YES 
+to USE_SHARED=NO and do a ./clean and ./install in $MESA_DIR. Though note that
+its fine to to run MESA normally after installing pyMESA.
 
 
 ## Bug reports:
@@ -197,7 +198,7 @@ fortran features. This repository just handles building mesa for python support.
 Bug reports, if mesa versions don't work, or new examples are welcome as either pull requests
 or issues on the github tracker.
 
-## Citating
+## Citations
 
 People who use pyMESA in papers should cite this using the zenodo link for the version they used. If you use pyMesa in a project (research or teaching), let me know and i can help advertise here (also useful for me to help
 with funding requests). Current versions citation is in the CITATION file.

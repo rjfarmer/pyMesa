@@ -112,6 +112,9 @@ if  [[ $MESA_VERSION =~ $re_int ]] ; then
         echo "Open an issue on github to request your mesa version"
         exit 1
     fi
+else
+    # Adjust USE_SHARED in the makefile
+    sed -i 's/USE_SHARED =.*/ USE_SHARED = YES/' $MESA_DIR/utils/makefile_header
 fi
 
 if [[ "$PYMESA_PATCH_INIT" == 1 ]]
