@@ -16,7 +16,7 @@ Note: pyMesa currently only works on linux, Macs will fail to build.
 Python dependencies can be installed with:
 
 ``
-python -m pip install requirements.txt
+python -m pip install -r requirements.txt
 ``
 
 We also need the following tool from installed by you system package manager or other means:
