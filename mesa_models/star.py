@@ -1,13 +1,10 @@
-from __future__ import print_function
-import pyMesaUtils as pym
+import pyMesa as pym
 import numpy as np
 import os
 import tempfile
 
 class pyStar(object):
     def __init__(self, rse = None):
-        pym.buildRunStarExtras(rse)
-        pym.buildRunStarSupport()
         self.star_lib, self.star_def = pym.loadMod("star")
         
         self.rse, _ = pym.loadMod('run_star_extras')

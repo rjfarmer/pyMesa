@@ -1,12 +1,9 @@
-import pyMesaUtils as pym
+import pyMesa as pym
+
 import numpy as np
 
-if pym.MESA_VERSION < 12608:
-	crlibm_lib, _ = pym.loadMod("crlibm")
-	crlibm_lib.crlibm_init()
-else:
-	crlibm_lib, _ = pym.loadMod("math")
-	crlibm_lib.math_init()
+math_lib, _ = pym.loadMod("math")
+math_lib.math_init()
 
 neu_lib,neu_def = pym.loadMod("neu")
 
@@ -19,10 +16,10 @@ abar=1.0
 zbar=1.0
 z2bar=1.0
 log10_Tlim=7.5
-flags=np.zeros(neu_def.num_neu_types.get())
+flags=np.zeros(neu_def.num_neu_types)
 flags[:]=True
-loss=np.zeros(neu_def.num_neu_rvs.get())
-sources=np.zeros((neu_def.num_neu_types.get(),neu_def.num_neu_rvs.get()))
+loss=np.zeros(neu_def.num_neu_rvs)
+sources=np.zeros((neu_def.num_neu_types,neu_def.num_neu_rvs))
 info=0
 
 res = neu_lib.neu_get(T, log10_T, Rho, log10_Rho, abar, zbar, z2bar, log10_Tlim, flags, loss, sources, info)

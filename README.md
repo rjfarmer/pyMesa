@@ -4,89 +4,66 @@
 
 
 # pyMesa
-Allows python to interface with MESA stellar evolution code. Current stable version is 1.0.3
-
+Allows python to interface with MESA stellar evolution code.
 
 
 ## Requirements:
-Note: pyMesa currently only works on linux, macs will fail to build.
+Note: pyMesa currently only works on linux, Macs will fail to build.
 
-[gfort2py](https://github.com/rjfarmer/gfort2py) (Also available via pip) (needs version >= 1.0.11)
+[gfort2py](https://github.com/rjfarmer/gfort2py) (Also available via pip) (needs version >= 2.0.0)
 
-All versions need numpy and patch
 
-if using MESA <  11035 then you also need:
+Python dependencies can be installed with:
 
-libtool
+``
+python -m pip install requirements.txt
+``
 
-automake
+We also need the following tool from installed by you system package manager or other means:
 
+``
 chrpath
- 
-## Building
+`` 
 
-### SDK's
 
-Grab a recent (atleast the september 2017 version) sdk from:
+## Installing pyMesa
 
-[mesasdk](http://www.astro.wisc.edu/~townsend/static.php?ref=mesasdk)
+The preferred way is via pip:
 
-### MESA patching
+``
+python -m pip install --upgrade pyMesa
+``
 
-Run the mesa-setup.sh script from this folder, after setting MESA_DIR and initializing the SDK.
 
-````bash
-chmod u+x mesa-setup.sh
-./mesa-setup.sh
+## Building MESA
+
+Go to ``$MESA_DIR/utils/makefile_header`` and find ``USE_SHARED=no`` and switch that to ``USE_SHARED=yes``
+
+Then:
+
+````
+cd $MESA_DIR
+./clean
+./install
 ````
 
-This script should only be run once to setup up mesa. It can be ran again if you do a ./clean inside the MESA_DIR.
-
-#### MESA < 11035
-If using mesa version < 11035 then the following applies:
-
-Adipls, gyre and stella are not currently built as part of this.
-
-While we can use the individual MESA modules we can not currently run a full star (or binary) model, in either python or fortran.
 
 ## Supported MESA versions
-- 9793
-- 10000
-- 10108
-- 10398
--  Any version after 11035 (non released mesa version)
 
-If you want to play with fire and try with another version, then set the environment variable:
+Any post github version: that is a version that starts with 'r2' or is from a git checkout.
 
-````bash
-export PYMESA_OVERRIDE=A_MESA_VERSION
-````
-
-Will override the version check and attempt to build MESA using the patches for the version specified. Things may not work between versions if MESA's build system changes.
 
 ## Running
-````bash
-# Set MESA_DIR and initialize the sdk
 
-# If using MESA < 11035 set the LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=$MESA_DIR/lib:$LD_LIBRARY_PATH
-python3
-````
-
-## Structure
-
-The only python file that is actually needed to run this is pyMesaUtils.py. This file contains the code needed to interface with mesa. Inside the mesa_models/ folder
-contain examples of how to interface with most of MESA's modules. pydfriddr/ folder contains examples for testing MESA's analytic derivatives with a numerical derivative.
+Make sure you set ``MESA_DIR`` and ``MESASDK_ROOT`` before starting Python.
 
 
 ## Usage
 
-Here is a basic example of talking to the const/ module.
+Here is a basic example of talking to the ``const`` module.
 
 ````python
-# Just need to make sure the pyMesaUtils.py file is visible either in the local directory or in PYHTHONPATH
-# It does not need to be in $MESA_DIR folder.
-import pyMesaUtils as pym
+import pyMesa as pym
 
 # pyMesa module defines a number of useful MESA paths as pym.SOMETHING.
 print(pym.MESA_DIR) # Print MESA_DIR
@@ -115,76 +92,28 @@ x = {}
 # or
 x = {'a':1,'b':'abc','c':{'d':1}}
 
-# Functions accepting arrays should pass a numpy array of the size it expects (if the function allocates the array, then just pass an array of size 1)
+# Functions accepting arrays should pass a numpy array of the size it expects (if the function allocates the array, then just pass None)
 x = np.zeros(size)
-
-# Arrays inside derived types are unstable at the moment and don't completely work.
 
 ````
 
-Function names and module variables are all tab completable.
+The folder ``mesa_models`` shows some examples of accessing different MESA modules. Note some may not work depending on whether MESA 
+has changed the interface since the code was written.
+
 
 ## Arrays
 
-Remember that fortran has 1-based arrays while numpy uses 0-based. This comes
+Remember that Fortran has 1-based arrays while Numpy uses 0-based. This comes
 up if you're accessing an array via a mesa constant:
 
 ````python
-mesa_array[mesa_module.i_mesa_const.get()]
+mesa_array[mesa_module.i_mesa_const]
 ````
  should instead be accessed as:
  
  ````python
-mesa_array[mesa_module.i_mesa_const.get()-1]
+mesa_array[mesa_module.i_mesa_const-1]
 ````
-An example of this can be found in eos.py.
-
-
-
-## Modules that work
-
-- [x] atm.py
-- [ ] binary.py
-- [x] chem.py
-- [ ] colors.py
-- [x] const.py
-- [x] crlibm.py
-- [x] eos.py
-- [x] ion.py
-- [x] kap.py
-- [ ] net.py (partial support)
-- [x] neu.py
-- [x] rates.py
-- [ ] utils.py
-- [ ] star.py
-
-## Uninstalling
-
-If using MESA < 11035:
-
-The best bet is just to re-download mesa, during the setup phase we alter a lot of files. If you want to try to keep your MESA_DIR then something like this should work:
-
-````bash
-cd $MESA_DIR
-./clean
-for i in $(ls patches/* | sort -r);
-do
-    patch -R -p1 < $i
-done
-
-for i in $(ls crlibm/crlibm-patches/* | sort -r);
-do 
-    patch -R -p1 < $i
-done    
-
-rm -rf $MESA_DIR/crlibm/crlibm-patches $MESA_DIR/{star,binary}/skip_test
-
-````
-
-If using MESA >= 11035, then in utils/makefile_header switch USE_SHARED=YES 
-to USE_SHARED=NO and do a ./clean and ./install in $MESA_DIR. Though note that
-its fine to to run MESA normally after installing pyMESA.
-
 
 ## Bug reports:
 

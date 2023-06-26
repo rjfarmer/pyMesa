@@ -1,16 +1,12 @@
-from __future__ import print_function
-import pyMesaUtils as pym
+import pyMesa as pym
+
 import numpy as np
 import os
 
 eos_lib, eos_def = pym.loadMod("eos")
 const_lib, const_def = pym.loadMod("const")
-if pym.MESA_VERSION < 12608:
-	crlibm_lib, _ = pym.loadMod("crlibm")
-	crlibm_lib.crlibm_init()
-else:
-	crlibm_lib, _ = pym.loadMod("math")
-	crlibm_lib.math_init()
+math_lib, _ = pym.loadMod("math")
+math_lib.math_init()
 chem_lib, chem_def = pym.loadMod("chem")
 net_lib, net_def = pym.loadMod("net")
 rates_lib, rates_def = pym.loadMod("rates")
@@ -22,18 +18,10 @@ ierr=0
 const_lib.const_init(pym.MESA_DIR,ierr)
 chem_lib.chem_init('isotopes.data',ierr)
 
-if pym.MESA_VERSION >= 10000:
-     #Function sig changed
-     rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
+rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
                     'rate_tables',False,False,'','','',ierr)
-else:
-     rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
-                    'rate_tables',False,'','','',ierr)
 
-if pym.MESA_VERSION >= 10398:
-    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,False,pym.KAP_CACHE,'',ierr)
-else:
-    kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,3.80,False,pym.KAP_CACHE,'',ierr)
+kap_lib.kap_init('gs98','gs98_co','lowT_fa05_gs98',3.88,3.80,False,pym.KAP_CACHE,'',ierr)
 
 ion_lib.ionization_init('ion','',pym.ION_CACHE,False,ierr)
 net_lib.net_init(ierr)
@@ -62,11 +50,11 @@ net_lib.net_set_fe56ec_fake_factor(handle, 10**-7, 3.0*10**9, ierr)
 species = net_lib.net_num_isos(handle, ierr)
 num_reactions =  net_lib.net_num_reactions(handle, ierr)
 
-rates_reaction_id_max = rates_def.rates_reaction_id_max.get()
+rates_reaction_id_max = rates_def.rates_reaction_id_max
 
-which_rates = np.zeros(rates_def.rates_reaction_id_max.get())
+which_rates = np.zeros(rates_def.rates_reaction_id_max)
 reaction_id = np.zeros(num_reactions)
-which_rates[:] = rates_def.rates_jr_if_available.get()
+which_rates[:] = rates_def.rates_jr_if_available
 #rates_lib.set_which_rates(ierr)
 net_lib.net_set_which_rates(handle, which_rates, ierr)
 net_lib.net_setup_tables(handle, '', ierr)
@@ -74,7 +62,7 @@ net_lib.net_setup_tables(handle, '', ierr)
 # End net setup
 
 
-num_chem_isos = chem_def.num_chem_isos.get()
+num_chem_isos = chem_def.num_chem_isos
 
 chem_id=np.zeros(num_chem_isos)
 net_iso_table=np.zeros(num_chem_isos)
@@ -94,8 +82,8 @@ res=net_lib.get_net_reaction_table(handle, reaction_table, ierr)
 reaction_table = res['net_reaction_table']
 
 #Setup reaction energies
-allQ = rates_def.std_reaction_qs.get()
-allQneu = rates_def.std_reaction_neuqs.get()
+allQ = rates_def.std_reaction_qs
+allQneu = rates_def.std_reaction_neuqs
 
 reaction_Qs  = np.zeros(num_reactions) 
 reaction_neuQs = np.zeros(num_reactions) 
@@ -114,8 +102,8 @@ num_isos = species
 x=np.zeros(num_isos)
 x[:]=10**-99
 
-x[net_lib.ih1.get()] = 0.5
-x[net_lib.ihe4.get()] = 0.5
+x[net_lib.ih1] = 0.5
+x[net_lib.ihe4] = 0.5
 
 temp = 10**9
 log10temp = np.log10(temp)
@@ -149,7 +137,7 @@ d_dxdt_dRho = np.zeros(num_isos)
 d_dxdt_dT = np.zeros(num_isos)
 d_dxdt_dx = np.zeros((num_isos,num_isos))
 
-eps_nuc_categories = np.zeros(chem_def.num_categories.get())
+eps_nuc_categories = np.zeros(chem_def.num_categories)
 eps_neu_total = 0.0
 screening_mode = 0
 theta_e_for_graboske_et_al = 0.0        

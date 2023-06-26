@@ -1,4 +1,4 @@
-import pyMesaUtils as pym
+import pyMesa as pym
 import sys
 
 utils_lib, utils_def = pym.loadMod("utils")

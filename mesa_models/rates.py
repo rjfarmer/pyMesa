@@ -1,17 +1,13 @@
-from __future__ import print_function
-import pyMesaUtils as pym
+import pyMesa as pym
+
 import numpy as np
 import os
 import matplotlib.pyplot as plt
 
 
 const_lib, const_def = pym.loadMod("const")
-if pym.MESA_VERSION < 12608:
-	crlibm_lib, _ = pym.loadMod("crlibm")
-	crlibm_lib.crlibm_init()
-else:
-	crlibm_lib, _ = pym.loadMod("math")
-	crlibm_lib.math_init()
+math_lib, _ = pym.loadMod("math")
+math_lib.math_init()
 chem_lib, chem_def = pym.loadMod("chem")
 rates_lib, rates_def = pym.loadMod("rates")
 
@@ -20,16 +16,8 @@ ierr=0
 const_lib.const_init(pym.MESA_DIR,ierr)
 chem_lib.chem_init('isotopes.data',ierr)
 
-if pym.MESA_VERSION >= 11213:
-    rates_lib.rates_init('reactions.list','jina_reaclib_results_20171020_default',
+rates_lib.rates_init('reactions.list','jina_reaclib_results_20171020_default',
                     'rate_tables',False,False,'','','',ierr)
-elif pym.MESA_VERSION >= 10000:
-     #Function sig changed
-     rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
-                    'rate_tables',False,False,'','','',ierr)
-else:
-     rates_lib.rates_init('reactions.list','jina_reaclib_results_20130213default2',
-                    'rate_tables',False,'','','',ierr)
 
 ierr=0
 

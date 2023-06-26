@@ -1,4 +1,5 @@
-import pyMesaUtils as pym
+import pyMesa as pym
+
 
 const_lib,const_def = pym.loadMod("const")
 

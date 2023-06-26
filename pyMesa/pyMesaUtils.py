@@ -1,6 +1,6 @@
 # Tool to build mesa with python support
 
-# Copyright (C) 2017  Robert Farmer <r.j.farmer@uva.nl>
+# Copyright (C) 2023  Robert Farmer <robert.j.farmer37@gmail.com>
 
 #This file is part of pyMesa.
 
@@ -17,33 +17,12 @@
 #You should have received a copy of the GNU General Public License
 #along with pyMesa. If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
 import gfort2py as gf
-import numpy as np
 import os
 import sys
 import shutil
 import subprocess
 
-
-# Dependacy check
-G2PY_MIN_VER='1.0.11'
-
-if sys.version_info[0] < 3:
-    FileNotFoundError = IOError
-
-
-try:
-    G2PY_VER=gf.__version__
-except AttributeError:
-    # Old versions didn't set __version__
-    raise AttributeError("Must update gfort2py to at least version "+G2PY_MIN_VER)
-
-def _versiontuple(v):
-    return tuple(map(int, (v.split("."))))
-
-if _versiontuple(G2PY_VER) < _versiontuple(G2PY_MIN_VER):
-    raise AttributeError("Must update gfort2py to at least version "+G2PY_MIN_VER)
 
 #MESA DIR check and path set
 if "MESA_DIR" not in os.environ:
@@ -75,15 +54,9 @@ MESASDK_ROOT=os.path.expandvars('$MESASDK_ROOT')
 
 with open(os.path.join(DATA_DIR,'version_number'),'r') as f:
     v=f.readline().strip()
-    try:
-        MESA_VERSION=int(v)
-        if MESA_VERSION < 11035:
-            if "LD_LIBRARY_PATH" not in os.environ:
-                raise ValueError("Must set LD_LIBRARY_PATH environment variable")
-            elif LIB_DIR not in os.environ['LD_LIBRARY_PATH']:
-                raise ValueError("Must have $MESA_DIR/lib in LD_LIBRARY_PATH environment variable")
-    except ValueError:
-        MESA_VERSION=str(v)
+    if not v.startswith('r2') and len(v)<7:
+        raise ValueError(f"Unsupported MESA version {v}")
+
 
 p=sys.platform.lower()
 
@@ -92,76 +65,43 @@ if p == "linux" or p == "linux2":
 elif p == "darwin":
     LIB_EXT="dylib"
 else:
-    raise Exception("Platform not support "+str(p))
+    raise Exception(f"Platform not support {p}")
 
 # The one function you actually need
 def loadMod(module):
 
-    MODULE_LIB = os.path.join(INCLUDE_DIR,module+"_lib.mod")
-    MODULE_DEF = os.path.join(INCLUDE_DIR,module+"_def.mod")
+    MODULE_LIB = os.path.join(INCLUDE_DIR,f"{module}_lib.mod")
+    MODULE_DEF = os.path.join(INCLUDE_DIR,f"{module}_def.mod")
 
-    if module =='crlibm':
-        SHARED_LIB = os.path.join(LIB_DIR,"libf2crlibm."+LIB_EXT)
-    elif module =='run_star_support':
-         SHARED_LIB = os.path.join(LIB_DIR,"librun_star_support."+LIB_EXT)
+    if module =='run_star_support':
+         SHARED_LIB = os.path.join(LIB_DIR,f"librun_star_support.{LIB_EXT}")
          MODULE_LIB = os.path.join(INCLUDE_DIR,"run_star_support.mod")
     elif module =='run_star_extras':
-         SHARED_LIB = os.path.join(LIB_DIR,"librun_star_extras."+LIB_EXT)
+         SHARED_LIB = os.path.join(LIB_DIR,f"librun_star_extras.{LIB_EXT}")
          MODULE_LIB = os.path.join(INCLUDE_DIR,"run_star_extras.mod")
     else:
-        SHARED_LIB = os.path.join(LIB_DIR,"lib"+module+"."+LIB_EXT)
+        SHARED_LIB = os.path.join(LIB_DIR,f"lib{module}.{LIB_EXT}")
 
     x = None
     y = None
 
     try:
-        x = gf.fFort(SHARED_LIB,MODULE_LIB,rerun=True)
+        x = gf.fFort(SHARED_LIB,MODULE_LIB)
     except FileNotFoundError:
         pass
 
     try:
-        y = gf.fFort(SHARED_LIB,MODULE_DEF,rerun=True)
+        y = gf.fFort(SHARED_LIB,MODULE_DEF)
     except FileNotFoundError:
         pass
 
     return x, y
 
 
-def buildModule(module):
-    cwd = os.getcwd()
-    os.chdir(os.path.join(MESA_DIR,module))
+def _buildRunStarSupport():
+    if os.path.exists(os.path.join(LIB_DIR,f"librun_star_support.{LIB_EXT}")):
+        return
 
-    try:
-        x=subprocess.call("./clean >/dev/null 2>/dev/null",shell=True)
-        if x:
-            raise ValueError("clean failed")
-        x = subprocess.call("./build_and_test >/dev/null 2>/dev/null",shell=True)
-        if x:
-            raise ValueError("Build_and_test failed")
-        x = subprocess.call("./export >/dev/null 2>/dev/null",shell=True)
-        if x:
-            raise ValueError("export failed")
-    except:
-        raise
-    finally:
-        os.chdir(cwd)
-
-    if isinstance(MESA_VERSION,int):
-        if MESA_VERSION < 11035:
-            os.chdir(LIB_DIR)
-            checkcrpath()
-            try:
-                x = subprocess.call("chrpath -r lib"+module+"."+LIB_EXT,shell=True)
-                if x:
-                    raise ValueError("chrpath failed")
-            except:
-                raise
-            finally:
-                os.chdir(cwd)
-
-    print("Built "+str(module))
-
-def buildRunStarSupport():
     cwd = os.getcwd()
     os.chdir(os.path.join(MESA_DIR,'star','make'))
     try:
@@ -178,19 +118,15 @@ def buildRunStarSupport():
                       '-Wl,-rpath=' + LIB_DIR,
                       '-o librun_star_support.'+LIB_EXT,
                       '-L'+LIB_DIR,
-                      '-lstar -lgyre -lionization -latm -lcolors -lnet -leos',
+                      '-lstar -lgyre -latm -lcolors -lnet -leos',
                       '-lkap -lrates -lneu -lchem -linterp_2d -linterp_1d',
                       '-lnum -lmtx -lconst -lutils -lrun_star_extras']
-
-        if isinstance(MESA_VERSION,int):
-            if MESA_VERSION < 12202:
-                compile_cmd.append('-lf2crlibm -lcrlibm')
 
         print(" ".join(compile_cmd))
         x = subprocess.call(" ".join(compile_cmd),shell=True)
         if x:
             raise ValueError("Build run_star_support failed")
-        shutil.copy2("librun_star_support."+LIB_EXT,os.path.join(LIB_DIR,"librun_star_support."+LIB_EXT))
+        shutil.copy2(f"librun_star_support.{LIB_EXT}",os.path.join(LIB_DIR,f"librun_star_support.{LIB_EXT}"))
         shutil.copy2('run_star_support.mod',os.path.join(INCLUDE_DIR,'run_star_support.mod'))
     except:
         raise
@@ -198,9 +134,9 @@ def buildRunStarSupport():
         os.chdir(cwd)
 
     os.chdir(LIB_DIR)
-    checkcrpath()
+    _checkcrpath()
     try:
-        x = subprocess.call("chrpath -r librun_star_support."+LIB_EXT,shell=True)
+        x = subprocess.call(f"chrpath -r librun_star_support.{LIB_EXT}",shell=True)
         if x:
             raise ValueError("chrpath failed")
     except:
@@ -211,7 +147,10 @@ def buildRunStarSupport():
     print("Built run_star_support")
 
 
-def buildRunStarExtras(rse=None):
+def _buildRunStarExtras(rse=None):
+    if os.path.exists(os.path.join(LIB_DIR,f"librun_star_extras.{LIB_EXT}")):
+        return
+
     filename = 'run_star_extras.f'
     output = os.path.join(MESA_DIR,'star','make',filename)
     if rse is None:
@@ -220,8 +159,6 @@ def buildRunStarExtras(rse=None):
             print('use star_lib',file=f)
             print('use star_def',file=f)
             print('use const_def',file=f)
-            if MESA_VERSION < 12202:
-                print('use crlibm_lib',file=f)
             print('implicit none',file=f)
             print('contains',file=f)
             print('include "standard_run_star_extras.inc"',file=f)
@@ -247,14 +184,12 @@ def buildRunStarExtras(rse=None):
                       '-o librun_star_extras.'+LIB_EXT,
                       '-L'+LIB_DIR,
                       '-lstar -lconst']
-        if MESA_VERSION < 12202:
-            compile_cmd.append('-lf2crlibm -lcrlibm')
 
         print(" ".join(compile_cmd))
         x = subprocess.call(" ".join(compile_cmd),shell=True)
         if x:
             raise ValueError("Build run_star_extras failed")
-        shutil.copy2("librun_star_extras."+LIB_EXT,os.path.join(LIB_DIR,"librun_star_extras."+LIB_EXT))
+        shutil.copy2(f"librun_star_extras.{LIB_EXT}",os.path.join(LIB_DIR,f"librun_star_extras.{LIB_EXT}"))
         shutil.copy2('run_star_extras.mod',os.path.join(INCLUDE_DIR,'run_star_extras.mod'))
     except:
         raise
@@ -262,9 +197,9 @@ def buildRunStarExtras(rse=None):
         os.chdir(cwd)
 
     os.chdir(LIB_DIR)
-    checkcrpath()
+    _checkcrpath()
     try:
-        x = subprocess.call("chrpath -r librun_star_extras."+LIB_EXT,shell=True)
+        x = subprocess.call(f"chrpath -r librun_star_extras.{LIB_EXT}",shell=True)
         if x:
             raise ValueError("chrpath failed")
     except:
@@ -278,7 +213,7 @@ class MesaError(Exception):
     pass
 
 
-def checkcrpath():
+def _checkcrpath():
 	res = subprocess.call(["command","-v","chrpath"])
 	if res:
 		raise ValueError("Please install chrpath")
@@ -292,3 +227,8 @@ def make_basic_inlist():
 		print('/',file=f)
 		print('&pgstar',file=f)
 		print('/',file=f)
+
+
+def mesa_init():
+    _buildRunStarExtras()
+    _buildRunStarSupport()
