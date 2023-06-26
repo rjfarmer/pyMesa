@@ -10,9 +10,6 @@ Allows python to interface with MESA stellar evolution code.
 ## Requirements:
 Note: pyMesa currently only works on linux, Macs will fail to build.
 
-[gfort2py](https://github.com/rjfarmer/gfort2py) (Also available via pip) (needs version >= 2.0.0)
-
-
 Python dependencies can be installed with:
 
 ``
@@ -67,7 +64,6 @@ import pyMesa as pym
 
 # pyMesa module defines a number of useful MESA paths as pym.SOMETHING.
 print(pym.MESA_DIR) # Print MESA_DIR
-print(pym.MESA_VERSION) # Print MESA version number
 
 # Loads the const module
 const_lib,const_def = pym.loadMod("const")
