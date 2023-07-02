@@ -5,15 +5,15 @@
             "orcid": "0000-0003-3441-7624"
         }
     ],
-    "description": "Python bindings for Fortran",
+    "description": "Allows Python to interface with the MESA stellar evolution code.",
     "keywords": [
         "Python",
         "Fortran",
-        "Code Generators"
+        "MESA"
     ],
     "license": {
         "id": "GPL-2.0+"
     },
-    "title" : "gfort2py"
+    "title": "pyMesa"
 }
 
