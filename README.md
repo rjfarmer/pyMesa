@@ -96,6 +96,34 @@ x = np.zeros(size)
 The folder ``mesa_models`` shows some examples of accessing different MESA modules. Note some may not work depending on whether MESA 
 has changed the interface since the code was written.
 
+## Procedure calls
+
+Calling a function or a subroutine is handled the same way:
+
+````python
+result = module.my_function(arg1, arg2)
+````
+
+Where every arg should be provided either with the value to be inputted (intent(in) or intent(inout)) or a dummy empty provided for intent(out) values.
+
+The result of a procedure call is returned as a NamedTuple of ``(result, args)``. Thus a function result is accessed via:
+
+````python
+result = module.my_function(arg1, arg2)
+
+#Function result
+result.result
+````
+
+While all the arguments (both those that change and those that don't) are returned via:
+
+````python
+result = module.my_function(arg1, arg2)
+
+#Arguments
+result.args['arg1']
+result.args['arg2']
+````
 
 ## Arrays
 
@@ -117,16 +145,16 @@ Bug reports should go to the issue tracker on github. Please include mesa versio
 
 ## Contributing
 
-In general most of the development should go towards the gfort2py project to add new
-fortran features. This repository just handles building mesa for python support. 
+In general, most of the development should go towards the gfort2py project to add new
+fortran features. This repository just handles building mesa for Python support. 
 
 Bug reports, if mesa versions don't work, or new examples are welcome as either pull requests
-or issues on the github tracker.
+or issues on the GitHub tracker.
 
 ## Citations
 
 People who use pyMESA in papers should cite this using the zenodo link for the version they used. If you use pyMesa in a project (research or teaching), let me know and i can help advertise here (also useful for me to help
-with funding requests). Current versions citation is in the CITATION file.
+with funding requests). The current version's citation is in the CITATION file.
 
 ## Known Projects using pyMesa
 
