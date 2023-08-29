@@ -1,5 +1,4 @@
 ![pyMesa logo](images/logo.png)
-
 [![DOI](https://zenodo.org/badge/98320319.svg)](https://zenodo.org/badge/latestdoi/98320319)
 
 
@@ -72,6 +71,11 @@ const_lib,const_def = pym.loadMod("const")
 ierr=0
 # Calls a function
 res = const_lib.const_init(pym.MESA_DIR,ierr)
+
+# Functions and subroutines return a namedtuple
+
+print(res.result) # prints function result
+print(res.args) # prints all arguments
 
 
 # If the call was a subroutine then res is a dict with the intent out variables in there
