@@ -13,10 +13,10 @@ col_lib,col_def = pym.loadMod("colors")
 
 ierr = 0
 
-fnames = np.array([os.path.join(pym.DATA_DIR,'colors','lcb98cor.dat')],dtype='S')
+fnames = np.array(['lcb98cor.dat'],dtype='S')
 
-# Currently broken in gfort2py
-col_lib.colors_init(len(fnames),fnames,11,ierr)
+# Needs gfort2py >=2.2.1
+col_lib.colors_init(len(fnames),fnames,np.array([11]),ierr)
 
 
 
