@@ -10,3 +10,11 @@ chem_lib,chem_def = pym.loadMod("chem")
 
 
 chem_lib.chem_init('isotopes.data',ierr)
+
+
+for iso in ['c12','c13','c14']:
+    print(f"{iso} {chem_lib.lodders03_element_atom_percent(iso).result}%")
+
+
+
+chem_lib.chem_shutdown()
