@@ -58,7 +58,7 @@ if res.args['ierr'] != 0:
 res = eos_result.args["res"]
 # These are indexed by indices that can be found in eos/public/eos_def.f90
 # We can get those indices with calls like this:
-i_lnE = eos_def.i_lnE - 1
+i_lnE = eos_def.i_lne - 1
 # subtract 1 due to the difference between fortran and numpy indexing.
 
 IE = np.exp(res[i_lnE])
