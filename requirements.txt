@@ -1,1 +1,1 @@
-gfort2py>=2.2.1
+gfort2py>=2.6.2
