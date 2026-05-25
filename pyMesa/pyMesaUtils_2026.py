@@ -71,6 +71,9 @@ def loadMod(module):
     try:
         x = gf.fFort(SHARED_LIB,MODULE_LIB)
     except FileNotFoundError:
+        # Check if static library exists, if so warn
+        if os.path.exists(os.path.join(BUILD_DIR,module,'lib',f"lib{module}.a")):
+            raise MesaError(f"Shared library for {module} not found, but static library exists. Please build with shared libraries enabled.")
         pass
 
     try:

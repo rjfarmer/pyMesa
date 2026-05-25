@@ -7,7 +7,7 @@ if "MESA_DIR" not in os.environ:
 else:
     MESA_DIR = os.environ.get('MESA_DIR')
 
-if pathlib.Path(MESA_DIR).joinpath('build'):
+if pathlib.Path(MESA_DIR).joinpath('build').exists():
     #Post 2026 versions
     from .pyMesaUtils_2026 import *
 else:
