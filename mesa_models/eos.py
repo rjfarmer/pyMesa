@@ -51,7 +51,7 @@ eos_result = eos_lib.eosdt_get(
     ierr
 )
 
-if res.args['ierr'] != 0:
+if eos_result.args['ierr'] != 0:
     raise ValueError("Ierr not zero eosdt_get")
 
 # The EOS call returns the quantities we want in the "res" array.

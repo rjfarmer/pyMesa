@@ -53,6 +53,14 @@ Any post github version: that is a version that starts with 'r2' or is from a gi
 
 Make sure you set ``MESA_DIR`` and ``MESASDK_ROOT`` before starting Python.
 
+If you recieve a Python ``CalledProcessError`` then in your shell set the enviromenet variable
+````
+FC=$MESASDK_ROOT/bin/gfortran
+````
+
+There is an issue where the gfortran.wrapper is found instead of the gfortran compilier and
+we dont pass arguments correctly.
+
 
 ## Usage
 
