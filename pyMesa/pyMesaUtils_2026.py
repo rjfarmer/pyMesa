@@ -13,6 +13,11 @@ if "MESA_DIR" not in os.environ:
 else:
     MESA_DIR = os.environ.get('MESA_DIR')
 
+# Gfort2py version check
+if not gf.__version__.startswith('3.'):
+    raise ValueError(f"Unsupported gfort2py version {gf.__version__}, must be greater than 3.0.0")
+
+
 
 DATA_DIR = os.path.join(MESA_DIR,'data')
 BUILD_DIR = os.path.join(MESA_DIR,'build')

@@ -75,7 +75,7 @@ eos_result = eos_lib.eosdt_get(
     ierr
 )
 
-if res.args['ierr'] != 0:
+if eos_result.args['ierr'] != 0:
     raise ValueError("Ierr not zero eosdt_get")
 
 
@@ -103,7 +103,7 @@ kap_res = kap_lib.kap_get(kap_handle, species, chem_id, net_iso, xa,
                           kap_fracs, kap, dlnkap_dlnRho, dlnkap_dlnT, dlnkap_dxa,
                           ierr)
 
-if res.args['ierr'] != 0:
+if kap_res.args['ierr'] != 0:
     raise ValueError("Ierr not zero from kap_get")
 
 print(f"Opacity {kap_res.args['kap']}")
