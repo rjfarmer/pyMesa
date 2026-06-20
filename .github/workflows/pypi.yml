@@ -36,7 +36,7 @@ jobs:
         .
     - name: Test
       run: |
-        python -m pip install dist/pyMesa*.tar.gz
+        python -m pip install dist/pymesa*.tar.gz
         cd ../;python -c "import pyMesa; print(pyMesa.__version__)"
 
 

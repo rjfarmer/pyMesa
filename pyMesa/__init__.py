@@ -1,6 +1,9 @@
 import pathlib
 import os
 
+from .version import __version__
+
+
 if "MESA_DIR" not in os.environ:
     raise ValueError("Must set MESA_DIR environment variable")
 else:
